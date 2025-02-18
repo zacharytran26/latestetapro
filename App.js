@@ -8,6 +8,7 @@ import messaging from '@react-native-firebase/messaging';
 import { PermissionsAndroid, Alert, Platform } from "react-native";
  
 const requestNotificationPermission = async () => {
+// testing github
 // let notificationsPermissionCheck = "granted";
 // The permission exists only for Android API versions bigger than 33 (Android 13),
 // we can assume it's always granted beforehand
