@@ -1,0 +1,423 @@
+Documentation for the Navigation System
+
+---------------------------------------
+
+The navigation system is comprised of a Stack nested inside a custom drawer. 
+A stack is a navigational system within react native that allows the user to go to a 
+screen and puts that screen on top of a stack. There are two ways to utilize the stack:
+Buttons/Touchable Opacities to point to a specific screen or using a drawer to condense the stack.
+
+here is an example of a stack: 
+
+    import React from "react";
+    import { createNativeStackNavigator } from "@react-navigation/native-stack";
+    import CurrencyScreen from "../screens/Currencies";
+    import DisplayImage from "../screens/ImageScreen";
+    import FIFScreen from "../screens/FIFScreen";
+    import ConfirmFIF from "../screens/ConfirmationFIF";
+    import InstructorsScreen from "../screens/InstructorScreen";
+    import InstructorList from "../screens/InstructorDetailScreen";
+    import PendingAuths from "../screens/PendingAuths";
+    import Times from "../screens/TimesScreen";
+    import Approve from "../screens/ApprovalScreen";
+    import StudentsScreen from "../screens/StudentScreen";
+    import StudentList from "../screens/StudentDetailScreen";
+    import StudentMap from "../screens/StudentMap";
+    import StudentMapDetails from "../screens/StudentMapsDetail";
+    import LineItem from "../screens/LineItems";
+    import StudentCourse from "../screens/StudentCourseScreen";
+    import SettingsScreen from "../screens/SettingScreen";
+    import LogoutScreen from "../screens/Logout";
+    import { useAuth } from "../screens/ThemeContext";
+
+    const Stack = createNativeStackNavigator();
+
+    export default function CurrencyStackNavigator() {
+    const { authUser } = useAuth();
+    return (
+        <Stack.Navigator
+        screenOptions={{
+            headerBackTitleVisible: false,
+            headerStyle: {
+            backgroundColor: "#f7f9fc",
+            },
+            headerTitle: `${authUser.currentasof}`,
+        }}
+        >
+        <Stack.Screen name="Currency" component={CurrencyScreen} />
+        <Stack.Screen name="Image" component={DisplayImage} />
+        <Stack.Screen name="FIF" component={FIFScreen} />
+        <Stack.Screen name="Confirm" component={ConfirmFIF} />      
+        <Stack.Screen name="InstructorScreen" component={InstructorsScreen} />
+        <Stack.Screen name="InstructorDetailScreen" component={InstructorList} />
+        <Stack.Screen name="PendingAuth" component={PendingAuths} />
+        <Stack.Screen name="Times" component={Times} />
+        <Stack.Screen name="Auth" component={Approve} />                  
+        <Stack.Screen name="StudentScreen" component={StudentsScreen} />      
+        <Stack.Screen name="StudentDetailScreen" component={StudentList} />            
+        <Stack.Screen name="StudentMap" component={StudentMap} />
+        <Stack.Screen name="StudentMapDetails" component={StudentMapDetails} />      
+        <Stack.Screen name="LineItem" component={LineItem} />
+        <Stack.Screen name="StudentCourse" component={StudentCourse} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />            
+        <Stack.Screen name="Logout" component={LogoutScreen} />
+        </Stack.Navigator>
+    );
+    }
+
+screenOptions - this block of code is where we can alter the stack to customize
+the stack. The props headerBackTitleVisible and headerStyle are parameters to show different 
+attributes of the stack. 
+
+<Stack.Screen name="Currency" component={CurrencyScreen} /> - This line of code is to render the component
+inside the specified file. By importing the file into the stack file, we can directly use the component call the component 
+to render it once the component is rendered.
+
+A Drawer is another navigation system that allows for easier navigation to different screens. It is a gesture oriented navigation system
+meaning the user has to prompt a left or right action to render the drawer. 
+Here is an example of a drawer: 
+    import React from "react";
+    import { TouchableOpacity, Image } from "react-native";
+    import { createDrawerNavigator } from "@react-navigation/drawer";
+    import CurrencyStackNavigator from "./CurrencyStack";
+    import { CustomDrawerContentCurrency } from "./CurrencyMainDrawer";
+
+    const Drawer = createDrawerNavigator();
+
+    export default function CurrencyDrawerNavigator() {
+    return (
+        <Drawer.Navigator
+        drawerContent={(props) => <CustomDrawerContentCurrency {...props} />}
+        screenOptions={({ navigation }) => ({
+            headerTitle: () => <LogoTitle navigation={navigation} />,
+            headerBackTitleVisible: false,
+            headerTintColor: "white",
+            headerStyle: { height: 130, backgroundColor: "#5d95e8" },
+        })}
+        >
+        <Drawer.Screen name="CurrencyStack" component={CurrencyStackNavigator} />
+        </Drawer.Navigator>
+    );
+    }
+
+    function LogoTitle({ navigation }) {
+    return (
+        <TouchableOpacity
+        onPress={() =>
+            navigation.reset({
+            index: 0,
+            routes: [{ name: "CurrencyStack", params: { screen: "Currency" } }],
+            })
+        }
+        >
+        <Image
+            style={{ width: 150, height: 50 }}
+            source={require("../assets/logo-transparent.png")}
+        />
+        </TouchableOpacity>
+    );
+    }
+
+By the example, we want to render the stack inside the drawer. To do this, the user
+must call the Stack component where all the screens live. 
+There is a functionality for the Logo to reset the user back to the homescreen of each of the bottom navigator screen. This
+allows the user to have an easier route to get back to the home screen without clicking the back button several times.  
+navigation.reset({index: 0,routes: [{ name: "CurrencyStack", params: { screen: "Currency" } }],}) - this line signifies what screen and stack to look for and once the user presses the logo icon, it will prompt the user to the
+specified screen. 
+
+headerTitle: () => <LogoTitle navigation={navigation} /> - this line here calls the function wrapping it in a JSX format to render it as a Touchable
+Opacity.
+
+To complete the navigation system, we need to create a custom drawer to house all the external links as well as the screens.
+    import React, { useState } from "react";
+    import {
+    SafeAreaView,
+    TouchableOpacity,
+    StyleSheet,
+    View,
+    Linking,
+    } from "react-native";
+    import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
+    import { useTheme, Avatar, Text } from "@ui-kitten/components";
+    import { useAuth } from "../screens/ThemeContext";
+    import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import icon library
+
+    export function CustomDrawerContentCurrency(props) {
+    const theme = useTheme();
+    const { authUser } = useAuth();
+
+    const uric = `${authUser.host.replace(
+        "servlet/",
+        ""
+    )}php/upload/view.php?imgRes=10&viewPers=${
+        authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${
+        authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+
+    const openInBrowser = (url) => {
+        const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
+        const sHost = authUser.host + "content?";
+        var surl =
+        url +
+        "&etamobilepro=1&nocache=" +
+        Math.random().toString().split(".")[1] +
+        "&session_id=" +
+        authUser.sessionid +
+        "&hash=" +
+        authUser.hash +
+        "&customer=eta" +
+        authUser.schema +
+        "&zajael1120=" +
+        authUser.custhash;
+        surl =
+        surl +
+        "&teamId=&uname=" +
+        authUser.uname +
+        "&password=" +
+        authUser.upwd +
+        "&curDate=" +
+        arrCalStart[0] +
+        "&schedDate=" +
+        arrCalStart[1] +
+        "&version=3.0.2&";
+        const urlGoto = sHost + surl;
+        Linking.canOpenURL(urlGoto)
+        .then((supported) => {
+            if (supported) {
+            Linking.openURL(urlGoto);
+            } else {
+            console.warn("Don't know how to open URI: " + urlGoto);
+            }
+        })
+        .catch((err) => console.error("An error occurred", err));
+    };
+
+    const openInBrowserCal = () => {
+        const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
+        const sHost = authUser.host.replace("servlet/", "");
+        const urlHost = sHost + "php/fullcalendar/demos/default.php?url=";
+        var surl =
+        authUser.host +
+        "content?module=home&toggleValue=1&msgToggleValue=1&etamobilepro=1&deviceid=";
+        var surl =
+        surl +
+        "&nocache=" +
+        Math.random().toString().split(".")[1] +
+        "&page=m&session_id=" +
+        authUser.sessionid +
+        "&hash=" +
+        authUser.hash +
+        "&customer=eta" +
+        authUser.schema +
+        "&zajael1120=" +
+        authUser.custhash;
+        surl =
+        surl +
+        "&teamId=&uname=" +
+        authUser.uname +
+        "&password=" +
+        authUser.upwd +
+        "&curDate=" +
+        arrCalStart[0] +
+        "&schedDate=" +
+        arrCalStart[1] +
+        "&version=3.0.2&";
+
+        const sCalUrl = urlHost + encodeURIComponent(surl);
+        Linking.canOpenURL(sCalUrl)
+        .then((supported) => {
+            if (supported) {
+            Linking.openURL(sCalUrl);
+            } else {
+            console.warn("Don't know how to open URI: " + sCalUrl);
+            }
+        })
+        .catch((err) => console.error("An error occurred", err));
+    };
+
+    return (
+        <DrawerContentScrollView
+        {...props}
+        style={{ backgroundColor: theme["color-basic-300"] }}
+        showsVerticalScrollIndicator={false}
+        >
+        <SafeAreaView>
+            <View style={styles.avatar}>
+            <Avatar source={{ uri: uric }} style={styles.profileAvatar} />
+            </View>
+
+            <DrawerItem
+            label="ETA"
+            icon={({ color, size }) => (
+                <Icon name="home-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInBrowser("module=home&page=homepg")}
+            />
+
+            <DrawerItem
+            label="FIF"
+            icon={({ color, size }) => (
+                <Icon name="file-document-edit-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", { screen: "FIF" })
+            }
+            />
+
+            <DrawerItem
+            label="Full Calendar"
+            icon={({ color, size }) => (
+                <Icon name="calendar-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInBrowserCal()}
+            />
+
+            <DrawerItem
+            label="Instructors"
+            icon={({ color, size }) => (
+                <Icon name="account-tie-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", {
+                screen: "InstructorScreen",
+                })
+            }
+            />
+
+            <DrawerItem
+            label="Logbook"
+            icon={({ color, size }) => (
+                <Icon name="book-open-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                openInBrowser("module=home&page=m&mode=mMyLogBookInit")
+            }
+            />
+
+            <DrawerItem
+            label="Pending Authorizations"
+            icon={({ color, size }) => (
+                <Icon name="clipboard-clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", {
+                screen: "PendingAuth",
+                })
+            }
+            />
+
+            <DrawerItem
+            label="Scheduling"
+            icon={({ color, size }) => (
+                <Icon name="clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInBrowser("module=home&page=m&mode=mGetPreGantt")}
+            />
+
+            <DrawerItem
+            label="Students"
+            icon={({ color, size }) => (
+                <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", {
+                screen: "StudentScreen",
+                })
+            }
+            />
+
+            <DrawerItem
+            label="Settings"
+            icon={({ color, size }) => (
+                <Icon name="cog-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", { screen: "Settings" })
+            }
+            />
+
+            <DrawerItem
+            label="Logout"
+            icon={({ color, size }) => (
+                <Icon name="logout" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", { screen: "Logout" })
+            }
+            />
+
+            <View style={styles.bottomTextContainer}>
+            <TouchableOpacity onPress={() => openInBrowser(authUser.LINK)}>
+                <Text>Help</Text>
+            </TouchableOpacity>
+            <Text style={styles.bottomText}>Version 1.0.0</Text>
+            <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
+            <Text style={styles.bottomText}>All Rights Reserved</Text>
+            </View>
+        </SafeAreaView>
+        </DrawerContentScrollView>
+    );
+    }
+
+    const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+    },
+    avatar: {
+        alignItems: "center",
+    },
+    bottomTextContainer: {
+        marginTop: "auto", // Pushes the text to the bottom
+        alignItems: "center",
+        paddingVertical: 20,
+    },
+    bottomText: {
+        fontSize: 10,
+        color: "#888", // Customize as needed
+    },
+    profileAvatar: {
+        width: 75,
+        height: 75,
+    },
+    drawerItemLabel: {
+        fontSize: 18, // Increase font size
+        fontWeight: "bold", // Make it bold (optional)
+        color: "#333", // Set a custom text color
+    },
+    });
+
+
+To render the Stack inside the Drawer, we create a custom drawer to house the nested navigation we created. In this we have a function called openInBrowser 
+which prompts the user to the browser in Safari/Chrome. The openInBrowserCal and sCalUrl deal with the calendar url.
+For the custom drawer, we can pass props that is wrapped in a scroll view and SafeAreaView to ensure that the drawer is not being rendered beyond the phone screen. The props 
+will be important in the navigational system.
+
+    <DrawerItem
+            label="Pending Authorizations"
+            icon={({ color, size }) => (
+                <Icon name="clipboard-clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+                props.navigation.navigate("CurrencyStack", {
+                screen: "PendingAuth",
+                })
+            }
+            />
+For each drawer item, we can give it a label, icon, and where to go once the user presses on the item. In the icon, we can call the react native vector icons to associate 
+each item to an icon. To navigate to the correct screen, there is an event listener called onPress waiting for the user to click on the button. By adding the () => inside the 
+event listener, it will wait until the button is clicked to execute the function. Each screen has a navigation props that allows two arguments: routeName and params. the routeName should match the 
+same name inside the navigator you define. In the second argument is to specify the exact screen you want the user to go to once the routeName is defined
+
+
