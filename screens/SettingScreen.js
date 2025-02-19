@@ -43,7 +43,7 @@ const SettingsScreen = ({ setProfileImage }) => {
   useEffect(() => {
     loadSettings();
   }, []);
-
+  // TODO: add in browser view of the terms and conditions
   const openInWebView = (url) => {
     setWebViewUrl(url);
     setModalVisible(true);

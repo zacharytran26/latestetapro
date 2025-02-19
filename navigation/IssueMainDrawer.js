@@ -18,11 +18,9 @@ export function CustomDrawerContentIssue(props) {
   const uric = `${authUser.host.replace(
     "servlet/",
     ""
-  )}php/upload/view.php?imgRes=10&viewPers=${
-    authUser.currpersid
-  }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${
-    authUser.svr
-  }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+  )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
   const openInBrowser = (url) => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
@@ -94,6 +92,7 @@ export function CustomDrawerContentIssue(props) {
       "&version=3.0.2&";
 
     const sCalUrl = urlHost + encodeURIComponent(surl);
+    console.log("sCalUrl", sCalUrl);
     Linking.canOpenURL(sCalUrl)
       .then((supported) => {
         if (supported) {

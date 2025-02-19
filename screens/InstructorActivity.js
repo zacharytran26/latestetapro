@@ -199,7 +199,7 @@ const InstructorActivity = ({ navigation }) => {
                 <Icon name="phone-outline" size={24} color="#3F51B5" />
                 <View style={styles.textContainer}>
                   <Text style={styles.contactLabel}>Phone</Text>
-                  <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                  <Text style={styles.contactValue}>*not set*</Text>
                 </View>
               </View>
             ) : (

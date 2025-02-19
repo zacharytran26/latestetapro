@@ -19,6 +19,7 @@ export function CustomDrawerContent(props) {
   const { authUser } = useAuth();
   const [WebViewUrl, setWebViewUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [CalWebView, setCalWebView] = useState("");
 
 
   const openInDrawerWebView = (url) => {
@@ -128,24 +129,23 @@ export function CustomDrawerContent(props) {
       "&version=3.0.2&";
 
     const sCalUrl = urlHost + encodeURIComponent(surl);
-    Linking.canOpenURL(sCalUrl)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(sCalUrl);
-        } else {
-          console.warn("Don't know how to open URI: " + sCalUrl);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    setCalWebView(sCalUrl);
+    setModalVisible(true);
+    // Linking.canOpenURL(sCalUrl)
+    //   .then((supported) => {
+    //     if (supported) {
+    //       Linking.openURL(sCalUrl);
+    //     } else {
+    //       console.warn("Don't know how to open URI: " + sCalUrl);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
   };
-
   const handleWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     Alert.alert("WebView Error", nativeEvent.description);
   };
 
-
-  console.log("WebViewUrl", WebViewUrl);
 
   return (
     <>
@@ -159,6 +159,19 @@ export function CustomDrawerContent(props) {
             <Button onPress={() => setModalVisible(false)}>Close</Button>
           </View>
           <WebView source={{ uri: WebViewUrl }} />
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.webViewHeader}>
+            <Button onPress={() => setModalVisible(false)}>Close</Button>
+          </View>
+          <WebView source={{ uri: CalWebView }} />
         </SafeAreaView>
       </Modal>
 
@@ -190,14 +203,14 @@ export function CustomDrawerContent(props) {
               props.navigation.navigate("HomeStack", { screen: "FIF" })
             }
           />
-
+          {/*Fix the Calendar not working */}
           <DrawerItem
             label="Full Calendar"
             icon={({ color, size }) => (
               <Icon name="calendar-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
-            onPress={() => openInDrawerWebView("module=fullcalendar")}
+            onPress={openInBrowserCal}
           />
 
           <DrawerItem

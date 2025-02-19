@@ -16,6 +16,39 @@ import { WebView } from 'react-native-webview';
 export function CustomDrawerContentCurrency(props) {
   const theme = useTheme();
   const { authUser } = useAuth();
+  const [WebViewUrl, setWebViewUrl] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openInDrawerWebView = (url) => {
+    const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
+    const sHost = authUser.host + "content?";
+    var surl =
+      url +
+      "&etamobilepro=1&nocache=" +
+      Math.random().toString().split(".")[1] +
+      "&session_id=" +
+      authUser.sessionid +
+      "&hash=" +
+      authUser.hash +
+      "&customer=eta" +
+      authUser.schema +
+      "&zajael1120=" +
+      authUser.custhash;
+    surl =
+      surl +
+      "&teamId=&uname=" +
+      authUser.uname +
+      "&password=" +
+      authUser.upwd +
+      "&curDate=" +
+      arrCalStart[0] +
+      "&schedDate=" +
+      arrCalStart[1] +
+      "&version=3.0.2&";
+    const urlGoto = sHost + surl;
+    setWebViewUrl(urlGoto);
+    setModalVisible(true);
+  };
 
   const uric = `${authUser.host.replace(
     "servlet/",
@@ -51,6 +84,7 @@ export function CustomDrawerContentCurrency(props) {
       arrCalStart[1] +
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
+
     console.log("scallurl", urlGoto);
     Linking.canOpenURL(urlGoto)
       .then((supported) => {

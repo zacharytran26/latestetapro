@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback,useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { StyleSheet, SafeAreaView, View, TouchableOpacity } from "react-native";
-import { Layout, Text, Button, Card} from "@ui-kitten/components";
+import { Layout, Text, Button, Card } from "@ui-kitten/components";
 import { SelectList } from "react-native-dropdown-select-list";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { useAuth } from "./ThemeContext";
@@ -15,160 +15,160 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 
-  const RenderAuth = React.memo(({ item, onPressTime, onPressAuth }) => {
-    const isAdditionalRepeats = item.REQST_TYPE === "Additional Repeats";
-    const isCompTime = item.REQST_TYPE === "Comp Time";
-    const hasNoStud1 = item.STUD1_DISNAME === "";
-    const hasNoStud2 = item.STUD2_DISNAME === "";
-  
-    return (
-      <Card
-        style={styles.card}
-        header={() => (
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardHeaderText}>
-              {item.value} - {item.HOUR}
-            </Text>
-          </View>
-        )}
-      >
-        <View style={styles.cardBody}>
-          {isAdditionalRepeats && (
-            <>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Reason:</Text> {item.REASON_DISNAME}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Comment:</Text> {item.REQST_CMNT}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Status:</Text> {item.STATUS_DISNAME}
-              </Text>
-              <View style={styles.row}>
-                <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
-                  <Icon name="check-bold" size={18} color="#07a61c" />
-                  <Text style={styles.buttonText}>Approve</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Date Submitted:</Text> {item.SUBMIT_DATE}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>By:</Text> {item.BY}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Resource:</Text> {item.RES_TYPE}
-              </Text>
-              <View style={styles.row}>
-                <TouchableOpacity onPress={() => onPressTime(item)} style={styles.button}>
-                  <Icon name="timer" size={18} color="#FFC107" />
-                  <Text style={styles.buttonText}>Times</Text>
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
-  
-          {isCompTime && (
-            <>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Request Date:</Text> {item.REQST_DATE}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Comment:</Text> {item.REQST_CMNT}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Reason:</Text> {item.REASON_DISNAME}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Status:</Text> {item.STATUS_DISNAME}
-              </Text>
-              <View style={styles.row}>
-                <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
-                  <Icon name="check-bold" size={18} color="#07a61c" />
-                  <Text style={styles.buttonText}>Approve</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>By:</Text> {item.BY}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Date Submitted:</Text> {item.SUBMIT_DATE}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Resource:</Text> {item.RES_TYPE}
-              </Text>
-              <View style={styles.row}>
-                <TouchableOpacity onPress={() => onPressTime(item)} style={styles.button}>
-                  <Icon name="timer" size={18} color="#FFC107" />
-                  <Text style={styles.buttonText}>Times</Text>
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
-  
-          {!isAdditionalRepeats && !isCompTime && (
-            <>
-              <Text style={styles.cardText}>{item.AUTH_REASON}</Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Request Date:</Text> {item.REQST_DATE}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Status:</Text> {item.STATUS_DISNAME}
-              </Text>
-              <View style={styles.row}>
-                <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
-                  <Icon name="check-bold" size={18} color="#07a61c" />
-                  <Text style={styles.buttonText}>Approve</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Date Submitted:</Text> {item.SUBMIT_DATE}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>By:</Text> {item.BY}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Resource:</Text> {item.RES_TYPE}
-              </Text>
-              <View style={styles.row}>
-                <TouchableOpacity onPress={() => onPressTime(item)} style={styles.button}>
-                  <Icon name="timer" size={18} color="#FFC107" />
-                  <Text style={styles.buttonText}>Times</Text>
-                </TouchableOpacity>
-              </View>
-              {!hasNoStud1 && (
-                <>
-                  <Text style={styles.cardText}>
-                    <Text style={styles.label}>Student 1:</Text> {item.STUD1_DISNAME}
-                  </Text>
-                  <Text style={styles.cardText}>
-                    <Text style={styles.label}>Course:</Text> {item.S1COURSE}
-                  </Text>
-                  <Text style={styles.cardText}>
-                    <Text style={styles.label}>Unit:</Text> {item.S1UNIT}
-                  </Text>
-                </>
-              )}
-              {!hasNoStud2 && (
-                <>
-                  <Text style={styles.cardText}>
-                    <Text style={styles.label}>Student 2:</Text> {item.STUD2_DISNAME}
-                  </Text>
-                  <Text style={styles.cardText}>
-                    <Text style={styles.label}>Course:</Text> {item.S2COURSE}
-                  </Text>
-                  <Text style={styles.cardText}>
-                    <Text style={styles.label}>Unit:</Text> {item.S2UNIT}
-                  </Text>
-                </>
-              )}
-            </>
-          )}
+const RenderAuth = React.memo(({ item, onPressTime, onPressAuth }) => {
+  const isAdditionalRepeats = item.REQST_TYPE === "Additional Repeats";
+  const isCompTime = item.REQST_TYPE === "Comp Time";
+  const hasNoStud1 = item.STUD1_DISNAME === "";
+  const hasNoStud2 = item.STUD2_DISNAME === "";
+
+  return (
+    <Card
+      style={styles.card}
+      header={() => (
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardHeaderText}>
+            {item.value} - {item.HOUR}
+          </Text>
         </View>
-      </Card>
-    );
-  });
-  const PendingAuth = () => {
+      )}
+    >
+      <View style={styles.cardBody}>
+        {isAdditionalRepeats && (
+          <>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Reason:</Text> {item.REASON_DISNAME}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Comment:</Text> {item.REQST_CMNT}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Status:</Text> {item.STATUS_DISNAME}
+            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
+                <Icon name="check-bold" size={18} color="#07a61c" />
+                <Text style={styles.buttonText}>Approve</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Date Submitted:</Text> {item.SUBMIT_DATE}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>By:</Text> {item.BY}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Resource:</Text> {item.RES_TYPE}
+            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onPressTime(item)} style={styles.button}>
+                <Icon name="timer" size={18} color="#FFC107" />
+                <Text style={styles.buttonText}>Times</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+
+        {isCompTime && (
+          <>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Request Date:</Text> {item.REQST_DATE}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Comment:</Text> {item.REQST_CMNT}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Reason:</Text> {item.REASON_DISNAME}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Status:</Text> {item.STATUS_DISNAME}
+            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
+                <Icon name="check-bold" size={18} color="#07a61c" />
+                <Text style={styles.buttonText}>Approve</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>By:</Text> {item.BY}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Date Submitted:</Text> {item.SUBMIT_DATE}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Resource:</Text> {item.RES_TYPE}
+            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onPressTime(item)} style={styles.button}>
+                <Icon name="timer" size={18} color="#FFC107" />
+                <Text style={styles.buttonText}>Times</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+
+        {!isAdditionalRepeats && !isCompTime && (
+          <>
+            <Text style={styles.cardText}>{item.AUTH_REASON}</Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Request Date:</Text> {item.REQST_DATE}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Status:</Text> {item.STATUS_DISNAME}
+            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
+                <Icon name="check-bold" size={18} color="#07a61c" />
+                <Text style={styles.buttonText}>Approve</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Date Submitted:</Text> {item.SUBMIT_DATE}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>By:</Text> {item.BY}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={styles.label}>Resource:</Text> {item.RES_TYPE}
+            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onPressTime(item)} style={styles.button}>
+                <Icon name="timer" size={18} color="#FFC107" />
+                <Text style={styles.buttonText}>Times</Text>
+              </TouchableOpacity>
+            </View>
+            {!hasNoStud1 && (
+              <>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Student 1:</Text> {item.STUD1_DISNAME}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Course:</Text> {item.S1COURSE}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Unit:</Text> {item.S1UNIT}
+                </Text>
+              </>
+            )}
+            {!hasNoStud2 && (
+              <>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Student 2:</Text> {item.STUD2_DISNAME}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Course:</Text> {item.S2COURSE}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Unit:</Text> {item.S2UNIT}
+                </Text>
+              </>
+            )}
+          </>
+        )}
+      </View>
+    </Card>
+  );
+});
+const PendingAuth = () => {
   const [requests, setRequests] = useState([]);
   const [goFetch, setgoFetch] = useState(true);
   const [confirmedItems, setConfirmedItems] = useState(new Set());
@@ -181,14 +181,14 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
   const PendRef = useRef(new Set());
 
   useEffect(() => {
-    if(goFetch){
+    if (goFetch) {
       fetchAuths();
     }
   }, [goFetch]);
 
   useFocusEffect(
-    useCallback(()=>{
-      if(route.params?.PendData){
+    useCallback(() => {
+      if (route.params?.PendData) {
         const { pdataid } = route.params.PendData;
         //console.log("Receieved",pdataid);
 
@@ -201,7 +201,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
         setRequests(newPendAuth);
 
       }
-    },[route.params?.PendData])
+    }, [route.params?.PendData])
   )
 
   const handleRefresh = async () => {
@@ -216,12 +216,9 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
   const fetchAuths = async () => {
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getpendauth&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getpendauth&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}`
       );
 
@@ -261,7 +258,6 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
         },
         { pendauths: [], teams: [] }
       );
-      console.log(pendAuthData.pendauths);
       setRequests(pendAuthData.pendauths);
       setTeams(pendAuthData.teams);
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
