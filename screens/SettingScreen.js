@@ -7,6 +7,7 @@ import {
   Alert,
   Linking,
   Webview,
+  Modal
 } from "react-native";
 import {
   Layout,
@@ -27,6 +28,9 @@ import { useAuth } from "./ThemeContext";
 const SettingsScreen = ({ setProfileImage }) => {
   const { theme, authUser } = useAuth();
   const [uploadedImageUri, setUploadedImageUri] = useState(null);
+  const [WebViewUrl, setWebViewUrl] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [form, setForm] = useState({
     emailNotifications: true,
     pushNotifications: false,
@@ -40,18 +44,9 @@ const SettingsScreen = ({ setProfileImage }) => {
     loadSettings();
   }, []);
 
-  const openInBrowser = (url, item) => {
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(url);
-          setViewedItems((prev) => new Set(prev).add(item.ID)); // Mark item as viewed
-          handleRefresh(); // Automatically refresh the page after viewing
-        } else {
-          Alert.alert("Don't know how to open URI: " + url);
-        }
-      })
-      .catch((err) => Alert.alert("An error occurred", err));
+  const openInWebView = (url) => {
+    setWebViewUrl(url);
+    setModalVisible(true);
   };
 
   const loadSettings = async () => {
@@ -140,7 +135,7 @@ const SettingsScreen = ({ setProfileImage }) => {
                   <Button
                     style={styles.termstext}
                     onPress={() =>
-                      Linking.openURL(
+                      openInWebView(
                         "https://apps5.talonsystems.com/tseta/tc.htm"
                       )
                     }

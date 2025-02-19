@@ -21,6 +21,7 @@ import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 import { handleFetchError } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Contacts from "react-native-contacts";
 
 const InstructorList = ({ navigation }) => {
   const route = useRoute();
@@ -50,20 +51,17 @@ const InstructorList = ({ navigation }) => {
       const uri = `${authUser.host.replace(
         "servlet/",
         ""
-      )}/php/upload/view.php?imgRes=10&viewPers=${
-        authUser.currpersid
-      }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-        instDetail.SYSDOCID
-      }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+      )}/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+        }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${instDetail.SYSDOCID
+        }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
       setImage(uri);
     }
   }, [instDetail]);
 
   function callPhoneNumber() {
-    const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${
-      instDetail.PHONE
-    }`;
+    const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${instDetail.PHONE
+      }`;
 
     Linking.canOpenURL(phoneNumber)
       .then((supported) => {
@@ -112,12 +110,9 @@ const InstructorList = ({ navigation }) => {
   const FetchInstructorDetail = async () => {
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getinstructordetail&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getinstructordetail&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}&persinstid=${picId}`
       );
       const data = await response.json();
@@ -133,6 +128,7 @@ const InstructorList = ({ navigation }) => {
       console.error("Error fetching instructor details:", error);
     }
   };
+  console.log("inst", instDetail);
 
   return (
     <Layout style={styles.container}>
@@ -144,8 +140,8 @@ const InstructorList = ({ navigation }) => {
                 image
                   ? { uri: image }
                   : imageError || !instDetail.SYSDOCID
-                  ? require("../assets/person-icon.png")
-                  : { uri: image }
+                    ? require("../assets/person-icon.png")
+                    : { uri: image }
               }
               style={styles.profileAvatar}
               onError={() => setImageError(true)} // Handle image load error
@@ -169,31 +165,53 @@ const InstructorList = ({ navigation }) => {
             </Text>
             <Card style={styles.card}>
               {/* Email Row */}
-              <TouchableOpacity
-                style={styles.contactRow}
-                onPress={openAndFormatEmail}
-              >
-                <Icon name="email-outline" size={24} color="#4CAF50" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.contactLabel}>Email</Text>
-                  <Text style={styles.contactValue}>{instDetail.EMAIL1}</Text>
+              {instDetail.EMAIL === "*not set*" || instDetail.EMAIL === "" ? (
+                <View style={styles.contactRow}>
+                  <Icon name="email-outline" size={24} color="#4CAF50" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contactLabel}>Email</Text>
+                    <Text style={styles.contactValue}>*not set*</Text>
+                  </View>
                 </View>
-                <Icon name="chevron-right" size={24} color="#AAA" />
-              </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.contactRow}
+                  onPress={openAndFormatEmail}
+                >
+                  <Icon name="email-outline" size={24} color="#4CAF50" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contactLabel}>Email</Text>
+                    <Text style={styles.contactValue}>{instDetail.EMAIL}</Text>
+                  </View>
+                  <Icon name="chevron-right" size={24} color="#AAA" />
+                </TouchableOpacity>
+              )}
               <Divider style={styles.divider} />
 
               {/* Phone Row */}
-              <TouchableOpacity
-                style={styles.contactRow}
-                onPress={callPhoneNumber}
-              >
-                <Icon name="phone-outline" size={24} color="#3F51B5" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.contactLabel}>Phone</Text>
-                  <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+              {instDetail.PHONE === "*not set*" || instDetail.PHONE === "" ? (
+                <View style={styles.contactRow}>
+
+
+                  <Icon name="phone-outline" size={24} color="#3F51B5" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contactLabel}>Phone</Text>
+                    <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                  </View>
                 </View>
-                <Icon name="chevron-right" size={24} color="#AAA" />
-              </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.contactRow}
+                  onPress={callPhoneNumber}
+                >
+                  <Icon name="phone-outline" size={24} color="#3F51B5" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contactLabel}>Phone</Text>
+                    <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                  </View>
+                  <Icon name="chevron-right" size={24} color="#AAA" />
+                </TouchableOpacity>
+              )}
             </Card>
           </View>
         </ScrollView>

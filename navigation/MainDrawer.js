@@ -5,26 +5,23 @@ import {
   StyleSheet,
   View,
   Linking,
+  Modal,
+  Alert
 } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import { useTheme, Avatar, Text } from "@ui-kitten/components";
+import { useTheme, Avatar, Text, Button } from "@ui-kitten/components";
 import { useAuth } from "../screens/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import icon library
+import { WebView } from 'react-native-webview';
 
 export function CustomDrawerContent(props) {
   const theme = useTheme();
   const { authUser } = useAuth();
+  const [WebViewUrl, setWebViewUrl] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const uric = `${authUser.host.replace(
-    "servlet/",
-    ""
-  )}php/upload/view.php?imgRes=10&viewPers=${
-    authUser.currpersid
-  }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${
-    authUser.svr
-  }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
-  const openInBrowser = (url) => {
+  const openInDrawerWebView = (url) => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
     const sHost = authUser.host + "content?";
     var surl =
@@ -51,16 +48,53 @@ export function CustomDrawerContent(props) {
       arrCalStart[1] +
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
-    Linking.canOpenURL(urlGoto)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(urlGoto);
-        } else {
-          console.warn("Don't know how to open URI: " + urlGoto);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    setWebViewUrl(urlGoto);
+    setModalVisible(true);
   };
+  const uric = `${authUser.host.replace(
+    "servlet/",
+    ""
+  )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+
+  // const openInBrowser = (url) => {
+  //   const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
+  //   const sHost = authUser.host + "content?";
+  //   var surl =
+  //     url +
+  //     "&etamobilepro=1&nocache=" +
+  //     Math.random().toString().split(".")[1] +
+  //     "&session_id=" +
+  //     authUser.sessionid +
+  //     "&hash=" +
+  //     authUser.hash +
+  //     "&customer=eta" +
+  //     authUser.schema +
+  //     "&zajael1120=" +
+  //     authUser.custhash;
+  //   surl =
+  //     surl +
+  //     "&teamId=&uname=" +
+  //     authUser.uname +
+  //     "&password=" +
+  //     authUser.upwd +
+  //     "&curDate=" +
+  //     arrCalStart[0] +
+  //     "&schedDate=" +
+  //     arrCalStart[1] +
+  //     "&version=3.0.2&";
+  //   const urlGoto = sHost + surl;
+  //   Linking.canOpenURL(urlGoto)
+  //     .then((supported) => {
+  //       if (supported) {
+  //         Linking.openURL(urlGoto);
+  //       } else {
+  //         console.warn("Don't know how to open URI: " + urlGoto);
+  //       }
+  //     })
+  //     .catch((err) => console.error("An error occurred", err));
+  // };
 
   const openInBrowserCal = () => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
@@ -105,135 +139,159 @@ export function CustomDrawerContent(props) {
       .catch((err) => console.error("An error occurred", err));
   };
 
+  const handleWebViewError = (syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    Alert.alert("WebView Error", nativeEvent.description);
+  };
+
+
+  console.log("WebViewUrl", WebViewUrl);
+
   return (
-    <DrawerContentScrollView
-      {...props}
-      style={{ backgroundColor: theme["color-basic-300"] }}
-      showsVerticalScrollIndicator={false}
-    >
-      <SafeAreaView>
-        <View style={styles.avatar}>
-          <Avatar source={{ uri: uric }} style={styles.profileAvatar} />
-        </View>
+    <>
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.webViewHeader}>
+            <Button onPress={() => setModalVisible(false)}>Close</Button>
+          </View>
+          <WebView source={{ uri: WebViewUrl }} />
+        </SafeAreaView>
+      </Modal>
 
-        <DrawerItem
-          label="ETA"
-          icon={({ color, size }) => (
-            <Icon name="home-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() => openInBrowser("module=home&page=homepg")}
-        />
+      <DrawerContentScrollView
+        {...props}
+        style={{ backgroundColor: theme["color-basic-300"] }}
+        showsVerticalScrollIndicator={false}
+      >
+        <SafeAreaView>
+          <View style={styles.avatar}>
+            <Avatar source={{ uri: uric }} style={styles.profileAvatar} />
+          </View>
+          <DrawerItem
+            label="ETA"
+            icon={({ color, size }) => (
+              <Icon name="home-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInDrawerWebView("module=home&page=homepg")}
+          />
 
-        <DrawerItem
-          label="FIF"
-          icon={({ color, size }) => (
-            <Icon name="file-document-edit-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("HomeStack", { screen: "FIF" })
-          }
-        />
+          <DrawerItem
+            label="FIF"
+            icon={({ color, size }) => (
+              <Icon name="file-document-edit-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", { screen: "FIF" })
+            }
+          />
 
-        <DrawerItem
-          label="Full Calendar"
-          icon={({ color, size }) => (
-            <Icon name="calendar-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() => openInBrowserCal()}
-        />
+          <DrawerItem
+            label="Full Calendar"
+            icon={({ color, size }) => (
+              <Icon name="calendar-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInDrawerWebView("module=fullcalendar")}
+          />
 
-        <DrawerItem
-          label="Instructors"
-          icon={({ color, size }) => (
-            <Icon name="account-tie-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("HomeStack", {
-              screen: "InstructorScreen",
-            })
-          }
-        />
+          <DrawerItem
+            label="Instructors"
+            icon={({ color, size }) => (
+              <Icon name="account-tie-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", {
+                screen: "InstructorScreen",
+              })
+            }
+          />
 
-        <DrawerItem
-          label="Logbook"
-          icon={({ color, size }) => (
-            <Icon name="book-open-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            openInBrowser("module=home&page=m&mode=mMyLogBookInit")
-          }
-        />
+          <DrawerItem
+            label="Logbook"
+            icon={({ color, size }) => (
+              <Icon name="book-open-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              openInDrawerWebView("module=home&page=m&mode=mMyLogBookInit")
+            }
+          />
 
-        <DrawerItem
-          label="Pending Authorizations"
-          icon={({ color, size }) => (
-            <Icon name="clipboard-clock-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("HomeStack", { screen: "PendingAuth" })
-          }
-        />
+          <DrawerItem
+            label="Pending Authorizations"
+            icon={({ color, size }) => (
+              <Icon name="clipboard-clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", { screen: "PendingAuth" })
+            }
+          />
 
-        <DrawerItem
-          label="Scheduling"
-          icon={({ color, size }) => (
-            <Icon name="clock-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() => openInBrowser("module=home&page=m&mode=mGetPreGantt")}
-        />
+          <DrawerItem
+            label="Scheduling"
+            icon={({ color, size }) => (
+              <Icon name="clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              openInDrawerWebView("module=home&page=m&mode=mGetPreGantt")
+            }
+          />
 
-        <DrawerItem
-          label="Students"
-          icon={({ color, size }) => (
-            <Icon name="account-group-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("HomeStack", {
-              screen: "StudentScreen",
-            })
-          }
-        />
+          <DrawerItem
+            label="Students"
+            icon={({ color, size }) => (
+              <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", {
+                screen: "StudentScreen",
+              })
+            }
+          />
 
-        <DrawerItem
-          label="Settings"
-          icon={({ color, size }) => (
-            <Icon name="cog-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("HomeStack", { screen: "Settings" })
-          }
-        />
+          <DrawerItem
+            label="Settings"
+            icon={({ color, size }) => (
+              <Icon name="cog-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", { screen: "Settings" })
+            }
+          />
 
-        <DrawerItem
-          label="Logout"
-          icon={({ color, size }) => (
-            <Icon name="logout" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("HomeStack", { screen: "Logout" })
-          }
-        />
+          <DrawerItem
+            label="Logout"
+            icon={({ color, size }) => (
+              <Icon name="logout" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", { screen: "Logout" })
+            }
+          />
 
-        <View style={styles.bottomTextContainer}>
-          <TouchableOpacity onPress={() => openInBrowser(authUser.LINK)}>
-            <Text>Help</Text>
-          </TouchableOpacity>
-          <Text style={styles.bottomText}>Version 1.0.0</Text>
-          <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
-          <Text style={styles.bottomText}>All Rights Reserved</Text>
-        </View>
-      </SafeAreaView>
-    </DrawerContentScrollView>
+          <View style={styles.bottomTextContainer}>
+            <TouchableOpacity onPress={() => openInDrawerWebView(authUser.LINK)}>
+              <Text>Help</Text>
+            </TouchableOpacity>
+            <Text style={styles.bottomText}>Version 1.0.0</Text>
+            <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
+            <Text style={styles.bottomText}>All Rights Reserved</Text>
+          </View>
+        </SafeAreaView>
+      </DrawerContentScrollView>
+    </>
   );
 }
 

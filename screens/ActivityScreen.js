@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState} from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -17,27 +17,31 @@ import {
 } from "@ui-kitten/components"; // Import Button and Icon components
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
-//import * as Calendar from "expo-calendar";
+import RNCalendarEvents from "react-native-calendar-events";
 
 const Activity = () => {
   const route = useRoute();
   const { activity } = route.params;
+  const [pickedCal, setPickedCal] = useState(null);
 
   useEffect(() => {
-    requestCalendarPermissions();
+    (async () => {
+      try {
+        const perms = await RNCalendarEvents.requestPermissions();
+        if (perms === 'authorized') {
+          const allCalendars = await RNCalendarEvents.findCalendars();
+          const primaryCal = allCalendars.find(
+            (cal) => cal.isPrimary && cal.allowsModifications
+          );
+          setPickedCal(primaryCal);
+        } else {
+          Alert.alert('Calendar permission denied.');
+        }
+      } catch (error) {
+        Alert.alert('Error while fetching calendars:'+ error.toString());
+      }
+    })();
   }, []);
-
-  const requestCalendarPermissions = async () => {
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "Calendar permission is required to add events. Please enable it in the settings."
-      );
-      return false;
-    }
-    return true;
-  };
 
   const openInBrowser = (url) => {
     Linking.canOpenURL(url)
@@ -51,68 +55,23 @@ const Activity = () => {
       .catch((err) => console.error("An error occurred", err));
   };
 
-  const getDefaultCalendarSource = async () => {
-    if (Platform.OS === "ios") {
-      const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-      return defaultCalendar.source;
-    } else {
-      return { isLocalAccount: true, name: "Expo Calendar" };
-    }
-  };
+  // Event creation function
+const handleAddEvent = async () => {
+  try {
+    const startDate =new Date(activity.start).toISOString();
+    const endDate = new Date(activity.end).toISOString();
+    const eventTitle = activity.activitytype + "(" + activity.subtype + ")";
+    const eventNotes = activity.start + activity.end;
 
-  const createCalendarEvent = async (title, startDate, endDate, notes) => {
-    const calendarGranted = await requestCalendarPermissions();
-    if (!calendarGranted) return;
-
-    let calendarId;
-
-    if (Platform.OS === "ios") {
-      const defaultCalendarSource = await getDefaultCalendarSource();
-      calendarId = await Calendar.createCalendarAsync({
-        title: "My New Calendar",
-        color: "blue",
-        entityType: Calendar.EntityTypes.EVENT,
-        sourceId: defaultCalendarSource.id,
-        source: defaultCalendarSource,
-        name: "My Internal Calendar",
-        ownerAccount: "personal",
-        accessLevel: Calendar.CalendarAccessLevel.OWNER,
-      });
-    } else {
-      const calendars = await Calendar.getCalendarsAsync(
-        Calendar.EntityTypes.EVENT
-      );
-      calendarId = calendars.find(
-        (cal) => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
-      )?.id;
-
-      if (!calendarId) {
-        Alert.alert("Error", "No suitable calendar found.");
-        return;
-      }
-    }
-
-    const eventId = await Calendar.createEventAsync(calendarId, {
-      title: title,
+    const savedEventId = await RNCalendarEvents.saveEvent(eventTitle, {
       startDate: startDate,
       endDate: endDate,
-      timeZone: "GMT", // Adjust this according to your needs
-      notes: notes,
-    });
-
-    Alert.alert(
-      "Event Created",
-      `Event with ID ${eventId} created successfully!`
-    );
-  };
-
-  const handleAddEvent = async () => {
-    const startDate = new Date(activity.start);
-    const endDate = new Date(activity.end);
-    const title = activity.activitytype + "(" + activity.subtype + ")";
-    const notes = activity.start + activity.end;
-    await createCalendarEvent(title, startDate, endDate, notes);
-  };
+      notes:eventNotes,
+    }).then((id)=>{ Alert.alert('Event added to calendar successfully.'); });
+  } catch (error) {
+    Alert.alert('Error while adding event to calendar: '+error.toString());
+  }
+};
 
   const handleAuthEvent = async (schactid, requestid) => {
     navigation.navigate("ActivityApproval", {
@@ -333,14 +292,6 @@ const Activity = () => {
 };
 
 const styles = StyleSheet.create({
-  card: {
-    marginVertical: 10,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
   header: {
     paddingBottom: 10,
     alignItems: "center",

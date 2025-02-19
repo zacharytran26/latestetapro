@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Layout, Text, Icon, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
-//import * as ImagePicker from "expo-image-picker";
+import {launchImageLibrary} from 'react-native-image-picker';
 import { handleFetchError } from "./ExtraImports";
 
 const QualiScreen = ({ navigation }) => {
@@ -23,7 +23,7 @@ const QualiScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [qualicount, setQualicount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [image, setImage] = useState(null);
+  const [imageURI, setImageURI] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const { authUser, setAuthUser, setIsLoggedIn, setTabBarBadge } = useAuth();
   const [filter, setFilter] = useState("");
@@ -95,34 +95,35 @@ const QualiScreen = ({ navigation }) => {
   const handleLongPress = (item) => {
     const uri = qualURIs[item.QID];
     if (uri) {
-      setImage(uri);
+      setImageURI(uri);
       setPreviewVisible(true);
     }
   };
 
-  const openImagePickerExpo = async (selectedQual) => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+const openImagePickerQ = async (selectedQual) => {
+      const options = {
+        mediaType: 'photo',
+        includeBase64: false,
+        maxHeight: 2000,
+        maxWidth: 2000,
+      };
+      var selectedImage=0;
+      var imageUri;
+      launchImageLibrary(options, (result) => {
+        if (result.didCancel) {
+          Alert.alert('User cancelled image picker');
+        } else if (result.error) {
+          Alert.alert('Image picker error: ', result.error);
+        } else {
+          imageUri = result.uri || result.assets?.[0]?.uri;        
+          selectedImage=1;
+          setImageURI(imageUri);
 
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const imageUri = result.assets[0].uri;
-      setImage(imageUri);
+    if (selectedImage==1){
       const formData = new FormData();
       formData.append("photo", {
         uri: imageUri,
-        type: "image/jpeg",
+        type: "image/png",
         name: result.assets[0].fileName,
       });
       formData.append("pers_id", `${authUser.currpersid}`);
@@ -139,33 +140,37 @@ const QualiScreen = ({ navigation }) => {
       formData.append("file_type", result.assets[0].type);
       formData.append("etaaction", "new");
 
-      const myurl = `${authUser.host}uploadBlobETAAll`;
-
-      try {
-        const response = await fetch(myurl, {
-          method: "POST",
-          body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data;",
-          },
+      const myurl = `${authUser.host}uploadBlobETAAll?`;
+      fetch(myurl, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data;",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            setLocalQualURIs((prevURIs) => ({
+              ...prevURIs,
+              [selectedQual.QID]: imageUri,
+            }));
+            setImageUploaded(true);
+            alert("Image uploaded successfully!");
+          } else {
+            alert("Image upload failed.");
+          }
+        })
+        .catch((error) => {
+          console.log("error", error);
         });
-
-        if (response.ok) {
-          setLocalQualURIs((prevURIs) => ({
-            ...prevURIs,
-            [selectedQual.QID]: imageUri,
-          }));
-          setImageUploaded(true);
-          alert("Image uploaded successfully!");
-        } else {
-          alert("Image upload failed.");
-        }
-      } catch (error) {
-        alert("An error occurred during the image upload.");
-      }
     }
+
+  }
+});
+
   };
 
+  
   const renderQuali = ({ item }) => {
     const uri = qualURIs[item.QID];
 
@@ -191,7 +196,7 @@ const QualiScreen = ({ navigation }) => {
             ) : authUser.upqual == "rw" ? (
               <TouchableOpacity
                 style={styles.cardHeaderIcon}
-                onPress={() => openImagePickerExpo(item)}
+                onPress={() => openImagePickerQ(item)}
               >
                 <Icon
                   name={"plus-circle"}
@@ -264,7 +269,7 @@ const QualiScreen = ({ navigation }) => {
           onRefresh={handleRefresh}
           contentContainerStyle={styles.list}
         />
-        {image && (
+        {imageURI && (
           <Modal
             animationType="slide"
             transparent={true}
@@ -277,10 +282,10 @@ const QualiScreen = ({ navigation }) => {
                   style={styles.modalView}
                   onPress={() => {
                     setPreviewVisible(false);
-                    navigation.navigate("Image", { imageUri: image });
+                    navigation.navigate("Image", { imageUri: imageURI });
                   }}
                 >
-                  <Image source={{ uri: image }} style={styles.imagePreview} />
+                  <Image source={{ uri: imageURI }} style={styles.imagePreview} />
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>

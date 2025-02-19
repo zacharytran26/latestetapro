@@ -10,6 +10,8 @@ import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useTheme, Avatar, Text } from "@ui-kitten/components";
 import { useAuth } from "../screens/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import icon library
+import { WebView } from 'react-native-webview';
+
 
 export function CustomDrawerContentCurrency(props) {
   const theme = useTheme();
@@ -18,11 +20,9 @@ export function CustomDrawerContentCurrency(props) {
   const uric = `${authUser.host.replace(
     "servlet/",
     ""
-  )}php/upload/view.php?imgRes=10&viewPers=${
-    authUser.currpersid
-  }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${
-    authUser.svr
-  }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+  )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
   const openInBrowser = (url) => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
@@ -51,6 +51,7 @@ export function CustomDrawerContentCurrency(props) {
       arrCalStart[1] +
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
+    console.log("scallurl", urlGoto);
     Linking.canOpenURL(urlGoto)
       .then((supported) => {
         if (supported) {
@@ -94,6 +95,7 @@ export function CustomDrawerContentCurrency(props) {
       "&version=3.0.2&";
 
     const sCalUrl = urlHost + encodeURIComponent(surl);
+    console.log("scallurl", sCalUrl);
     Linking.canOpenURL(sCalUrl)
       .then((supported) => {
         if (supported) {

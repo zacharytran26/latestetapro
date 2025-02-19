@@ -20,7 +20,8 @@ import {
 } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
-// import * as Contacts from "expo-contacts";
+//import * as Contacts from "expo-contacts";
+import Contacts from "react-native-contacts";
 import { handleFetchError } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -34,44 +35,26 @@ const StudentDetailScreen = ({ navigation }) => {
   const uric = `${authUser.host.replace(
     "servlet/",
     ""
-  )}/php/upload/view.php?imgRes=10&viewPers=${
-    authUser.currpersid
-  }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-    studDetail.SYSDOCID
-  }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+  )}/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${studDetail.SYSDOCID
+    }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
   useEffect(() => {
     fetchStudentDetails();
-    (async () => {
-      try {
-        const { status } = await Contacts.requestPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert("Permission denied", "Unable to access contacts.");
-        }
-      } catch (error) {
-        console.error("Error requesting permissions:", error);
-        Alert.alert("Error", "An error occurred while requesting permissions.");
-      }
-    })();
   }, []);
 
-  //from home cal screen : ${detail.id}  == ${detail.s1pr}
   //how to handle student 2
   var persRegId = 0;
   detail.s1pr ? (persRegId = detail.s1pr) : (persRegId = detail.id);
   const fetchStudentDetails = async () => {
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getstudentdetail&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getstudentdetail&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}&persregid=${persRegId}`
       );
       const data = await response.json();
-      console.log(data)
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
@@ -82,9 +65,8 @@ const StudentDetailScreen = ({ navigation }) => {
   };
 
   function callPhoneNumber() {
-    const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${
-      studDetail.PHONE
-    }`;
+    const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${studDetail.PHONE
+      }`;
 
     Linking.canOpenURL(phoneNumber)
       .then((supported) => {
@@ -105,24 +87,26 @@ const StudentDetailScreen = ({ navigation }) => {
 
   const addContact = async () => {
     const contact = {
-      [Contacts.Fields.FirstName]: studDetail.DISNAME || "Unknown",
-      [Contacts.Fields.PhoneNumbers]: studDetail.PHONE
-        ? [{ label: "mobile", number: studDetail.PHONE }]
-        : [],
-      [Contacts.Fields.Emails]: studDetail.EMAIL1
-        ? [{ label: "work", email: studDetail.EMAIL1 }]
-        : [],
+      familyName: studDetail.DISNAME || "Unknown",
+      //givenName:'',
+      emailAddresses: [{ label: 'work', email: studDetail.EMAIL1 }],
+      phoneNumbers: [{ label: 'mobile', number: studDetail.PHONE }],
     };
 
     try {
-      const contactId = await Contacts.addContactAsync(contact);
-      if (contactId) {
-        Alert.alert("Success", "Contact added successfully!");
-      } else {
-        Alert.alert("Failed", "Failed to add contact.");
-      }
+      //const contactId = await Contacts.addContactAsync(contact);
+      const contactId = await Contacts.addContact(contact).then(
+        (contactId) => {
+          if (contactId) {
+            Alert.alert("Success", "Contact added successfully!");
+          } else {
+            Alert.alert("Failed", "Failed to add contact.");
+          }
+        }
+      );
+
     } catch (error) {
-      console.error("Error adding contact:", error);
+      //console.error("Error adding contact:"+error.toString());
       Alert.alert("Error", "An error occurred while adding the contact.");
     }
   };
@@ -208,10 +192,12 @@ const StudentDetailScreen = ({ navigation }) => {
               {/* Phone Row */}
               {studDetail.PHONE === "*not set*" ? (
                 <View style={styles.contactRow}>
+
+
                   <Icon name="phone-outline" size={24} color="#3F51B5" />
                   <View style={styles.textContainer}>
-                  <Text style={styles.contactLabel}>Phone</Text>
-                  <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                    <Text style={styles.contactLabel}>Phone</Text>
+                    <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
                   </View>
                 </View>
               ) : (
@@ -222,7 +208,7 @@ const StudentDetailScreen = ({ navigation }) => {
                   <Icon name="phone-outline" size={24} color="#3F51B5" />
                   <View style={styles.textContainer}>
                     <Text style={styles.contactLabel}>Phone</Text>
-                    <Text style={styles.contactValue}>{studDetail.EMAIL1}</Text>
+                    <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
                   </View>
                   <Icon name="chevron-right" size={24} color="#AAA" />
                 </TouchableOpacity>
@@ -436,10 +422,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     marginVertical: 12,
+
   },
   actionButton: {
     flex: 1,
     marginHorizontal: 6,
+    marginRight: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Ensures both icon and text are centered
   },
   sectionContainer: {
     marginVertical: 8,

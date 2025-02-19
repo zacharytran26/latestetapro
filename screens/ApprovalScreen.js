@@ -135,8 +135,8 @@ const Approve = ({ navigation }) => {
           <Text category="p1" style={styles.comment}>{pdata.comment}</Text>
 
           <Input
-            label="Approval"
-            placeholder="Enter Total Approved"
+            label="Hours Approved"
+            placeholder="Enter Hours"
             keyboardType="numeric"
             {...hoursInputState}
             style={styles.input}

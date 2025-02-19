@@ -6,6 +6,8 @@ import {
   View,
   TouchableOpacity,
   Alert,
+  Platform,
+  Linking,
 } from "react-native";
 import {
   Layout,
@@ -14,11 +16,12 @@ import {
   Card,
   Button,
   Icon,
+  Divider,
 } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
-// import * as Contacts from "expo-contacts";
-// import * as ImagePicker from "expo-image-picker";
+import Contacts from "react-native-contacts";
+import { handleFetchError } from "./ExtraImports";
 
 const InstructorActivity = ({ navigation }) => {
   const route = useRoute();
@@ -30,17 +33,6 @@ const InstructorActivity = ({ navigation }) => {
   const [imageError, setImageError] = useState(false);
   useEffect(() => {
     FetchInstructorDetail();
-    (async () => {
-      try {
-        const { status } = await Contacts.requestPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert("Permission denied", "Unable to access contacts.");
-        }
-      } catch (error) {
-        console.error("Error requesting permissions:", error);
-        Alert.alert("Error", "An error occurred while requesting permissions.");
-      }
-    })();
   }, []);
 
   useEffect(() => {
@@ -48,11 +40,9 @@ const InstructorActivity = ({ navigation }) => {
       const uri = `${authUser.host.replace(
         "servlet/",
         ""
-      )}/php/upload/view.php?imgRes=10&viewPers=${
-        authUser.currpersid
-      }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-        instDetail.SYSDOCID
-      }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+      )}/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+        }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${instDetail.SYSDOCID
+        }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
       setImage(uri);
     }
@@ -74,27 +64,48 @@ const InstructorActivity = ({ navigation }) => {
 
   const addContact = async () => {
     const contact = {
-      [Contacts.Fields.FirstName]: instDetail.DISNAME || "Unknown",
-      [Contacts.Fields.PhoneNumbers]: instDetail.PHONE
-        ? [{ label: "mobile", number: instDetail.PHONE }]
-        : [],
-      [Contacts.Fields.Emails]: instDetail.EMAIL1
-        ? [{ label: "work", email: instDetail.EMAIL1 }]
-        : [],
+      familyName: instDetail.DISNAME || "Unknown",
+      emailAddresses: [{ label: 'work', email: instDetail.EMAIL1 }],
+      phoneNumbers: [{ label: 'mobile', number: instDetail.PHONE }],
     };
 
     try {
-      const contactId = await Contacts.addContactAsync(contact);
-      if (contactId) {
-        Alert.alert("Success", "Contact added successfully!");
-      } else {
-        Alert.alert("Failed", "Failed to add contact.");
-      }
+      const contactId = await Contacts.addContact(contact).then(
+        (contactId) => {
+          if (contactId) {
+            Alert.alert("Success", "Contact added successfully!");
+          } else {
+            Alert.alert("Failed", "Failed to add contact.");
+          }
+        }
+      );
+
     } catch (error) {
-      console.error("Error adding contact:", error);
+      //console.error("Error adding contact:"+error.toString());
       Alert.alert("Error", "An error occurred while adding the contact.");
     }
   };
+
+  function callPhoneNumber() {
+    const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${instDetail.PHONE
+      }`;
+
+    Linking.canOpenURL(phoneNumber)
+      .then((supported) => {
+        if (supported) Linking.openURL(phoneNumber);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function openAndFormatEmail() {
+    const link = `mailto:${instDetail.EMAIL}`;
+
+    Linking.canOpenURL(link)
+      .then((supported) => {
+        if (supported) Linking.openURL(link);
+      })
+      .catch((err) => console.log(error));
+  }
 
   useEffect(() => {
     FetchInstructorDetail();
@@ -103,12 +114,9 @@ const InstructorActivity = ({ navigation }) => {
   const FetchInstructorDetail = async () => {
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getinstructordetail&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getinstructordetail&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}&persinstid=${activity.picid}`
       );
       const data = await response.json();
@@ -136,8 +144,8 @@ const InstructorActivity = ({ navigation }) => {
                   image
                     ? { uri: image }
                     : imageError || !instDetail.SYSDOCID
-                    ? require("../assets/person-icon.png") // Fallback image
-                    : { uri: image }
+                      ? require("../assets/person-icon.png") // Fallback image
+                      : { uri: image }
                 }
                 style={styles.profileAvatar}
                 onError={() => setImageError(true)} // Handle image load error
@@ -162,16 +170,52 @@ const InstructorActivity = ({ navigation }) => {
                 Instructor Information
               </Text>
             </View>
-            <Card style={styles.card}>
-              <Text category="s1" style={styles.cardText}>
-                Email: {instDetail.EMAIL}
-              </Text>
-            </Card>
-            <Card style={styles.card}>
-              <Text category="s1" style={styles.cardText}>
-                Phone: {instDetail.PHONE}
-              </Text>
-            </Card>
+            {instDetail.EMAIL === '*not set*' || instDetail.EMAIL === "" ? (
+              <View style={styles.contactRow}>
+                <Icon name="email-outline" size={24} color="#4CAF50" />
+                <View style={styles.textContainer}>
+                  <Text style={styles.contactLabel}>Email</Text>
+                  <Text style={styles.contactValue}>*not set*</Text>
+                </View>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.contactRow}
+                onPress={openAndFormatEmail}
+              >
+                <Icon name="email-outline" size={24} color="#4CAF50" />
+                <View style={styles.textContainer}>
+                  <Text style={styles.cardText}>Email</Text>
+                  <Text style={styles.contactValue}>{instDetail.EMAIL}</Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="#AAA" />
+              </TouchableOpacity>
+            )}
+            <Divider style={styles.divider} />
+            {instDetail.PHONE === "*not set*" || instDetail.PHONE === "" ? (
+              <View style={styles.contactRow}>
+
+
+                <Icon name="phone-outline" size={24} color="#3F51B5" />
+                <View style={styles.textContainer}>
+                  <Text style={styles.contactLabel}>Phone</Text>
+                  <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                </View>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.contactRow}
+                onPress={callPhoneNumber}
+              >
+                <Icon name="phone-outline" size={24} color="#3F51B5" />
+                <View style={styles.textContainer}>
+                  <Text style={styles.contactLabel}>Phone</Text>
+                  <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="#AAA" />
+              </TouchableOpacity>
+            )}
+
           </View>
         </ScrollView>
       </SafeAreaView>

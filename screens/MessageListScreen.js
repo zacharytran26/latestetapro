@@ -83,7 +83,6 @@ const MessagesScreen = () => {
       const text = await response.text();
       const sanitizedText = sanitizeJSONString(text);
       const data = JSON.parse(sanitizedText);
-      console.log("data",tabBarBadge);
       setMessages(data);
       if (data.openmsg > 0) {
         setTabBarBadge(jsonData.openmsg);
@@ -310,7 +309,7 @@ const MessagesScreen = () => {
 
         {showNewOnly === 1 && tabBarBadge === 0 ? (
           <View style={styles.noDataContainer}>
-            <Text style={styles.noDataText}>No Unread Messages</Text>
+            <Text style={styles.noDataText}>No New Messages</Text>
           </View>
           ) : (
           <FlashList
