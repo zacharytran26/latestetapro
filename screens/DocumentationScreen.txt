@@ -53,7 +53,7 @@ Here is an example of a screen:
         return true;
     };
 
-    const openInBrowser = (url) => {
+    const openInDrawerWebView = (url) => {
         Linking.canOpenURL(url)
         .then((supported) => {
             if (supported) {
@@ -270,7 +270,7 @@ Here is an example of a screen:
                     </Text>
                     <Button
                         appearance="ghost"
-                        onPress={() => openInBrowser(item.gs1)}
+                        onPress={() => openInDrawerWebView(item.gs1)}
                         style={styles.button}
                     >
                         View Gradesheet
@@ -319,7 +319,7 @@ Here is an example of a screen:
                     </Text>
                     <Button
                         appearance="ghost"
-                        onPress={() => openInBrowser(item.gs2)}
+                        onPress={() => openInDrawerWebView(item.gs2)}
                         style={styles.button}
                     >
                         View Gradesheet

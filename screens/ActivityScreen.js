@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -18,6 +18,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import RNCalendarEvents from "react-native-calendar-events";
+import { Notification } from "./ExtraImports";
 
 const Activity = () => {
   const route = useRoute();
@@ -25,6 +26,7 @@ const Activity = () => {
   const [pickedCal, setPickedCal] = useState(null);
 
   useEffect(() => {
+    Notification();
     (async () => {
       try {
         const perms = await RNCalendarEvents.requestPermissions();
@@ -38,12 +40,12 @@ const Activity = () => {
           Alert.alert('Calendar permission denied.');
         }
       } catch (error) {
-        Alert.alert('Error while fetching calendars:'+ error.toString());
+        Alert.alert('Error while fetching calendars:' + error.toString());
       }
     })();
   }, []);
 
-  const openInBrowser = (url) => {
+  const openInDrawerWebView = (url) => {
     Linking.canOpenURL(url)
       .then((supported) => {
         if (supported) {
@@ -56,22 +58,22 @@ const Activity = () => {
   };
 
   // Event creation function
-const handleAddEvent = async () => {
-  try {
-    const startDate =new Date(activity.start).toISOString();
-    const endDate = new Date(activity.end).toISOString();
-    const eventTitle = activity.activitytype + "(" + activity.subtype + ")";
-    const eventNotes = activity.start + activity.end;
+  const handleAddEvent = async () => {
+    try {
+      const startDate = new Date(activity.start).toISOString();
+      const endDate = new Date(activity.end).toISOString();
+      const eventTitle = activity.activitytype + "(" + activity.subtype + ")";
+      const eventNotes = activity.start + activity.end;
 
-    const savedEventId = await RNCalendarEvents.saveEvent(eventTitle, {
-      startDate: startDate,
-      endDate: endDate,
-      notes:eventNotes,
-    }).then((id)=>{ Alert.alert('Event added to calendar successfully.'); });
-  } catch (error) {
-    Alert.alert('Error while adding event to calendar: '+error.toString());
-  }
-};
+      const savedEventId = await RNCalendarEvents.saveEvent(eventTitle, {
+        startDate: startDate,
+        endDate: endDate,
+        notes: eventNotes,
+      }).then((id) => { Alert.alert('Event added to calendar successfully.'); });
+    } catch (error) {
+      Alert.alert('Error while adding event to calendar: ' + error.toString());
+    }
+  };
 
   const handleAuthEvent = async (schactid, requestid) => {
     navigation.navigate("ActivityApproval", {
@@ -214,7 +216,7 @@ const handleAddEvent = async () => {
                   </Text>
                   <Button
                     appearance="ghost"
-                    onPress={() => openInBrowser(item.gs1)}
+                    onPress={() => openInDrawerWebView(item.gs1)}
                     style={styles.button}
                   >
                     View Gradesheet
@@ -263,7 +265,7 @@ const handleAddEvent = async () => {
                   </Text>
                   <Button
                     appearance="ghost"
-                    onPress={() => openInBrowser(item.gs2)}
+                    onPress={() => openInDrawerWebView(item.gs2)}
                     style={styles.button}
                   >
                     View Gradesheet

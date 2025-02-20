@@ -24,6 +24,7 @@ import { useAuth } from "./ThemeContext";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import messaging from '@react-native-firebase/messaging';
 import { PermissionsAndroid } from "react-native";
+import { Notification } from "./ExtraImports";
 
 var ssoLogin = 0;
 const LoginScreen = ({ navigation }) => {
@@ -42,10 +43,11 @@ const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
     setIsLoginEnabled(true);
-    const handleForegroundNotification = messaging().onMessage((message) => {
-      Alert.alert(message.notification.title, message.notification.body);
-    });
-    return handleForegroundNotification;
+    // const handleForegroundNotification = messaging().onMessage((message) => {
+    //   Alert.alert(message.notification.title, message.notification.body);
+    // });
+    // return handleForegroundNotification;
+    Notification();
   }, []);
 
   const [urlview, setUrlview] = useState(
@@ -158,6 +160,9 @@ const LoginScreen = ({ navigation }) => {
       setAccesscode(acode);
     }
   }
+  const handleLowerCaseUser = (newText) => {
+    setUsername(newText.toLowerCase());
+  };
 
   function fLogin() {
     if (accesscode === "" && ssoLogin === 0) {
@@ -342,7 +347,7 @@ const LoginScreen = ({ navigation }) => {
             label="Username"
             placeholder="Enter your username"
             returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-            onChangeText={(text) => setUsername(text)}
+            onChangeText={handleLowerCaseUser}
           />
 
           <Input

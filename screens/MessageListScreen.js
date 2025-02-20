@@ -33,7 +33,7 @@ const MessagesScreen = () => {
   const [deletedItems, setDeletedItems] = useState([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
-  const { authUser, setAuthUser, setIsLoggedIn, setTabBarBadge, tabBarBadge} = useAuth();
+  const { authUser, setAuthUser, setIsLoggedIn, setTabBarBadge, tabBarBadge } = useAuth();
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -70,15 +70,11 @@ const MessagesScreen = () => {
       status = "unread";
     }
     try {
-      const url = `${
-        authUser.host
-      }content?module=home&page=m&reactnative=1&uname=${
-        authUser.uname
-      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-        authUser.sessionid
-      }&mode=getmessage&etamobilepro=1&nocache=${
-        Math.random().toString().split(".")[1]
-      }&persid=${authUser.currpersid}&status=${status}`;
+      const url = `${authUser.host
+        }content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getmessage&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+        }&persid=${authUser.currpersid}&status=${status}`;
       const response = await fetch(url);
       const text = await response.text();
       const sanitizedText = sanitizeJSONString(text);
@@ -99,13 +95,10 @@ const MessagesScreen = () => {
   };
 
   const archiveEmails = async (id) => {
-    const querystring = `${
-      authUser.host
-    }content?module=home&page=m&reactnative=1&session_id=${
-      authUser.sessionid
-    }&mode=archivemessage&etamobilepro=1&nocache=${
-      Math.random().toString().split(".")[1]
-    }&persid=${authUser.currpersid}&msgid=${id}`;
+    const querystring = `${authUser.host
+      }content?module=home&page=m&reactnative=1&session_id=${authUser.sessionid
+      }&mode=archivemessage&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&persid=${authUser.currpersid}&msgid=${id}`;
     try {
       const response = await fetch(querystring);
       const data = await response.json();
@@ -148,13 +141,10 @@ const MessagesScreen = () => {
     //console.log("Before", messages);
     // Update the server
     try {
-      const url = `${
-        authUser.host
-      }content?module=home&page=m&reactnative=1&session_id=${
-        authUser.sessionid
-      }&mode=updatemessage&etamobilepro=1&nocache=${
-        Math.random().toString().split(".")[1]
-      }&persid=${authUser.currpersid}&msgid=${id}`;
+      const url = `${authUser.host
+        }content?module=home&page=m&reactnative=1&session_id=${authUser.sessionid
+        }&mode=updatemessage&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+        }&persid=${authUser.currpersid}&msgid=${id}`;
       const response = await fetch(url);
       //console.log("After", messages);
       const data = await response.text();
@@ -292,11 +282,11 @@ const MessagesScreen = () => {
               fill={"#0c4bc9"}
             />
           </TouchableOpacity>
-          
-          
+
+
           <Text category="h5" style={styles.headerText}> Messages</Text>
-          
-          
+
+
           <TouchableOpacity onPress={toggleNewMessages}>
             <Icon
               name="list-outline"
@@ -307,21 +297,18 @@ const MessagesScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {showNewOnly === 1 && tabBarBadge === 0 ? (
-          <View style={styles.noDataContainer}>
+        <FlashList
+          data={filteredMessages}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          contentContainerStyle={styles.list}
+          estimatedItemSize={100}
+          ListEmptyComponent={<View style={styles.noDataContainer}>
             <Text style={styles.noDataText}>No New Messages</Text>
-          </View>
-          ) : (
-          <FlashList
-            data={filteredMessages}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            contentContainerStyle={styles.list}
-            estimatedItemSize={100} 
-          />
-        )}
+          </View>}
+        />
 
         {selectedMessage && (
           <Modal
@@ -376,6 +363,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 200,
   },
   noDataText: {
     fontSize: 18,

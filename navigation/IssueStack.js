@@ -28,27 +28,30 @@ export default function IssueStackNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerBackTitleVisible: false,
+        headerTitleStyle: {
+          fontSize: 15,
+        },
         headerStyle: {
           backgroundColor: "#f7f9fc",
         },
-        headerTitle: `${authUser.currentasof}`,
+        headerTitle: `${authUser.opscond}             ${authUser.currentasof}`,
       }}
     >
       <Stack.Screen name="Issues" component={MyIssues} />
       <Stack.Screen name="FIF" component={FIFScreen} />
-      <Stack.Screen name="Confirm" component={ConfirmFIF} />      
+      <Stack.Screen name="Confirm" component={ConfirmFIF} />
       <Stack.Screen name="InstructorScreen" component={InstructorsScreen} />
       <Stack.Screen name="InstructorDetailScreen" component={InstructorList} />
       <Stack.Screen name="PendingAuth" component={PendingAuths} />
       <Stack.Screen name="Times" component={Times} />
-      <Stack.Screen name="Auth" component={Approve} />                  
-      <Stack.Screen name="StudentScreen" component={StudentsScreen} />      
-      <Stack.Screen name="StudentDetailScreen" component={StudentList} />            
+      <Stack.Screen name="Auth" component={Approve} />
+      <Stack.Screen name="StudentScreen" component={StudentsScreen} />
+      <Stack.Screen name="StudentDetailScreen" component={StudentList} />
       <Stack.Screen name="StudentMap" component={StudentMap} />
-      <Stack.Screen name="StudentMapDetails" component={StudentMapDetails} />      
+      <Stack.Screen name="StudentMapDetails" component={StudentMapDetails} />
       <Stack.Screen name="LineItem" component={LineItem} />
       <Stack.Screen name="StudentCourse" component={StudentCourse} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />            
+      <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Logout" component={LogoutScreen} />
     </Stack.Navigator>
   );

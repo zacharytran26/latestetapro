@@ -32,10 +32,15 @@ const HomeStackNavigator = ({ navigation, route }) => {
       screenOptions={{
         headerShown: true, //has the back button
         headerBackTitleVisible: false,
+        headerTitleStyle: {
+          fontSize: 15,
+        },
+        headerTitleAlign: " center",
         headerStyle: {
           backgroundColor: "#f7f9fc",
+
         },
-        headerTitle: `${authUser.currentasof}`,
+        headerTitle: `${authUser.opscond}             ${authUser.currentasof}`,
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />

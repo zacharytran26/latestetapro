@@ -1,7 +1,8 @@
-import React from "react";
-import { Alert,Image, StyleSheet} from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { Alert, Image, StyleSheet, View, Text } from "react-native";
 import { useAuth } from "./ThemeContext";
-import Animated, { useAnimatedStyle} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
+import messaging from '@react-native-firebase/messaging';
 
 export function handleFetchError(data, setAuthUser, setIsLoggedIn) {
   if (data.errcode === "-911") {
@@ -26,10 +27,64 @@ export const Chevron = ({ progress }) => {
   );
 };
 
+export const Carousel = () => {
+  const { authUser } = useAuth();
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const opacity = useSharedValue(1);
+  const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const messages = [`${authUser.currentasof}`, `ops condition: ${authUser.opscond}`];
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      // Fade out first
+      opacity.value = withTiming(0, { duration: 1000, easing: Easing.linear });
+
+      // Wait for the fade-out animation to complete, then update index and fade in
+      timeoutRef.current = setTimeout(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % messages.length);
+        opacity.value = withTiming(1, { duration: 1000, easing: Easing.linear });
+      }, 1000); // Wait for fade-out to finish before updating index
+    }, 3000);
+
+    return () => {
+      clearInterval(intervalRef.current);
+      clearTimeout(timeoutRef.current);
+    };
+  }, [opacity]); // Dependency on opacity ensures animations are controlled
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <View style={styles.carouselContainer}>
+      <Animated.Text style={[styles.carouselText, animatedStyle]}>
+        {messages[currentIndex]}
+      </Animated.Text>
+    </View>
+  );
+};
+
+export const Notification = () => {
+  const handleForegroundNotification = messaging().onMessage((message) => {
+    Alert.alert(message.notification.title, message.notification.body);
+  });
+  return handleForegroundNotification;
+}
 
 const styles = StyleSheet.create({
   chevron: {
     width: 24,
     height: 24,
+  },
+  carouselContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  carouselText: {
+    fontSize: 11,
+    color: "#333",
   },
 });

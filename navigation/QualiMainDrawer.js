@@ -4,27 +4,31 @@ import {
   TouchableOpacity,
   StyleSheet,
   View,
-  Linking,
+  Modal,
+  Button
 } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useTheme, Avatar, Text } from "@ui-kitten/components";
 import { useAuth } from "../screens/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import icon library
+import { WebView } from 'react-native-webview';
 
 export function CustomDrawerContentQuali(props) {
   const theme = useTheme();
   const { authUser } = useAuth();
+  const [WebViewUrl, setWebViewUrl] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [CalWebView, setCalWebView] = useState("");
+
 
   const uric = `${authUser.host.replace(
     "servlet/",
     ""
-  )}php/upload/view.php?imgRes=10&viewPers=${
-    authUser.currpersid
-  }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${
-    authUser.svr
-  }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+  )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
-  const openInBrowser = (url) => {
+  const openInDrawerWebView = (url) => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
     const sHost = authUser.host + "content?";
     var surl =
@@ -51,15 +55,8 @@ export function CustomDrawerContentQuali(props) {
       arrCalStart[1] +
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
-    Linking.canOpenURL(urlGoto)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(urlGoto);
-        } else {
-          console.warn("Don't know how to open URI: " + urlGoto);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    setWebViewUrl(urlGoto);
+    setModalVisible(true);
   };
 
   const openInBrowserCal = () => {
@@ -94,148 +91,159 @@ export function CustomDrawerContentQuali(props) {
       "&version=3.0.2&";
 
     const sCalUrl = urlHost + encodeURIComponent(surl);
-    Linking.canOpenURL(sCalUrl)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(sCalUrl);
-        } else {
-          console.warn("Don't know how to open URI: " + sCalUrl);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    setCalWebView(sCalUrl);
+    setModalVisible(true);
   };
 
   return (
-    <DrawerContentScrollView
-      {...props}
-      style={{ backgroundColor: theme["color-basic-300"] }}
-      showsVerticalScrollIndicator={false}
-    >
-      <SafeAreaView>
-        <View style={styles.avatar}>
-          <Avatar source={{ uri: uric }} style={styles.profileAvatar} />
-        </View>
+    <>
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.webViewHeader}>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+          <WebView source={{ uri: WebViewUrl || CalWebView }} />
+        </SafeAreaView>
+      </Modal>
 
-        <DrawerItem
-          label="ETA"
-          icon={({ color, size }) => (
-            <Icon name="home-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() => openInBrowser("module=home&page=homepg")}
-        />
 
-        <DrawerItem
-          label="FIF"
-          icon={({ color, size }) => (
-            <Icon name="file-document-edit-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("QualiStack", { screen: "FIF" })
-          }
-        />
+      <DrawerContentScrollView
+        {...props}
+        style={{ backgroundColor: theme["color-basic-300"] }}
+        showsVerticalScrollIndicator={false}
+      >
+        <SafeAreaView>
+          <View style={styles.avatar}>
+            <Avatar source={{ uri: uric }} style={styles.profileAvatar} />
+          </View>
 
-        <DrawerItem
-          label="Full Calendar"
-          icon={({ color, size }) => (
-            <Icon name="calendar-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() => openInBrowserCal()}
-        />
+          <DrawerItem
+            label="ETA"
+            icon={({ color, size }) => (
+              <Icon name="home-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInDrawerWebView("module=home&page=homepg")}
+          />
 
-        <DrawerItem
-          label="Instructors"
-          icon={({ color, size }) => (
-            <Icon name="account-tie-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("QualiStack", {
-              screen: "InstructorScreen",
-            })
-          }
-        />
+          <DrawerItem
+            label="FIF"
+            icon={({ color, size }) => (
+              <Icon name="file-document-edit-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", { screen: "FIF" })
+            }
+          />
 
-        <DrawerItem
-          label="Logbook"
-          icon={({ color, size }) => (
-            <Icon name="book-open-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            openInBrowser("module=home&page=m&mode=mMyLogBookInit")
-          }
-        />
+          <DrawerItem
+            label="Full Calendar"
+            icon={({ color, size }) => (
+              <Icon name="calendar-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInBrowserCal()}
+          />
 
-        <DrawerItem
-          label="Pending Authorizations"
-          icon={({ color, size }) => (
-            <Icon name="clipboard-clock-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("QualiStack", {
-              screen: "PendingAuth",
-            })
-          }
-        />
+          <DrawerItem
+            label="Instructors"
+            icon={({ color, size }) => (
+              <Icon name="account-tie-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", {
+                screen: "InstructorScreen",
+              })
+            }
+          />
 
-        <DrawerItem
-          label="Scheduling"
-          icon={({ color, size }) => (
-            <Icon name="clock-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() => openInBrowser("module=home&page=m&mode=mGetPreGantt")}
-        />
+          <DrawerItem
+            label="Logbook"
+            icon={({ color, size }) => (
+              <Icon name="book-open-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              openInDrawerWebView("module=home&page=m&mode=mMyLogBookInit")
+            }
+          />
 
-        <DrawerItem
-          label="Students"
-          icon={({ color, size }) => (
-            <Icon name="account-group-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("QualiStack", {
-              screen: "StudentScreen",
-            })
-          }
-        />
+          <DrawerItem
+            label="Pending Authorizations"
+            icon={({ color, size }) => (
+              <Icon name="clipboard-clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", {
+                screen: "PendingAuth",
+              })
+            }
+          />
 
-        <DrawerItem
-          label="Settings"
-          icon={({ color, size }) => (
-            <Icon name="cog-outline" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("QualiStack", { screen: "Settings" })
-          }
-        />
+          <DrawerItem
+            label="Scheduling"
+            icon={({ color, size }) => (
+              <Icon name="clock-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() => openInDrawerWebView("module=home&page=m&mode=mGetPreGantt")}
+          />
 
-        <DrawerItem
-          label="Logout"
-          icon={({ color, size }) => (
-            <Icon name="logout" color={color} size={size} />
-          )}
-          labelStyle={styles.drawerItemLabel}
-          onPress={() =>
-            props.navigation.navigate("QualiStack", { screen: "Logout" })
-          }
-        />
+          <DrawerItem
+            label="Students"
+            icon={({ color, size }) => (
+              <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", {
+                screen: "StudentScreen",
+              })
+            }
+          />
 
-        <View style={styles.bottomTextContainer}>
-          <TouchableOpacity onPress={() => openInBrowser(authUser.LINK)}>
-            <Text>Help</Text>
-          </TouchableOpacity>
-          <Text style={styles.bottomText}>Version 1.0.0</Text>
-          <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
-          <Text style={styles.bottomText}>All Rights Reserved</Text>
-        </View>
-      </SafeAreaView>
-    </DrawerContentScrollView>
+          <DrawerItem
+            label="Settings"
+            icon={({ color, size }) => (
+              <Icon name="cog-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", { screen: "Settings" })
+            }
+          />
+
+          <DrawerItem
+            label="Logout"
+            icon={({ color, size }) => (
+              <Icon name="logout" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", { screen: "Logout" })
+            }
+          />
+
+          <View style={styles.bottomTextContainer}>
+            <TouchableOpacity onPress={() => openInDrawerWebView(authUser.LINK)}>
+              <Text>Help</Text>
+            </TouchableOpacity>
+            <Text style={styles.bottomText}>Version 1.0.0</Text>
+            <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
+            <Text style={styles.bottomText}>All Rights Reserved</Text>
+          </View>
+        </SafeAreaView>
+      </DrawerContentScrollView>
+    </>
   );
 }
 
@@ -263,5 +271,16 @@ const styles = StyleSheet.create({
     fontSize: 18, // Increase font size
     fontWeight: "bold", // Make it bold (optional)
     color: "#333", // Set a custom text color
+  },
+  closeText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FF0000", // Black text
+    textAlign: "center",
+    padding: 10,
+  },
+  webViewHeader: {
+    padding: 10,
+    alignItems: "center",
   },
 });

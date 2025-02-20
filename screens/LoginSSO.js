@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { StyleSheet, View, SafeAreaView, Alert } from "react-native";
 import { WebView } from "react-native-webview";
 import { useAuth } from "./ThemeContext";
-import { Button, Layout, Text } from "@ui-kitten/components";
+import { Button, Layout, Text, Icon, Card } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 
 export default function LoginSSOScreen({ navigation }) {
@@ -74,21 +74,40 @@ export default function LoginSSOScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F7F9FC" }}>
       <Layout style={styles.container}>
+
+        {/* Header Section */}
         <View style={styles.header}>
-          <Text category="h1">SSO Login</Text>
-          <Button onPress={logoutSSO}>SSO Logout</Button>
+          <Icon name="log-in-outline" fill="#3366FF" style={styles.icon} />
+          <Text category="h5" style={styles.headerText}>
+            Secure SSO Login
+          </Text>
+          <Text category="p2" appearance="hint">
+            Access your account securely via Single Sign-On
+          </Text>
         </View>
-        <WebView
-          source={{ uri: ssourl }}
-          onError={handleWebViewError}
-          onMessage={(event) => {
-            //setIsLoggedIn(true);
-            //setAuthUser(JSON.parse(event.nativeEvent.data));
-            loginSSO(event.nativeEvent.data);
-          }}
-        />
+
+        {/* WebView Card */}
+        <Card style={styles.webViewCard}>
+          <WebView
+            source={{ uri: ssourl }}
+            onError={handleWebViewError}
+            onMessage={(event) => loginSSO(event.nativeEvent.data)}
+            style={styles.webView}
+          />
+        </Card>
+
+        {/* Logout Button */}
+        <Button
+          style={styles.logoutButton}
+          onPress={logoutSSO}
+          status="danger"
+          accessoryLeft={(props) => <Icon {...props} name="log-out-outline" />}
+        >
+          Logout
+        </Button>
+
       </Layout>
     </SafeAreaView>
   );
@@ -97,20 +116,39 @@ export default function LoginSSOScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#F7F9FC",
+    paddingHorizontal: 20,
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
   },
   header: {
     alignItems: "center",
-    marginBottom: 20,
+    marginVertical: 20,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
+  headerText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#3366FF",
+    marginTop: 10,
   },
-  button: {
+  icon: {
+    width: 40,
+    height: 40,
+  },
+  webViewCard: {
     flex: 1,
-    marginHorizontal: 10,
+    borderRadius: 10,
+    overflow: "hidden",
+    elevation: 2, // Shadow for Android
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  webView: {
+    flex: 1,
+  },
+  logoutButton: {
+    marginVertical: 20,
+    borderRadius: 10,
   },
 });

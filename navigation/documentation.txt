@@ -155,7 +155,7 @@ To complete the navigation system, we need to create a custom drawer to house al
         authUser.svr
     }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
-    const openInBrowser = (url) => {
+    const openInDrawerWebView = (url) => {
         const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
         const sHost = authUser.host + "content?";
         var surl =
@@ -253,7 +253,7 @@ To complete the navigation system, we need to create a custom drawer to house al
                 <Icon name="home-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
-            onPress={() => openInBrowser("module=home&page=homepg")}
+            onPress={() => openInDrawerWebView("module=home&page=homepg")}
             />
 
             <DrawerItem
@@ -296,7 +296,7 @@ To complete the navigation system, we need to create a custom drawer to house al
             )}
             labelStyle={styles.drawerItemLabel}
             onPress={() =>
-                openInBrowser("module=home&page=m&mode=mMyLogBookInit")
+                openInDrawerWebView("module=home&page=m&mode=mMyLogBookInit")
             }
             />
 
@@ -319,7 +319,7 @@ To complete the navigation system, we need to create a custom drawer to house al
                 <Icon name="clock-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
-            onPress={() => openInBrowser("module=home&page=m&mode=mGetPreGantt")}
+            onPress={() => openInDrawerWebView("module=home&page=m&mode=mGetPreGantt")}
             />
 
             <DrawerItem
@@ -358,7 +358,7 @@ To complete the navigation system, we need to create a custom drawer to house al
             />
 
             <View style={styles.bottomTextContainer}>
-            <TouchableOpacity onPress={() => openInBrowser(authUser.LINK)}>
+            <TouchableOpacity onPress={() => openInDrawerWebView(authUser.LINK)}>
                 <Text>Help</Text>
             </TouchableOpacity>
             <Text style={styles.bottomText}>Version 1.0.0</Text>
@@ -398,7 +398,7 @@ To complete the navigation system, we need to create a custom drawer to house al
     });
 
 
-To render the Stack inside the Drawer, we create a custom drawer to house the nested navigation we created. In this we have a function called openInBrowser 
+To render the Stack inside the Drawer, we create a custom drawer to house the nested navigation we created. In this we have a function called openInDrawerWebView 
 which prompts the user to the browser in Safari/Chrome. The openInBrowserCal and sCalUrl deal with the calendar url.
 For the custom drawer, we can pass props that is wrapped in a scroll view and SafeAreaView to ensure that the drawer is not being rendered beyond the phone screen. The props 
 will be important in the navigational system.

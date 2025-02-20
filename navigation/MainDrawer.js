@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   View,
-  Linking,
   Modal,
   Alert
 } from "react-native";
@@ -59,43 +58,6 @@ export function CustomDrawerContent(props) {
     }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${authUser.svr
     }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
-  // const openInBrowser = (url) => {
-  //   const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
-  //   const sHost = authUser.host + "content?";
-  //   var surl =
-  //     url +
-  //     "&etamobilepro=1&nocache=" +
-  //     Math.random().toString().split(".")[1] +
-  //     "&session_id=" +
-  //     authUser.sessionid +
-  //     "&hash=" +
-  //     authUser.hash +
-  //     "&customer=eta" +
-  //     authUser.schema +
-  //     "&zajael1120=" +
-  //     authUser.custhash;
-  //   surl =
-  //     surl +
-  //     "&teamId=&uname=" +
-  //     authUser.uname +
-  //     "&password=" +
-  //     authUser.upwd +
-  //     "&curDate=" +
-  //     arrCalStart[0] +
-  //     "&schedDate=" +
-  //     arrCalStart[1] +
-  //     "&version=3.0.2&";
-  //   const urlGoto = sHost + surl;
-  //   Linking.canOpenURL(urlGoto)
-  //     .then((supported) => {
-  //       if (supported) {
-  //         Linking.openURL(urlGoto);
-  //       } else {
-  //         console.warn("Don't know how to open URI: " + urlGoto);
-  //       }
-  //     })
-  //     .catch((err) => console.error("An error occurred", err));
-  // };
 
   const openInBrowserCal = () => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
@@ -131,16 +93,8 @@ export function CustomDrawerContent(props) {
     const sCalUrl = urlHost + encodeURIComponent(surl);
     setCalWebView(sCalUrl);
     setModalVisible(true);
-    // Linking.canOpenURL(sCalUrl)
-    //   .then((supported) => {
-    //     if (supported) {
-    //       Linking.openURL(sCalUrl);
-    //     } else {
-    //       console.warn("Don't know how to open URI: " + sCalUrl);
-    //     }
-    //   })
-    //   .catch((err) => console.error("An error occurred", err));
   };
+
   const handleWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     Alert.alert("WebView Error", nativeEvent.description);
@@ -156,24 +110,14 @@ export function CustomDrawerContent(props) {
       >
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.webViewHeader}>
-            <Button onPress={() => setModalVisible(false)}>Close</Button>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeText}>Close</Text>
+            </TouchableOpacity>
           </View>
-          <WebView source={{ uri: WebViewUrl }} />
+          <WebView source={{ uri: WebViewUrl || CalWebView }} />
         </SafeAreaView>
       </Modal>
 
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.webViewHeader}>
-            <Button onPress={() => setModalVisible(false)}>Close</Button>
-          </View>
-          <WebView source={{ uri: CalWebView }} />
-        </SafeAreaView>
-      </Modal>
 
       <DrawerContentScrollView
         {...props}
@@ -332,5 +276,16 @@ const styles = StyleSheet.create({
     fontSize: 18, // Increase font size
     fontWeight: "bold", // Make it bold (optional)
     color: "#333", // Set a custom text color
+  },
+  closeText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FF0000", // Black text
+    textAlign: "center",
+    padding: 10,
+  },
+  webViewHeader: {
+    padding: 10,
+    alignItems: "center",
   },
 });

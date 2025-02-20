@@ -34,17 +34,16 @@ const TimelineCalendarScreen = () => {
 
   const { authUser, setTabBarBadge, setAuthUser, setIsLoggedIn } = useAuth();
 
+  console.log(authUser);
+
   // Fetch calendar data
   const fetchCalData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getactivities&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getactivities&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}&scheddate=${schedDate}`
       );
       const textData = await response.text();

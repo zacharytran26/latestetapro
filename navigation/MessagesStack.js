@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import MessagesScreen from "../screens/MessageListScreen"; 
+import MessagesScreen from "../screens/MessageListScreen";
 import EmailList from "../screens/EmailDetailsScreen";
 import ReplyScreen from "../screens/ReplyScreen";
 import NewMessage from "../screens/NewMessageScreen";
@@ -30,10 +30,13 @@ export default function MessagesStackNavigator({ updateBadgeCount }) {
       screenOptions={{
         headerShown: true, //has the back button
         headerBackTitleVisible: false,
+        headerTitleStyle: {
+          fontSize: 15,
+        },
         headerStyle: {
           backgroundColor: "#f7f9fc",
         },
-        headerTitle: `${authUser.currentasof}`,
+        headerTitle: `${authUser.opscond}             ${authUser.currentasof}`,
       }}
     >
       <Stack.Screen name="Messages">
@@ -43,21 +46,21 @@ export default function MessagesStackNavigator({ updateBadgeCount }) {
       </Stack.Screen>
       <Stack.Screen name="MessageEmails" component={EmailList} />
       <Stack.Screen name="MessageNewMessage" component={NewMessage} />
-      <Stack.Screen name="MessageReplyScreen" component={ReplyScreen} />      
+      <Stack.Screen name="MessageReplyScreen" component={ReplyScreen} />
       <Stack.Screen name="FIF" component={FIFScreen} />
-      <Stack.Screen name="Confirm" component={ConfirmFIF} />      
+      <Stack.Screen name="Confirm" component={ConfirmFIF} />
       <Stack.Screen name="InstructorScreen" component={InstructorsScreen} />
       <Stack.Screen name="InstructorDetailScreen" component={InstructorList} />
       <Stack.Screen name="PendingAuth" component={PendingAuths} />
       <Stack.Screen name="Times" component={Times} />
-      <Stack.Screen name="Auth" component={Approve} />                  
-      <Stack.Screen name="StudentScreen" component={StudentsScreen} />      
-      <Stack.Screen name="StudentDetailScreen" component={StudentList} />      
+      <Stack.Screen name="Auth" component={Approve} />
+      <Stack.Screen name="StudentScreen" component={StudentsScreen} />
+      <Stack.Screen name="StudentDetailScreen" component={StudentList} />
       <Stack.Screen name="StudentCourse" component={StudentCourse} />
       <Stack.Screen name="StudentMap" component={StudentMap} />
       <Stack.Screen name="StudentMapDetails" component={StudentMapDetails} />
       <Stack.Screen name="LineItem" component={LineItem} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />            
+      <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Logout" component={LogoutScreen} />
     </Stack.Navigator>
   );
