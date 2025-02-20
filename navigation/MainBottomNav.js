@@ -85,11 +85,11 @@ const BottomTabBar = ({ navigation, state }) => {
         style={{ width: 48, height: 24 }}
       />
       <BottomNavigationTab
-        icon={renderIconWithBadge("file-text-outline", "mQualifications", 2)}
+        icon={renderIconWithBadge("checkmark-square-2-outline", "mQualifications", 2)}
         style={{ width: 48, height: 24 }}
       />
       <BottomNavigationTab
-        icon={renderIconWithBadge("checkmark-circle-2-outline", "mCurrency", 3)}
+        icon={renderIconWithBadge("sync-outline", "mCurrency", 3)}
         style={{ width: 48, height: 24 }}
       />
       <BottomNavigationTab

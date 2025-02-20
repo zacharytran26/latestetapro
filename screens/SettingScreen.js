@@ -7,7 +7,7 @@ import {
   Alert,
   Linking,
   Webview,
-  Modal
+  Modal,
 } from "react-native";
 import {
   Layout,
@@ -20,6 +20,7 @@ import {
   Input,
   Toggle,
 } from "@ui-kitten/components";
+import { WebView } from 'react-native-webview';
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import * as eva from "@eva-design/eva";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,6 +28,7 @@ import { useAuth } from "./ThemeContext";
 
 const SettingsScreen = ({ setProfileImage }) => {
   const { theme, authUser } = useAuth();
+  const [Enabled, setEnabled] = useState(false)
   const [uploadedImageUri, setUploadedImageUri] = useState(null);
   const [WebViewUrl, setWebViewUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,6 +39,11 @@ const SettingsScreen = ({ setProfileImage }) => {
     accessCode: "",
     username: "",
   });
+
+  const openInDrawerWebView = (url) => {
+    setWebViewUrl(url);
+    setModalVisible(true);
+  };
 
   const uric = `https://apps5.talonsystems.com/tseta/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid}&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${authUser.sysdocid}&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
@@ -51,15 +58,13 @@ const SettingsScreen = ({ setProfileImage }) => {
 
   const loadSettings = async () => {
     try {
-      const emailNotifications = await AsyncStorage.getItem(
-        "emailNotifications"
-      );
-      const accessCode = await AsyncStorage.getItem("accesscode");
+      const pushNotifications = await AsyncStorage.getItem("pushNotifications");
+      const accessCode = await AsyncStorage.getItem("accessCode");
       const username = await AsyncStorage.getItem("username");
 
       setForm((prevForm) => ({
         ...prevForm,
-        emailNotifications: emailNotifications === "true",
+        pushNotifications: pushNotifications === "true", // Ensure it is a boolean
         accessCode: accessCode || "",
         username: username || "",
       }));
@@ -76,13 +81,24 @@ const SettingsScreen = ({ setProfileImage }) => {
     }
   };
 
-  const handleEmailNotificationsToggle = (isChecked) => {
-    setForm({ ...form, emailNotifications: isChecked });
-    saveSettings("emailNotifications", isChecked);
+  const handlePushNotificationsToggle = (isChecked) => {
+    setForm((prevForm) => ({ ...prevForm, pushNotifications: isChecked }));
+    saveSettings("pushNotifications", isChecked);
   };
-
   return (
     <>
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.webViewHeader}>
+            <Button onPress={() => setModalVisible(false)}>Close</Button>
+          </View>
+          <WebView source={{ uri: WebViewUrl }} />
+        </SafeAreaView>
+      </Modal>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva[theme]}>
         <SafeAreaView style={styles.safeArea}>
@@ -135,7 +151,7 @@ const SettingsScreen = ({ setProfileImage }) => {
                   <Button
                     style={styles.termstext}
                     onPress={() =>
-                      openInWebView(
+                      openInDrawerWebView(
                         "https://apps5.talonsystems.com/tseta/tc.htm"
                       )
                     }
@@ -161,9 +177,7 @@ const SettingsScreen = ({ setProfileImage }) => {
                   <View style={styles.rowSpacer} />
                   <Toggle
                     checked={form.pushNotifications}
-                    onChange={(pushNotifications) =>
-                      setForm({ ...form, pushNotifications })
-                    }
+                    onChange={handlePushNotificationsToggle}
                   />
                 </View>
               </Layout>
