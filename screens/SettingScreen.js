@@ -59,7 +59,7 @@ const SettingsScreen = ({ setProfileImage }) => {
   const loadSettings = async () => {
     try {
       const pushNotifications = await AsyncStorage.getItem("pushNotifications");
-      const accessCode = await AsyncStorage.getItem("accessCode");
+      const accessCode = await AsyncStorage.getItem("accesscode");
       const username = await AsyncStorage.getItem("username");
 
       setForm((prevForm) => ({

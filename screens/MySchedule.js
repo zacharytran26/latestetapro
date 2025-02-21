@@ -303,6 +303,7 @@ const styles = StyleSheet.create({
   datePickerWrapper: {
     justifyContent: "center", // Center vertically
     alignItems: "center", // Center horizontally
+    backgroundColor: '#9c9ea1'
   },
   rowContainer: {
     flexDirection: "row",

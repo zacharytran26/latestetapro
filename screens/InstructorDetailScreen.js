@@ -33,17 +33,17 @@ const InstructorList = ({ navigation }) => {
 
   useEffect(() => {
     FetchInstructorDetail();
-    (async () => {
-      try {
-        const { status } = await Contacts.requestPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert("Permission denied", "Unable to access contacts.");
-        }
-      } catch (error) {
-        console.error("Error requesting permissions:", error);
-        Alert.alert("Error", "An error occurred while requesting permissions.");
-      }
-    })();
+    // (async () => {
+    //   try {
+    //     const { status } = await Contacts.requestPermission();
+    //     if (status !== "granted") {
+    //       Alert.alert("Permission denied", "Unable to access contacts.");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error requesting permissions:", error);
+    //     Alert.alert("Error", "An error occurred while requesting permissions.");
+    //   }
+    // })();
   }, []);
 
   useEffect(() => {
@@ -80,26 +80,60 @@ const InstructorList = ({ navigation }) => {
       .catch((err) => console.log(error));
   }
 
+  // const addContact = async () => {
+  //   // const contact = {
+  //   //   [Contacts.Fields.FirstName]: instDetail.DISNAME || "Unknown",
+  //   //   [Contacts.Fields.PhoneNumbers]: instDetail.PHONE
+  //   //     ? [{ label: "mobile", number: instDetail.PHONE }]
+  //   //     : [],
+  //   //   [Contacts.Fields.Emails]: instDetail.EMAIL1
+  //   //     ? [{ label: "work", email: instDetail.EMAIL1 }]
+  //   //     : [],
+  //   // };
+  //   const contact = {
+  //     firstName: instDetail.DISNAME || 'unknown',
+  //     phoneNumber: [{ label: 'mobile', number: instDetail.PHONE }],
+  //     emailAddress: [{ label: 'work', email: instDetail.EMAIL1 }]
+  //   }
+  //   try {
+  //     //const contactId = await Contacts.addContactAsync(contact);
+  //     const contactId = await Contacts.addContact(contact).then(
+  //       (contactId) => {
+  //         if (contactId) {
+  //           Alert.alert("Success", "Contact added successfully!");
+  //         } else {
+  //           Alert.alert("Failed", "Failed to add contact.");
+  //         }
+  //       }
+  //     );
+
+  //   } catch (error) {
+  //     //console.error("Error adding contact:"+error.toString());
+  //     Alert.alert("Error", "An error occurred while adding the contact.");
+  //   }
+  // };
   const addContact = async () => {
     const contact = {
-      [Contacts.Fields.FirstName]: instDetail.DISNAME || "Unknown",
-      [Contacts.Fields.PhoneNumbers]: instDetail.PHONE
-        ? [{ label: "mobile", number: instDetail.PHONE }]
-        : [],
-      [Contacts.Fields.Emails]: instDetail.EMAIL1
-        ? [{ label: "work", email: instDetail.EMAIL1 }]
-        : [],
+      familyName: instDetail.DISNAME || "Unknown",
+      //givenName:'',
+      emailAddresses: [{ label: 'work', email: instDetail.EMAIL1 }],
+      phoneNumbers: [{ label: 'mobile', number: instDetail.PHONE }],
     };
 
     try {
-      const contactId = await Contacts.addContactAsync(contact);
-      if (contactId) {
-        Alert.alert("Success", "Contact added successfully!");
-      } else {
-        Alert.alert("Failed", "Failed to add contact.");
-      }
+      //const contactId = await Contacts.addContactAsync(contact);
+      const contactId = await Contacts.addContact(contact).then(
+        (contactId) => {
+          if (contactId) {
+            Alert.alert("Success", "Contact added successfully!");
+          } else {
+            Alert.alert("Failed", "Failed to add contact.");
+          }
+        }
+      );
+
     } catch (error) {
-      console.error("Error adding contact:", error);
+      //console.error("Error adding contact:"+error.toString());
       Alert.alert("Error", "An error occurred while adding the contact.");
     }
   };
@@ -128,7 +162,6 @@ const InstructorList = ({ navigation }) => {
       console.error("Error fetching instructor details:", error);
     }
   };
-  console.log("inst", instDetail);
 
   return (
     <Layout style={styles.container}>

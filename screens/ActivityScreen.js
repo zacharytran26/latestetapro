@@ -18,7 +18,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import RNCalendarEvents from "react-native-calendar-events";
-import { Notification } from "./ExtraImports";
+// import { handleForegroundNotification } from "./ExtraImports";
 
 const Activity = () => {
   const route = useRoute();
@@ -26,23 +26,23 @@ const Activity = () => {
   const [pickedCal, setPickedCal] = useState(null);
 
   useEffect(() => {
-    Notification();
-    (async () => {
-      try {
-        const perms = await RNCalendarEvents.requestPermissions();
-        if (perms === 'authorized') {
-          const allCalendars = await RNCalendarEvents.findCalendars();
-          const primaryCal = allCalendars.find(
-            (cal) => cal.isPrimary && cal.allowsModifications
-          );
-          setPickedCal(primaryCal);
-        } else {
-          Alert.alert('Calendar permission denied.');
-        }
-      } catch (error) {
-        Alert.alert('Error while fetching calendars:' + error.toString());
-      }
-    })();
+    // Notification();
+    // (async () => {
+    //   try {
+    //     const perms = await RNCalendarEvents.requestPermissions();
+    //     if (perms === 'authorized') {
+    //       const allCalendars = await RNCalendarEvents.findCalendars();
+    //       const primaryCal = allCalendars.find(
+    //         (cal) => cal.isPrimary && cal.allowsModifications
+    //       );
+    //       setPickedCal(primaryCal);
+    //     } else {
+    //       Alert.alert('Calendar permission denied.');
+    //     }
+    //   } catch (error) {
+    //     Alert.alert('Error while fetching calendars:' + error.toString());
+    //   }
+    // })();
   }, []);
 
   const openInDrawerWebView = (url) => {

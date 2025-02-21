@@ -67,12 +67,10 @@ export const Carousel = () => {
   );
 };
 
-export const Notification = () => {
-  const handleForegroundNotification = messaging().onMessage((message) => {
-    Alert.alert(message.notification.title, message.notification.body);
-  });
-  return handleForegroundNotification;
-}
+export const handleForegroundNotification = messaging().onMessage((message) => {
+  Alert.alert(message.notification.title, message.notification.body);
+});
+
 
 const styles = StyleSheet.create({
   chevron: {
