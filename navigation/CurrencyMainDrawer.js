@@ -19,7 +19,6 @@ export function CustomDrawerContentCurrency(props) {
   const { authUser } = useAuth();
   const [WebViewUrl, setWebViewUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [CalWebView, setCalWebView] = useState("");
 
   const openInDrawerWebView = (url) => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
@@ -91,7 +90,7 @@ export function CustomDrawerContentCurrency(props) {
       "&version=3.0.2&";
 
     const sCalUrl = urlHost + encodeURIComponent(surl);
-    setCalWebView(sCalUrl);
+    setWebViewUrl(sCalUrl);
     setModalVisible(true);
   };
 
@@ -108,7 +107,7 @@ export function CustomDrawerContentCurrency(props) {
               <Text style={styles.closeText}>Close</Text>
             </TouchableOpacity>
           </View>
-          <WebView source={{ uri: WebViewUrl || CalWebView }} />
+          <WebView source={{ uri: WebViewUrl }} />
         </SafeAreaView>
       </Modal>
 

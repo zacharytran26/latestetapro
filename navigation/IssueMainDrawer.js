@@ -18,7 +18,6 @@ export function CustomDrawerContentIssue(props) {
   const { authUser } = useAuth();
   const [WebViewUrl, setWebViewUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [CalWebView, setCalWebView] = useState("");
 
   const uric = `${authUser.host.replace(
     "servlet/",
@@ -90,7 +89,7 @@ export function CustomDrawerContentIssue(props) {
       "&version=3.0.2&";
 
     const sCalUrl = urlHost + encodeURIComponent(surl);
-    setCalWebView(sCalUrl);
+    setWebViewUrl(sCalUrl);
     setModalVisible(true);
   };
 
@@ -107,7 +106,7 @@ export function CustomDrawerContentIssue(props) {
               <Text style={styles.closeText}>Close</Text>
             </TouchableOpacity>
           </View>
-          <WebView source={{ uri: WebViewUrl || CalWebView }} />
+          <WebView source={{ uri: WebViewUrl }} />
         </SafeAreaView>
       </Modal>
 
