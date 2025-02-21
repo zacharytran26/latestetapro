@@ -102,22 +102,6 @@ export function CustomDrawerContent(props) {
 
   return (
     <>
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.webViewHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-          <WebView source={{ uri: WebViewUrl }} />
-        </SafeAreaView>
-      </Modal>
-
-
       <DrawerContentScrollView
         {...props}
         style={{ backgroundColor: theme["color-basic-300"] }}
@@ -245,6 +229,20 @@ export function CustomDrawerContent(props) {
             <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
             <Text style={styles.bottomText}>All Rights Reserved</Text>
           </View>
+          <Modal
+            visible={modalVisible}
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <SafeAreaView style={{ flex: 1 }}>
+              <View style={styles.webViewHeader}>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Text style={styles.closeText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+              <WebView source={{ uri: WebViewUrl }} />
+            </SafeAreaView>
+          </Modal>
         </SafeAreaView>
       </DrawerContentScrollView>
     </>
