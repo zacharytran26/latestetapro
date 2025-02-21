@@ -76,8 +76,6 @@ export default function LoginSSOScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F7F9FC" }}>
       <Layout style={styles.container}>
-
-        {/* Header Section */}
         <View style={styles.header}>
           <Icon name="log-in-outline" fill="#3366FF" style={styles.icon} />
           <Text category="h5" style={styles.headerText}>
@@ -87,18 +85,15 @@ export default function LoginSSOScreen({ navigation }) {
             Access your account securely via Single Sign-On
           </Text>
         </View>
-
-        {/* WebView Card */}
-        <Card style={styles.webViewCard}>
-          <WebView
-            source={{ uri: ssourl }}
-            onError={handleWebViewError}
-            onMessage={(event) => loginSSO(event.nativeEvent.data)}
-            style={styles.webView}
-          />
-        </Card>
-
-        {/* Logout Button */}
+        <WebView
+          source={{ uri: ssourl }}
+          onError={handleWebViewError}
+          onMessage={(event) => {
+            //setIsLoggedIn(true);
+            //setAuthUser(JSON.parse(event.nativeEvent.data));
+            loginSSO(event.nativeEvent.data);
+          }}
+        />
         <Button
           style={styles.logoutButton}
           onPress={logoutSSO}
@@ -107,7 +102,6 @@ export default function LoginSSOScreen({ navigation }) {
         >
           Logout
         </Button>
-
       </Layout>
     </SafeAreaView>
   );
