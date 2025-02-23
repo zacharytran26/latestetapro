@@ -164,6 +164,7 @@ export function CustomDrawerContent(props) {
             }
           />
 
+
           <DrawerItem
             label="Pending Authorizations"
             icon={({ color, size }) => (
@@ -172,6 +173,18 @@ export function CustomDrawerContent(props) {
             labelStyle={styles.drawerItemLabel}
             onPress={() =>
               props.navigation.navigate("HomeStack", { screen: "PendingAuth" })
+            }
+          />
+          <DrawerItem
+            label="Request"
+            icon={({ color, size }) => (
+              <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", {
+                screen: "Request",
+              })
             }
           />
 

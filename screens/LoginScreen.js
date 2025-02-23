@@ -354,6 +354,7 @@ const LoginScreen = ({ navigation }) => {
             secureTextEntry={true}
             returnKeyType={Platform.OS === "ios" ? "done" : "next"}
             onChangeText={(text) => setPassword(text)}
+            autoCapitalize="none"
           />
 
 

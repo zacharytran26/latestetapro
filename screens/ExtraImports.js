@@ -68,7 +68,9 @@ export const Carousel = () => {
 };
 
 export const handleForegroundNotification = messaging().onMessage((message) => {
-  Alert.alert(message.notification.title, message.notification.body);
+  Alert.alert(message.notification.title, message.notification.body,
+    message.notification.body);
+  return Promise.resolve();
 });
 
 
