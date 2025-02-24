@@ -38,13 +38,8 @@ const RequestConfirmS = ({ navigation }) => {
 
     };
 
-    const handleSecondStudent = () => {
-        Alert.alert('Data Sent!', JSON.stringify(modifiedData, null, 2));
-        if (modifiedData.secondStudent) {
-            navigation.navigate("RequestSecondStudent", { passeddata: modifiedData });
-        } else {
-            navigation.navigate("RequestConfirm", { alldata: modifiedData });
-        }
+    const handleConfirm = () => {
+        Alert.alert('Confirmed!', JSON.stringify(modifiedData, null, 2));
     };
 
     return (
@@ -152,7 +147,7 @@ const RequestConfirmS = ({ navigation }) => {
                 </View>
 
                 {/* Submit Button */}
-                <Button onPress={handleSecondStudent}>Next</Button>
+                <Button onPress={handleConfirm}>Confirm</Button>
             </ScrollView>
         </SafeAreaView>
     );

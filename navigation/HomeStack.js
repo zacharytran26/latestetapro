@@ -24,6 +24,7 @@ import RequestScreen from "../screens/RequestScreen";
 import RequestStudent from "../screens/RequestStudent";
 import RequestConfirmS from "../screens/RequestConfirm";
 import RequestSecondStudent from "../screens/RequestSecond";
+import RequestQuick from "../screens/RequestQuick";
 import { useAuth } from "../screens/ThemeContext";
 
 const Stack = createNativeStackNavigator();
@@ -71,6 +72,7 @@ const HomeStackNavigator = ({ navigation, route }) => {
       <Stack.Screen name="RequestStudent" component={RequestStudent} />
       <Stack.Screen name="RequestSecondStudent" component={RequestSecondStudent} />
       <Stack.Screen name="RequestConfirm" component={RequestConfirmS} />
+      <Stack.Screen name="RequestQuicK" component={RequestQuick} />
     </Stack.Navigator>
   );
 }

@@ -18,7 +18,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import RNCalendarEvents from "react-native-calendar-events";
-// import { handleForegroundNotification } from "./ExtraImports";
+import { handleForegroundNotification } from "./ExtraImports";
 
 const Activity = () => {
   const route = useRoute();

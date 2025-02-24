@@ -70,6 +70,10 @@ export const Carousel = () => {
 export const handleForegroundNotification = messaging().onMessage((message) => {
   Alert.alert(message.notification.title, message.notification.body,
     message.notification.body);
+});
+
+export const handleBackgroundNotification = messaging().setBackgroundMessageHandler((message) => {
+  Alert.alert(message.notification.title, message.notification.body);
   return Promise.resolve();
 });
 

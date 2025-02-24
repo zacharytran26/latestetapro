@@ -31,7 +31,7 @@ import RequestScreen from "../screens/RequestScreen";
 import RequestStudent from "../screens/RequestStudent";
 import RequestConfirmS from "../screens/RequestConfirm";
 import RequestSecondStudent from "../screens/RequestSecond";
-
+import RequestQuick from "../screens/RequestQuick";
 const Stack = createNativeStackNavigator();
 
 function LogoTitle({ navigation }) {
@@ -89,6 +89,8 @@ export default function StackScreens({ route, navigation }) {
       <Stack.Screen name="RequestStudent" component={RequestStudent} />
       <Stack.Screen name="RequestSecondStudent" component={RequestSecondStudent} />
       <Stack.Screen name="RequestConfirmS" component={RequestConfirmS} />
+      <Stack.Screen name="RequestQuick" component={RequestQuick} />
+
     </Stack.Navigator>
   );
 }
