@@ -51,6 +51,9 @@ const TimelineCalendarScreen = () => {
 
       try {
         jsonData = JSON.parse(textData);
+        if (handleFetchError(jsonData, setAuthUser, setIsLoggedIn)) {
+          return; // Stop further processing if an error is handled
+        }
       } catch (parseError) {
         const jsonStart = textData.indexOf("{");
         const jsonEnd = textData.lastIndexOf("}") + 1;
@@ -63,15 +66,14 @@ const TimelineCalendarScreen = () => {
       }
       setActivities(jsonData.activities);
       authUser.calstart = jsonData.calstart;
-      if (handleFetchError(jsonData, setAuthUser, setIsLoggedIn)) {
-        return; // Stop further processing if an error is handled
-      }
+
       // console.log(jsonData.activities);
       // console.log(jsonData);
     } catch (error) {
       Alert.alert("Error fetching data:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [authUser, schedDate, setAuthUser, setIsLoggedIn]);
 
@@ -207,7 +209,7 @@ const TimelineCalendarScreen = () => {
 
   if (loading && !refreshing) {
     return (
-      <Layout style={styles.container}>
+      <Layout style={styles.loadingContainer}>
         <Spinner />
       </Layout>
     );
@@ -339,6 +341,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   cardHeader: {
     flexDirection: "row",

@@ -79,13 +79,14 @@ const MessagesScreen = () => {
       const text = await response.text();
       const sanitizedText = sanitizeJSONString(text);
       const data = JSON.parse(sanitizedText);
+      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+        return; // Stop further processing if an error is handled
+      }
       setMessages(data);
       if (data.openmsg > 0) {
         setTabBarBadge(jsonData.openmsg);
       }
-      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
-        return; // Stop further processing if an error is handled
-      }
+
     } catch (error) {
       console.error("Error fetching emails:", error);
     } finally {

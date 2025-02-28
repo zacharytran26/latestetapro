@@ -27,19 +27,18 @@ const MyIssues = () => {
 
   const FetchIssues = async () => {
     setLoading(true);
-    const url = `${
-      authUser.host
-    }content?module=home&page=m&reactnative=1&uname=${
-      authUser.uname
-    }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-      authUser.sessionid
-    }&mode=getissues&etamobilepro=1&nocache=${
-      Math.random().toString().split(".")[1]
-    }&persid=${authUser.currpersid}`;
+    const url = `${authUser.host
+      }content?module=home&page=m&reactnative=1&uname=${authUser.uname
+      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+      }&mode=getissues&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&persid=${authUser.currpersid}`;
     try {
       const response = await fetch(url);
       const text = await response.text();
       const data = JSON.parse(text);
+      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+        return; // Stop further processing if an error is handled
+      }
       setMyIssues(data.issues);
       if (data.openmsg > 0) {
         setTabBarBadge(jsonData.openmsg);
@@ -108,9 +107,9 @@ const MyIssues = () => {
           />
         </View>
         <View style={styles.headerContainer}>
-        <Text category="h5" style={styles.counterText}>
-          Issues: {issuecount}
-        </Text>
+          <Text category="h5" style={styles.counterText}>
+            Issues: {issuecount}
+          </Text>
         </View>
 
 
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f7f9fc",
   },
-  headerContainer:{
+  headerContainer: {
     alignItems: "center",
   },
   loadingContainer: {

@@ -32,14 +32,10 @@ const ConfirmFIF = ({ navigation }) => {
     try {
       //console.log("Response Data:", data);
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=confirmfif&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
-        }&pinnum=${pin}&confirmcode=${confirmcode}&persid=${
-          authUser.currpersid
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=confirmfif&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+        }&pinnum=${pin}&confirmcode=${confirmcode}&persid=${authUser.currpersid
         }&fifid=${fifdata.ID}`,
         {
           method: "POST",
@@ -50,12 +46,11 @@ const ConfirmFIF = ({ navigation }) => {
         }
       );
       const data = await response.json(); // Parse the JSON from the response
-      //console.log("Response Data:", data);
-      setEtaresponse(data); // Store response in state
-
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
+      //console.log("Response Data:", data);
+      setEtaresponse(data); // Store response in state
     } catch (error) {
       console.error("Error during fetch:", error);
     }
@@ -104,12 +99,12 @@ const ConfirmFIF = ({ navigation }) => {
     if (confirm) {
       if (fifdata.CONFIRM_CODE != confirmInputState.value) {
         Alert.alert("Invalid Confirmation Code. Please Try Again");
-      } else{
+      } else {
         const FifId = {
           id: String(fifdata.ID), // Ensure ID is a string
         };
         // navigation.navigate("FIF", { FifId });
-        navigation.popTo("FIF",{ FifId, isConfirmed: true })
+        navigation.popTo("FIF", { FifId, isConfirmed: true })
       }
     }
 

@@ -282,7 +282,7 @@ const LoginScreen = ({ navigation }) => {
               saveAccessCode(accesscode);
               saveUsername(username);
             } else {
-              Alert.alert("You are not authorized to access ETA.");
+              Alert.alert("You have entered invalid login credentials. Please Try Again.");
               setIsLoggedIn(false);
               setAuthUser(json);
             }

@@ -20,11 +20,6 @@ import ConfirmFIF from "../screens/ConfirmationFIF";
 import SettingsScreen from "../screens/SettingScreen";
 import PendingAuths from "../screens/PendingAuths";
 import FIFScreen from "../screens/FIFScreen";
-import RequestScreen from "../screens/RequestScreen";
-import RequestStudent from "../screens/RequestStudent";
-import RequestConfirmS from "../screens/RequestConfirm";
-import RequestSecondStudent from "../screens/RequestSecond";
-import RequestQuick from "../screens/RequestQuick";
 import { useAuth } from "../screens/ThemeContext";
 
 const Stack = createNativeStackNavigator();
@@ -68,11 +63,6 @@ const HomeStackNavigator = ({ navigation, route }) => {
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="PendingAuth" component={PendingAuths} />
       <Stack.Screen name="FIF" component={FIFScreen} />
-      <Stack.Screen name="Request" component={RequestScreen} />
-      <Stack.Screen name="RequestStudent" component={RequestStudent} />
-      <Stack.Screen name="RequestSecondStudent" component={RequestSecondStudent} />
-      <Stack.Screen name="RequestConfirm" component={RequestConfirmS} />
-      <Stack.Screen name="RequestQuicK" component={RequestQuick} />
     </Stack.Navigator>
   );
 }

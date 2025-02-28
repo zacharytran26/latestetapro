@@ -175,7 +175,7 @@ export function CustomDrawerContent(props) {
               props.navigation.navigate("HomeStack", { screen: "PendingAuth" })
             }
           />
-          <DrawerItem
+          {/* <DrawerItem
             label="Request"
             icon={({ color, size }) => (
               <Icon name="account-group-outline" color={color} size={size} />
@@ -186,7 +186,7 @@ export function CustomDrawerContent(props) {
                 screen: "Request",
               })
             }
-          />
+          /> */}
 
           <DrawerItem
             label="Scheduling"

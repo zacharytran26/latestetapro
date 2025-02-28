@@ -27,11 +27,6 @@ import InstructorActivity from "../screens/InstructorActivity";
 import ApproveActivity from "../screens/ActivityApproval";
 import ConfirmFIF from "../screens/ConfirmationFIF";
 import MainDrawer from "./MainDrawer";
-import RequestScreen from "../screens/RequestScreen";
-import RequestStudent from "../screens/RequestStudent";
-import RequestConfirmS from "../screens/RequestConfirm";
-import RequestSecondStudent from "../screens/RequestSecond";
-import RequestQuick from "../screens/RequestQuick";
 const Stack = createNativeStackNavigator();
 
 function LogoTitle({ navigation }) {
@@ -85,11 +80,6 @@ export default function StackScreens({ route, navigation }) {
       <Stack.Screen name="ActivityApproval" component={ApproveActivity} />
       <Stack.Screen name="Confirm" component={ConfirmFIF} />
       <Stack.Screen name="InstructorActivity" component={InstructorActivity} />
-      <Stack.Screen name="Request" component={RequestScreen} />
-      <Stack.Screen name="RequestStudent" component={RequestStudent} />
-      <Stack.Screen name="RequestSecondStudent" component={RequestSecondStudent} />
-      <Stack.Screen name="RequestConfirmS" component={RequestConfirmS} />
-      <Stack.Screen name="RequestQuick" component={RequestQuick} />
 
     </Stack.Navigator>
   );

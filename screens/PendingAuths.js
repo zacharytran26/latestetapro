@@ -225,6 +225,9 @@ const PendingAuth = () => {
       const responseText = await response.text();
       const sanitizedResponseText = sanitizeJSON(responseText);
       const data = JSON.parse(sanitizedResponseText);
+      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+        return; // Stop further processing if an error is handled
+      }
       const pendAuthData = data.pendauthdata.reduce(
         (acc, item) => {
           if (item.pendauths) {
@@ -260,9 +263,6 @@ const PendingAuth = () => {
       );
       setRequests(pendAuthData.pendauths);
       setTeams(pendAuthData.teams);
-      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
-        return; // Stop further processing if an error is handled
-      }
     } catch (error) {
       console.error("Error fetching and parsing data:", error);
     } finally {

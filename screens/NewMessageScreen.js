@@ -14,6 +14,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 import { SelectList } from "react-native-dropdown-select-list";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { handleFetchError } from "./ExtraImports";
 
 const SendIcon = (props) => <Icon {...props} name="paper-plane-outline" />;
 
@@ -33,7 +34,7 @@ const NewMessage = () => {
   const [selected, setSelected] = useState("");
   const [dropdown, setDropDown] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const { authUser } = useAuth();
+  const { authUser, setTabBarBadge, setAuthUser, setIsLoggedIn } = useAuth();
 
   const message = multilineInputState.value;
 
@@ -45,12 +46,15 @@ const NewMessage = () => {
     try {
       const response = await fetch(
         `${authUser.host}` +
-          `content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=getrecipients&etamobilepro=1&nocache=n&persid=${authUser.currpersid}`
+        `content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=getrecipients&etamobilepro=1&nocache=n&persid=${authUser.currpersid}`
       );
 
       const AllRecipientsText = await response.text();
 
       const AllRecipients = JSON.parse(AllRecipientsText);
+      if (handleFetchError(AllRecipients, setAuthUser, setIsLoggedIn)) {
+        return; // Stop further processing if an error is handled
+      }
 
       // Assuming recipientData is an array of objects with 'persid' and 'name'
       const formattedData = AllRecipients.map((recipient) => ({
@@ -68,7 +72,6 @@ const NewMessage = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchData();
     multilineInputState.reset();
     setSelected(null);
   };
@@ -82,7 +85,7 @@ const NewMessage = () => {
     try {
       const response = await fetch(
         `${authUser.host}` +
-          `content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=newmessage&etamobilepro=1&nocache=n&persid=${authUser.currpersid}&topersid=${selected}&string=${message}`,
+        `content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=newmessage&etamobilepro=1&nocache=n&persid=${authUser.currpersid}&topersid=${selected}&string=${message}`,
         {
           method: "POST",
           headers: {
