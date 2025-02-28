@@ -390,8 +390,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   image: {
-    width: 300,
-    height: 300,
+    width: 370, // Fixed width
+    height: undefined, // Let the height adjust automatically
+    aspectRatio: .9, // Maintains the correct aspect ratio (adjust as needed)
+    resizeMode: "contain", // Ensures the image is not distorted
+    alignSelf: "center", // Centers the image
+    marginVertical: 20, // Adds spacing above and below
+    marginTop: -80
   },
   input: {
     marginVertical: 8,
