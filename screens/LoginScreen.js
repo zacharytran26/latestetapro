@@ -325,7 +325,7 @@ const LoginScreen = ({ navigation }) => {
         <Layout style={styles.container}>
           <Image
             style={styles.image}
-            source={require("../assets/login-transparent.png")}
+            source={require("../assets/official_logo.png")}
           />
 
           <Input
