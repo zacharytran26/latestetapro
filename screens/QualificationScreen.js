@@ -9,10 +9,11 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Image,
+  Alert
 } from "react-native";
 import { Layout, Text, Icon, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
-import {launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { handleFetchError } from "./ExtraImports";
 
 const QualiScreen = ({ navigation }) => {
@@ -39,12 +40,9 @@ const QualiScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${
-          authUser.host
-        }content?module=home&page=m&reactnative=1&accesscode=&session_id=${
-          authUser.sessionid
-        }&customer=&mode=getqualification&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host
+        }content?module=home&page=m&reactnative=1&accesscode=&session_id=${authUser.sessionid
+        }&customer=&mode=getqualification&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}`
       );
       const data = await response.json();
@@ -64,13 +62,10 @@ const QualiScreen = ({ navigation }) => {
           serverURIs[qual.QID] = `${authUser.host.replace(
             "servlet/",
             ""
-          )}php/upload/view.php?imgRes=10&viewPers=${
-            authUser.currpersid
-          }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-            qual.SYSDOCID
-          }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${
-            authUser.schema
-          }`;
+          )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+            }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${qual.SYSDOCID
+            }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema
+            }`;
         } else {
           serverURIs[qual.QID] = null;
         }
@@ -100,77 +95,77 @@ const QualiScreen = ({ navigation }) => {
     }
   };
 
-const openImagePickerQ = async (selectedQual) => {
-      const options = {
-        mediaType: 'photo',
-        includeBase64: false,
-        maxHeight: 2000,
-        maxWidth: 2000,
-      };
-      var selectedImage=0;
-      var imageUri;
-      launchImageLibrary(options, (result) => {
-        if (result.didCancel) {
-          Alert.alert('User cancelled image picker');
-        } else if (result.error) {
-          Alert.alert('Image picker error: ', result.error);
-        } else {
-          imageUri = result.uri || result.assets?.[0]?.uri;        
-          selectedImage=1;
-          setImageURI(imageUri);
+  const openImagePickerQ = async (selectedQual) => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+    var selectedImage = 0;
+    var imageUri;
+    launchImageLibrary(options, (result) => {
+      if (result.didCancel) {
+        Alert.alert('User cancelled image picker');
+      } else if (result.error) {
+        Alert.alert('Image picker error: ', result.error);
+      } else {
+        imageUri = result.uri || result.assets?.[0]?.uri;
+        selectedImage = 1;
+        setImageURI(imageUri);
 
-    if (selectedImage==1){
-      const formData = new FormData();
-      formData.append("photo", {
-        uri: imageUri,
-        type: "image/png",
-        name: result.assets[0].fileName,
-      });
-      formData.append("pers_id", `${authUser.currpersid}`);
-      formData.append("pers_type", `${authUser.perstype}`);
-      formData.append("any_type", "qual_id");
-      formData.append("any_id", selectedQual.QID);
-      if (authUser.perstype === "instructor") {
-        formData.append("doc_type", "instQual");
-        formData.append("title", "Instructor Qualification");
-      } else if (authUser.perstype === "student") {
-        formData.append("doc_type", "studQual");
-        formData.append("title", "Student Qualification");
-      }
-      formData.append("file_type", result.assets[0].type);
-      formData.append("etaaction", "new");
-
-      const myurl = `${authUser.host}uploadBlobETAAll?`;
-      fetch(myurl, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data;",
-        },
-      })
-        .then((response) => {
-          if (response.ok) {
-            setLocalQualURIs((prevURIs) => ({
-              ...prevURIs,
-              [selectedQual.QID]: imageUri,
-            }));
-            setImageUploaded(true);
-            alert("Image uploaded successfully!");
-          } else {
-            alert("Image upload failed.");
+        if (selectedImage == 1) {
+          const formData = new FormData();
+          formData.append("photo", {
+            uri: imageUri,
+            type: "image/png",
+            name: result.assets[0].fileName,
+          });
+          formData.append("pers_id", `${authUser.currpersid}`);
+          formData.append("pers_type", `${authUser.perstype}`);
+          formData.append("any_type", "qual_id");
+          formData.append("any_id", selectedQual.QID);
+          if (authUser.perstype === "instructor") {
+            formData.append("doc_type", "instQual");
+            formData.append("title", "Instructor Qualification");
+          } else if (authUser.perstype === "student") {
+            formData.append("doc_type", "studQual");
+            formData.append("title", "Student Qualification");
           }
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
-    }
+          formData.append("file_type", result.assets[0].type);
+          formData.append("etaaction", "new");
 
-  }
-});
+          const myurl = `${authUser.host}uploadBlobETAAll?`;
+          fetch(myurl, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Content-Type": "multipart/form-data;",
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                setLocalQualURIs((prevURIs) => ({
+                  ...prevURIs,
+                  [selectedQual.QID]: imageUri,
+                }));
+                setImageUploaded(true);
+                alert("Image uploaded successfully!");
+              } else {
+                alert("Image upload failed.");
+              }
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
+        }
+
+      }
+    });
 
   };
 
-  
+
   const renderQuali = ({ item }) => {
     const uri = qualURIs[item.QID];
 
@@ -255,10 +250,9 @@ const openImagePickerQ = async (selectedQual) => {
             />
           </View>
           <View style={styles.headerContainer}>
-          <Text category="h5" style={styles.headerText}>
-            Qualifications: {qualicount}
-          </Text>
-          <Text>Current as of: {currentAsOf}</Text>
+            <Text category="h5" style={styles.headerText}>
+              Qualifications: {qualicount}
+            </Text>
           </View>
         </View>
         <FlatList
@@ -302,7 +296,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#F7F9FC",
   },
-  headerContainer:{
+  headerContainer: {
     alignItems: "center",
   },
   loadingContainer: {

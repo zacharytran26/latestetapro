@@ -24,6 +24,7 @@ import { useAuth } from "./ThemeContext";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import messaging from '@react-native-firebase/messaging';
 import { PermissionsAndroid } from "react-native";
+import { handleBackgroundNotification } from "./ExtraImports";
 
 var ssoLogin = 0;
 const LoginScreen = ({ navigation }) => {

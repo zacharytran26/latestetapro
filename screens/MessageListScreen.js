@@ -253,7 +253,7 @@ const MessagesScreen = () => {
 
   if (loading && !refreshing) {
     return (
-      <Layout style={styles.container}>
+      <Layout style={styles.loadingContainer}>
         <Spinner />
       </Layout>
     );
@@ -359,6 +359,11 @@ const styles = StyleSheet.create({
     color: "#2E3A59",
     alignItems: "center",
     marginRight: 7
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   noDataContainer: {
     flex: 1,

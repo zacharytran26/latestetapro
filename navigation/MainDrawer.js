@@ -5,7 +5,8 @@ import {
   StyleSheet,
   View,
   Modal,
-  Alert
+  Alert,
+  Linking
 } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useTheme, Avatar, Text, Button } from "@ui-kitten/components";
@@ -58,6 +59,42 @@ export function CustomDrawerContent(props) {
     }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
 
+  const openEtaBroswer = (url) => {
+    const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
+    const sHost = authUser.host + "content?";
+    var surl =
+      url +
+      "&etamobilepro=1&nocache=" +
+      Math.random().toString().split(".")[1] +
+      "&rnetalink=" +
+      1 +
+      "&hash=" +
+      authUser.hash +
+      "&customer=eta" +
+      authUser.schema +
+      "&zajael1120=" +
+      authUser.custhash;
+    surl =
+      surl +
+      "&teamId=&uname=" +
+      authUser.uname +
+      "&password=" +
+      authUser.upwd +
+      "&curDate=" +
+      arrCalStart[0] +
+      "&schedDate=" +
+      arrCalStart[1] +
+      "&version=3.0.2&";
+    const urlGoto = sHost + surl;
+
+    Linking.canOpenURL(urlGoto).then((supported) => {
+      if (supported) {
+        Linking.openURL(urlGoto);
+      } else {
+        console.warn("Don't know how to open URI:" + urlGoto);
+      }
+    }).catch((err) => console.error("An error occured,", err))
+  }
   const openInBrowserCal = () => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
     const sHost = authUser.host.replace("servlet/", "");
@@ -117,7 +154,7 @@ export function CustomDrawerContent(props) {
               <Icon name="home-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
-            onPress={() => openInDrawerWebView("module=home&page=homepg")}
+            onPress={() => openEtaBroswer("module=home&page=homepg")}
           />
 
           <DrawerItem
