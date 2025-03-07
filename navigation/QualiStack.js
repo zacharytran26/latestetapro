@@ -22,7 +22,7 @@ import { useAuth } from "../screens/ThemeContext";
 const Stack = createNativeStackNavigator();
 
 export default function MessagesStackNavigator({ }) {
-  const { authUser } = useAuth();
+  const { authUser, currentasof } = useAuth();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -30,9 +30,9 @@ export default function MessagesStackNavigator({ }) {
           backgroundColor: "#f7f9fc",
         },
         headerTitleStyle: {
-          fontSize: 15,
+          fontSize: 13,
         },
-        headerTitle: `${authUser.opscond}             ${authUser.currentasof}`,
+        headerTitle: `OPS COND: ${authUser.opscond}             ${currentasof}`,
         headerBackTitleVisible: false,
       }}
     >

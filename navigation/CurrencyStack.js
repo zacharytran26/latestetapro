@@ -23,18 +23,18 @@ import { Carousel } from "../screens/ExtraImports";
 const Stack = createNativeStackNavigator();
 
 export default function CurrencyStackNavigator() {
-  const { authUser } = useAuth();
+  const { authUser, currentasof } = useAuth();
   return (
     <Stack.Navigator
       screenOptions={{
         headerBackTitleVisible: false,
         headerTitleStyle: {
-          fontSize: 15,
+          fontSize: 13,
         },
         headerStyle: {
           backgroundColor: "#f7f9fc",
         },
-        headerTitle: `${authUser.opscond}             ${authUser.currentasof}`,
+        headerTitle: `OPS COND: ${authUser.opscond}             ${currentasof}`,
       }}
     >
       <Stack.Screen name="Currency" component={CurrencyScreen} />

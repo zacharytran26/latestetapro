@@ -16,8 +16,7 @@ import { useAuth } from "../screens/ThemeContext"; // Assuming useAuth gives acc
 const { Navigator, Screen } = createBottomTabNavigator();
 
 const BottomTabBar = ({ navigation, state }) => {
-  const { tabBarBadge } = useAuth(); // Fetch tabBarBadge from context
-
+  const { tabBarBadge, CountCurr, ExpiringCurr } = useAuth(); // Fetch tabBarBadge from context
   // Function to dynamically determine icon color
   const getIconColor = (route, focused) => {
     let iconColor;
@@ -25,11 +24,17 @@ const BottomTabBar = ({ navigation, state }) => {
     if (route.name === "mHome") {
       iconColor = focused ? "blue" : "white";
     } else if (route.name === "mIssue") {
-      iconColor = focused ? "red" : "white"; // Red when active
+      iconColor = focused ? "red" : "red"; // Red when active
     } else if (route.name === "mQualifications") {
       iconColor = focused ? "blue" : "white"; // Yellow when active
     } else if (route.name === "mCurrency") {
-      iconColor = focused ? "red" : "white"; // Green when active
+      if (CountCurr > 0) {
+        iconColor = "red"
+      } else if (ExpiringCurr > 0) {
+        iconColor = 'yellow'
+      } else if (CountCurr == 0 && ExpiringCurr == 0) {
+        iconColor = "white"
+      }
     } else if (route.name === "mMessages") {
       iconColor = focused ? "blue" : "white"; // Orange when active
     }

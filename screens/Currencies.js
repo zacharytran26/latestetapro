@@ -18,8 +18,10 @@ import {
   Spinner,
   Card,
   Toggle,
+  Radio,
+  CheckBox
 } from "@ui-kitten/components";
-import {launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { useAuth } from "./ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
@@ -40,7 +42,7 @@ const CurrencyScreen = () => {
   const [uploadedImageUri, setUploadedImageUri] = useState(null);
   //const [previewImage, setPreviewImage] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
-  const { authUser, setAuthUser, setIsLoggedIn, setTabBarBadge } = useAuth();
+  const { authUser, setAuthUser, setIsLoggedIn, setCountCurrency } = useAuth();
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -52,10 +54,8 @@ const CurrencyScreen = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&session_id=${
-          authUser.sessionid
-        }&mode=getcurrency&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&session_id=${authUser.sessionid
+        }&mode=getcurrency&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}`
       );
       const data = await response.json();
@@ -63,9 +63,6 @@ const CurrencyScreen = () => {
         return; // Stop further processing if an error is handled
       }
       setCurrencies(data.currencies);
-      if (data.openmsg > 0) {
-        setTabBarBadge(jsonData.openmsg);
-      }
       setCurrCount(data.currencies.length);
       const serverURIs = {};
       data.currencies.forEach((cid) => {
@@ -73,13 +70,10 @@ const CurrencyScreen = () => {
           serverURIs[cid.CID] = `${authUser.host.replace(
             "servlet/",
             ""
-          )}php/upload/view.php?imgRes=10&viewPers=${
-            authUser.currpersid
-          }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-            cid.SYSDOCID
-          }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${
-            authUser.schema
-          }`;
+          )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+            }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${cid.SYSDOCID
+            }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema
+            }`;
         } else {
           serverURIs[cid.CID] = null;
         }
@@ -96,103 +90,99 @@ const CurrencyScreen = () => {
   };
 
   const openImagePickerC = async (selectedCurr) => {
-      const options = {
-        mediaType: 'photo',
-        includeBase64: false,
-        maxHeight: 2000,
-        maxWidth: 2000,
-      };
-      var selectedImage=0;
-      var imageUri;
-      launchImageLibrary(options, (result) => {
-        if (result.didCancel) {
-          Alert.alert('User cancelled image picker');
-        } else if (result.error) {
-          Alert.alert('Image picker error: ', result.error);
-        } else {
-          imageUri = result.uri || result.assets?.[0]?.uri;       
-          selectedImage=1;
-          setUploadedImageUri(imageUri);
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+    var selectedImage = 0;
+    var imageUri;
+    launchImageLibrary(options, (result) => {
+      if (result.didCancel) {
+        Alert.alert('User cancelled image picker');
+      } else if (result.error) {
+        Alert.alert('Image picker error: ', result.error);
+      } else {
+        imageUri = result.uri || result.assets?.[0]?.uri;
+        selectedImage = 1;
+        setUploadedImageUri(imageUri);
 
-    if (selectedImage==1){
-      const formData = new FormData();
-      formData.append("photo", {
-        uri: imageUri,
-        type: "image/png",
-        name: result.assets[0].fileName,
-      });
-      formData.append("pers_id", `${authUser.currpersid}`);
-      formData.append("pers_type", `${authUser.perstype}`);
-      formData.append("any_type", "crncy_id");
-      formData.append("doc_type", "");
-      if (authUser.perstype == "instructor") {
-        formData.append("doc_type", "instCrncy");
-        formData.append("title", "Instructor Currency");
-      } else if (authUser.perstype == "student") {
-        formData.append("doc_type", "studCrncy");
-        formData.append("title", "Student Currency");
-      }
-      formData.append("file_type", result.assets[0].type);
-      formData.append("etaaction", "new");
-      formData.append("any_id", selectedCurr.CID);
-
-      const myurl = `${authUser.host}uploadBlobETAAll?`;
-      fetch(myurl, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data;",
-        },
-      })
-        .then((response) => {
-          if (response.ok) {
-            setLocalCurrURIs((prevURIs) => ({
-              ...prevURIs,
-              [selectedCurr.CID]: imageUri,
-            }));
-            setImageUploaded(true);
-            Alert.alert("Image uploaded successfully!");
-          } else {
-            Alert.alert("Image upload failed.");
+        if (selectedImage == 1) {
+          const formData = new FormData();
+          formData.append("photo", {
+            uri: imageUri,
+            type: "image/png",
+            name: result.assets[0].fileName,
+          });
+          formData.append("pers_id", `${authUser.currpersid}`);
+          formData.append("pers_type", `${authUser.perstype}`);
+          formData.append("any_type", "crncy_id");
+          formData.append("doc_type", "");
+          if (authUser.perstype == "instructor") {
+            formData.append("doc_type", "instCrncy");
+            formData.append("title", "Instructor Currency");
+          } else if (authUser.perstype == "student") {
+            formData.append("doc_type", "studCrncy");
+            formData.append("title", "Student Currency");
           }
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
-    }
+          formData.append("file_type", result.assets[0].type);
+          formData.append("etaaction", "new");
+          formData.append("any_id", selectedCurr.CID);
 
-  }
-});
+          const myurl = `${authUser.host}uploadBlobETAAll?`;
+          fetch(myurl, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Content-Type": "multipart/form-data;",
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                setLocalCurrURIs((prevURIs) => ({
+                  ...prevURIs,
+                  [selectedCurr.CID]: imageUri,
+                }));
+                setImageUploaded(true);
+                Alert.alert("Image uploaded successfully!");
+              } else {
+                Alert.alert("Image upload failed.");
+              }
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
+        }
+
+      }
+    });
 
   };
 
   const getURi = (currency) =>
     currencies.length > 0
       ? `${authUser.host.replace(
-          "servlet/",
-          ""
-        )}php/upload/view.php?imgRes=10&viewPers=${
-          authUser.currpersid
-        }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-          currency.SYSDOCID
-        }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`
+        "servlet/",
+        ""
+      )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+      }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${currency.SYSDOCID
+      }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`
       : "";
 
   const fetchExpCurr = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getcurrency&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getcurrency&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}&showexp=1`
       );
       const data = await response.json();
       setExpcurrencies(data.currencies);
       setExpiredCurrCount(data.currencies.length);
+      setCountCurrency(data.currencies.length);
 
       const serverURIs = {};
       data.currencies.forEach((curr) => {
@@ -200,13 +190,10 @@ const CurrencyScreen = () => {
           serverURIs[curr.CID] = `${authUser.host.replace(
             "servlet/",
             ""
-          )}php/upload/view.php?imgRes=10&viewPers=${
-            authUser.currpersid
-          }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
-            curr.SYSDOCID
-          }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${
-            authUser.schema
-          }`;
+          )}php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+            }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${curr.SYSDOCID
+            }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema
+            }`;
         } else {
           serverURIs[curr.CID] = null;
         }
@@ -355,15 +342,15 @@ const CurrencyScreen = () => {
           />
         </View>
         <View style={styles.headerContainer}>
-        <Text category="h5" style={styles.counterText}>
-          Currencies: {showExpired ? expirecurrcount : currcount}
-        </Text>
-        </View>
-        <Toggle checked={showExpired} onChange={handleAlertPress}>
-          <Text style={styles.toggleText}>
-            {showExpired ? "Expired" : "Active"}
+          <Text category="h5" style={styles.counterText}>
+            Currencies: {showExpired ? expirecurrcount : currcount}
           </Text>
-        </Toggle>
+        </View>
+        <CheckBox checked={showExpired} onChange={handleAlertPress} style={styles.radio}>
+          <Text style={styles.toggleText}>
+            Show Expired
+          </Text>
+        </CheckBox>
         <View style={{ flex: 1 }}>
           <FlashList
             data={displayedCurrencies}
@@ -413,8 +400,13 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f7f9fc",
   },
-  headerContainer:{
+  radio: {
+    flexDirection: 'row', alignItems: 'center',
+    alignSelf: 'center',
+  },
+  headerContainer: {
     alignItems: "center",
+    justifyContent: "center"
   },
   loadingContainer: {
     flex: 1,

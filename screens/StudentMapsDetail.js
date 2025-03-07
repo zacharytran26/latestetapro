@@ -41,15 +41,11 @@ const StudentMapDetails = ({ navigation }) => {
     try {
       const response = await fetch(
         `${authUser.host}` +
-          `content?module=home&page=m&reactnative=1&uname=${
-            authUser.uname
-          }&password=${authUser.upwd}&customer=eta${
-            authUser.schema
-          }&session_id=${
-            authUser.sessionid
-          }&mode=getcoursemapli&etamobilepro=1&nocache=${
-            Math.random().toString().split(".")[1]
-          }&persid=${authUser.currpersid}&currlvl4id=${unitId}`
+        `content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema
+        }&session_id=${authUser.sessionid
+        }&mode=getcoursemapli&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+        }&persid=${authUser.currpersid}&currlvl4id=${unitId}`
       );
       const data = await response.json();
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
@@ -76,6 +72,7 @@ const StudentMapDetails = ({ navigation }) => {
         <TextInput
           style={styles.searchInput}
           placeholder="Search units..."
+          placeholderTextColor={'grey'}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />

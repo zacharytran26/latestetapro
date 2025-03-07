@@ -12,6 +12,7 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 

@@ -15,6 +15,8 @@ export function AuthProvider({ children }) {
   const [theme, setTheme] = useState("light");
   const [link, setLink] = useState("");
   const [currentasof, setCurrasof] = useState("");
+  const [CountCurr, setCountCurrency] = useState(0);
+  const [ExpiringCurr, setExpiringCurr] = useState(0);
 
   const value = {
     url,
@@ -30,7 +32,11 @@ export function AuthProvider({ children }) {
     currentasof,
     setCurrasof,
     chgPwd,
-    setChgPwd
+    setChgPwd,
+    CountCurr,
+    setCountCurrency,
+    ExpiringCurr,
+    setExpiringCurr
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

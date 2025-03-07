@@ -26,21 +26,21 @@ const Stack = createNativeStackNavigator();
 
 //export default function HomeStackNavigator({ route, navigation }) {
 const HomeStackNavigator = ({ navigation, route }) => {
-  const { authUser } = useAuth();
+  const { authUser, currentasof } = useAuth();
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: true, //has the back button
         headerBackTitleVisible: false,
         headerTitleStyle: {
-          fontSize: 15,
+          fontSize: 13,
         },
         headerTitleAlign: " center",
         headerStyle: {
           backgroundColor: "#f7f9fc",
 
         },
-        headerTitle: `${authUser.opscond}             ${authUser.currentasof}`,
+        headerTitle: `OPS COND: ${authUser.opscond}             ${currentasof}`,
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />

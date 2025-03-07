@@ -3,6 +3,7 @@ import { Alert, Image, StyleSheet, View, Text } from "react-native";
 import { useAuth } from "./ThemeContext";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
 import messaging from '@react-native-firebase/messaging';
+import ReactNativeBiometrics from "react-native-biometrics";
 
 export function handleFetchError(data, setAuthUser, setIsLoggedIn) {
   if (data.errcode === "-911") {
@@ -76,6 +77,117 @@ export const handleBackgroundNotification = messaging().setBackgroundMessageHand
   Alert.alert(message.notification.title, message.notification.body);
   return Promise.resolve();
 });
+
+// Biometric Authentication Setup
+const rnBioMetrics = new ReactNativeBiometrics();
+
+export const handleBiometricAuth = async () => {
+  const { available, biometryType } = await rnBioMetrics.isSensorAvailable();
+  if (available) {
+    const result = await rnBioMetrics.simplePrompt({
+      promptMessage: `Authenticate with ${biometryType}`,
+    });
+
+    if (result.success) {
+      console.log('Biometric Authentication Successful');
+      return true;
+    } else {
+      console.log('Biometric Authentication Failed or Cancelled');
+      return false;
+    }
+  } else {
+    console.log('Biometric Authentication Not Available');
+    return false;
+  }
+};
+
+// Check if Biometrics is Available
+export const checkBiometricsAvailability = async () => {
+  try {
+    const { available, biometryType } = await rnBioMetrics.isSensorAvailable();
+    if (available) {
+      console.log(`${biometryType} is supported`);
+      return true;
+    } else {
+      console.log('Biometrics not supported');
+      return false;
+    }
+  } catch (error) {
+    console.log('Error checking biometric availability:', error);
+    return false;
+  }
+};
+
+// Create Key Pair for Secure Authentication
+export const createBiometricKey = async () => {
+  try {
+    const { publicKey } = await rnBioMetrics.createKeys();
+    console.log('Biometric Keys Created:', publicKey);
+    return publicKey;
+  } catch (error) {
+    console.log('Failed to create biometric keys:', error);
+    return null;
+  }
+};
+
+// Check if Biometric Keys Exist
+export const areBiometricKeysExist = async () => {
+  try {
+    const { keysExist } = await rnBioMetrics.biometricKeysExist();
+    console.log(keysExist ? 'Biometric keys exist' : 'Biometric keys do not exist');
+    return keysExist;
+  } catch (error) {
+    console.log('Error checking biometric keys:', error);
+    return false;
+  }
+};
+
+// Delete Biometric Keys
+export const deleteBiometricKeys = async () => {
+  try {
+    const { keysDeleted } = await rnBioMetrics.deleteKeys();
+    console.log(keysDeleted ? 'Biometric keys deleted' : 'Biometric keys not deleted');
+    return keysDeleted;
+  } catch (error) {
+    console.log('Error deleting biometric keys:', error);
+    return false;
+  }
+};
+
+// Create Biometric Signature
+export const createBiometricSignature = async () => {
+  try {
+    const { success, signature } = await rnBioMetrics.createSignature({
+      promptMessage: 'Sign in',
+      payload: 'some payload',
+    });
+    if (success) {
+      console.log('Biometric Signature Created:', signature);
+      return signature;
+    } else {
+      console.log('Failed to create biometric signature');
+      return null;
+    }
+  } catch (error) {
+    console.log('Error creating biometric signature:', error);
+    return null;
+  }
+};
+
+// Verify Biometric Signature
+export const verifyBiometricSignature = async (signature) => {
+  try {
+    const { success } = await rnBioMetrics.verifySignature({
+      signature: signature,
+      payload: 'some payload',
+    });
+    console.log(success ? 'Biometric Signature Verified' : 'Failed to verify biometric signature');
+    return success;
+  } catch (error) {
+    console.log('Error verifying biometric signature:', error);
+    return false;
+  }
+};
 
 
 const styles = StyleSheet.create({

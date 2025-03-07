@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Alert,
+  AppState,
 } from "react-native";
 import { Layout, Text, Spinner, Button } from "@ui-kitten/components";
 import { FlashList } from "@shopify/flash-list";
@@ -23,6 +24,7 @@ const RightIcon = () => <Icon name="arrow-right" size={20} />;
 
 const TimelineCalendarScreen = () => {
   const navigation = useNavigation();
+  const [appState, setAppState] = useState(AppState.currentState);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [opscond, setOpsCond] = useState("");
@@ -32,9 +34,8 @@ const TimelineCalendarScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
 
-  const { authUser, setTabBarBadge, setAuthUser, setIsLoggedIn } = useAuth();
+  const { authUser, setTabBarBadge, setAuthUser, setIsLoggedIn, setCountCurrency, setExpiringCurr, setCurrasof } = useAuth();
 
-  console.log(authUser);
 
   // Fetch calendar data
   const fetchCalData = useCallback(async () => {
@@ -54,6 +55,7 @@ const TimelineCalendarScreen = () => {
         if (handleFetchError(jsonData, setAuthUser, setIsLoggedIn)) {
           return; // Stop further processing if an error is handled
         }
+        setCurrasof(jsonData.currentasof);
       } catch (parseError) {
         const jsonStart = textData.indexOf("{");
         const jsonEnd = textData.lastIndexOf("}") + 1;
@@ -64,10 +66,14 @@ const TimelineCalendarScreen = () => {
       if (jsonData.openmsg > 0) {
         setTabBarBadge(jsonData.openmsg);
       }
+      if (jsonData.expiredcurrency > 0) {
+        setCountCurrency(jsonData.expiredcurrency);
+      }
+      if (jsonData.expiringcurrency > 0) {
+        setExpiringCurr(jsonData.expiringcurrency);
+      }
       setActivities(jsonData.activities);
       authUser.calstart = jsonData.calstart;
-
-      // console.log(jsonData.activities);
       // console.log(jsonData);
     } catch (error) {
       Alert.alert("Error fetching data:", error);
@@ -77,11 +83,32 @@ const TimelineCalendarScreen = () => {
     }
   }, [authUser, schedDate, setAuthUser, setIsLoggedIn]);
 
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if (appState.match(/inactive|background/) && nextAppState === "active") {
+        fetchCalData();
+        //console.log('App has come to the foreground app');
+      } else {
+        //console.log('App has come to the backround app');
+        setAppState(nextAppState);
+      }
+
+
+    };
+
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [appState, fetchCalData]);
+
   useFocusEffect(
     useCallback(() => {
       fetchCalData();
     }, [fetchCalData])
   );
+
 
   const handleRefresh = () => {
     setRefreshing(true);

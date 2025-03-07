@@ -60,20 +60,55 @@ const Activity = () => {
   // Event creation function
   const handleAddEvent = async () => {
     try {
+      // Request calendar permissions
+      const permissionStatus = await RNCalendarEvents.requestPermissions();
+
+      if (permissionStatus !== 'authorized') {
+        Alert.alert(
+          "Calendar Permission Required",
+          "This feature requires access to your calendar. Please enable permissions in settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() }
+          ]
+        );
+        return;
+      }
+
+      // Convert start and end dates to ISO format
       const startDate = new Date(activity.start).toISOString();
       const endDate = new Date(activity.end).toISOString();
-      const eventTitle = activity.activitytype + "(" + activity.subtype + ")";
-      const eventNotes = activity.start + activity.end;
 
+      const eventTitle = `${activity.activitytype} (${activity.subtype})`;
+      const eventNotes = `
+      
+      Res Type: ${activity.resourcetype}
+      Instructor: ${activity.pic}
+  
+      Student: ${activity.s1}
+      Unit: ${activity.u1}
+  
+      Student 2: ${activity.s2}
+      Unit 2: ${activity.u2}
+      `;
+
+      // Save event to calendar
       const savedEventId = await RNCalendarEvents.saveEvent(eventTitle, {
         startDate: startDate,
         endDate: endDate,
         notes: eventNotes,
-      }).then((id) => { Alert.alert('Event added to calendar successfully.'); });
+        calendarId: pickedCal?.id || undefined, // Save to selected calendar if available
+      });
+
+      if (savedEventId) {
+        Alert.alert("Success", "Event added to your calendar successfully.");
+      }
+
     } catch (error) {
-      Alert.alert('Error while adding event to calendar: ' + error.toString());
+      Alert.alert('Error', 'Failed to add event to calendar: ' + error.toString());
     }
   };
+
 
   const handleAuthEvent = async (schactid, requestid) => {
     navigation.navigate("ActivityApproval", {

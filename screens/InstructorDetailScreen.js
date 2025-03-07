@@ -71,7 +71,7 @@ const InstructorList = ({ navigation }) => {
   }
 
   function openAndFormatEmail() {
-    const link = `mailto:${instDetail.EMAIL1}`;
+    const link = `mailto:${instDetail.EMAIL}`;
 
     Linking.canOpenURL(link)
       .then((supported) => {
@@ -116,7 +116,7 @@ const InstructorList = ({ navigation }) => {
     const contact = {
       familyName: instDetail.DISNAME || "Unknown",
       //givenName:'',
-      emailAddresses: [{ label: 'work', email: instDetail.EMAIL1 }],
+      emailAddresses: [{ label: 'work', email: instDetail.EMAIL }],
       phoneNumbers: [{ label: 'mobile', number: instDetail.PHONE }],
     };
 

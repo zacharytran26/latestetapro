@@ -130,6 +130,21 @@ export function CustomDrawerContentQuali(props) {
     setWebViewUrl(sCalUrl);
     setModalVisible(true);
   };
+  const openHelp = (url) => {
+    setWebViewUrl(url);
+    setModalVisible(true);
+  };
+
+  function openAndFormatEmail() {
+    const link = `mailto: etamobile@talonsystems.com`;
+
+    Linking.canOpenURL(link)
+      .then((supported) => {
+        if (supported) Linking.openURL(link);
+      })
+      .catch((err) => console.log(error));
+  };
+
 
   return (
     <>
@@ -254,8 +269,16 @@ export function CustomDrawerContentQuali(props) {
           />
 
           <View style={styles.bottomTextContainer}>
-            <TouchableOpacity onPress={() => openInDrawerWebView(authUser.LINK)}>
-              <Text>Help</Text>
+            <TouchableOpacity onPress={openAndFormatEmail}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Icon name="bullhorn-outline" fill="black" size={25} />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => openHelp(authUser.LINK)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Icon name="help-circle" fill="black" width={10} height={10} />
+                <Text style={{ marginLeft: 5 }}>Help</Text>
+              </View>
             </TouchableOpacity>
             <Text style={styles.bottomText}>Version 1.0.0</Text>
             <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
@@ -291,7 +314,7 @@ const styles = StyleSheet.create({
   bottomTextContainer: {
     marginTop: "auto", // Pushes the text to the bottom
     alignItems: "center",
-    paddingVertical: 20,
+    paddingVertical: 1,
   },
   bottomText: {
     fontSize: 10,

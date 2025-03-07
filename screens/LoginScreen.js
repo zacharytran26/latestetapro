@@ -24,7 +24,11 @@ import { useAuth } from "./ThemeContext";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import messaging from '@react-native-firebase/messaging';
 import { PermissionsAndroid } from "react-native";
-import { handleBackgroundNotification } from "./ExtraImports";
+import {
+  handleBackgroundNotification, checkBiometricsAvailability, handleBiometricAuth,
+  createBiometricKey, areBiometricKeysExist, deleteBiometricKeys, createBiometricSignature,
+  verifyBiometricSignature
+} from "./ExtraImports";
 
 var ssoLogin = 0;
 const LoginScreen = ({ navigation }) => {
@@ -271,6 +275,7 @@ const LoginScreen = ({ navigation }) => {
             }
             setLoading(false);
             setProgress(1);
+
             if (json.validated == "1") {
               json.host = sHost;
               json.schema = schema;
@@ -283,7 +288,7 @@ const LoginScreen = ({ navigation }) => {
               saveAccessCode(accesscode);
               saveUsername(username);
             } else {
-              Alert.alert("You have entered invalid login credentials. Please Try Again.");
+              Alert.alert(json.msg);
               setIsLoggedIn(false);
               setAuthUser(json);
             }
