@@ -28,22 +28,7 @@ const Approve = ({ navigation }) => {
   const { authUser, setAuthUser, setIsLoggedIn } = useAuth();
   const [submitToScheduling, setSubmitToScheduling] = useState(false);
   const [etaresponse, setEtaresponse] = useState(null);
-  const [warnings,setWarnings]=useState([]);
 
-  const fetchAuthWarning = async (reqid,reqstp) => {
-    try {
-      const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
-        }&mode=getauthwarn&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
-        }&persid=${authUser.currpersid}&reqid=${reqid}&reqtp=${reqstp}
-        `
-      );
-
-      response.text().then((data)=>{setWarnings(data.split('\n'));});
-    }catch(e){}
-  };
-  
   const handleToggleChange = (isChecked) => {
     setSubmitToScheduling(isChecked);
   };
