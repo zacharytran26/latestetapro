@@ -343,7 +343,7 @@ const CurrencyScreen = () => {
         </View>
         <View style={styles.headerContainer}>
           <Text category="h5" style={styles.counterText}>
-            Currencies: {showExpired ? expirecurrcount : currcount}
+            Currencies
           </Text>
         </View>
         <CheckBox checked={showExpired} onChange={handleAlertPress} style={styles.radio}>
