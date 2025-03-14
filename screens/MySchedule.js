@@ -86,6 +86,7 @@ const TimelineCalendarScreen = () => {
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
       if (appState.match(/inactive|background/) && nextAppState === "active") {
+        setSchedDate(new Date());
         fetchCalData();
         //console.log('App has come to the foreground app');
       } else {

@@ -108,7 +108,7 @@ const MyIssues = () => {
         </View>
         <View style={styles.headerContainer}>
           <Text category="h5" style={styles.counterText}>
-            Issues: {issuecount}
+            Issues
           </Text>
         </View>
 
@@ -136,6 +136,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     alignItems: "center",
+    marginTop: -20,
+    justifyContent: "center",
   },
   loadingContainer: {
     flex: 1,
@@ -160,16 +162,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   card: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-    borderRadius: 12,
+    marginBottom: 16,
+    borderRadius: 8,
     backgroundColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3, // Android shadow
+    shadowRadius: 8,
+    elevation: 2,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   contentContainer: {
     flexDirection: "row",

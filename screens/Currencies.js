@@ -332,6 +332,11 @@ const CurrencyScreen = () => {
     <Layout style={styles.container}>
       <StatusBar />
       <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.headerContainer}>
+          <Text category="h5" style={styles.counterText}>
+            Currencies
+          </Text>
+        </View>
         <View style={styles.header}>
           <TextInput
             style={styles.input}
@@ -341,11 +346,7 @@ const CurrencyScreen = () => {
             placeholderTextColor="#8F9BB3"
           />
         </View>
-        <View style={styles.headerContainer}>
-          <Text category="h5" style={styles.counterText}>
-            Currencies
-          </Text>
-        </View>
+
         <CheckBox checked={showExpired} onChange={handleAlertPress} style={styles.radio}>
           <Text style={styles.toggleText}>
             Show Expired
@@ -401,12 +402,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#f7f9fc",
   },
   radio: {
-    flexDirection: 'row', alignItems: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'center',
+    marginTop: -15,
+    marginBottom: 10
   },
   headerContainer: {
     alignItems: "center",
-    justifyContent: "center"
+    marginVertical: 10,
   },
   loadingContainer: {
     flex: 1,

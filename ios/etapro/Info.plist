@@ -11,10 +11,7 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app requires access to your location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to your photo library to upload and share images.
-This app requires access to your photo library to upload and share images.
-This app requires access to your photo library to upload and share images.
-</string>
+	<string>This app requires access to your photo library to upload and share images.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app needs access to your contacts to enhance user interactions.</string>
 	<key>NSCalendarsUsageDescription</key>
@@ -69,5 +66,8 @@ This app requires access to your photo library to upload and share images.
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use Face ID to authenticate your login securely.</string>
+
 </dict>
 </plist>

@@ -239,6 +239,11 @@ const QualiScreen = ({ navigation }) => {
   return (
     <Layout style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.headerContainer}>
+          <Text category="h5" style={styles.headerText}>
+            Qualifications
+          </Text>
+        </View>
         <View style={styles.header}>
           <View style={styles.searchContainer}>
             <TextInput
@@ -248,11 +253,6 @@ const QualiScreen = ({ navigation }) => {
               onChangeText={setFilter}
               placeholderTextColor="#8F9BB3"
             />
-          </View>
-          <View style={styles.headerContainer}>
-            <Text category="h5" style={styles.headerText}>
-              Qualifications: {qualicount}
-            </Text>
           </View>
         </View>
         <FlatList
@@ -298,6 +298,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     alignItems: "center",
+    marginVertical: 10,
+    marginTop: -10
   },
   loadingContainer: {
     flex: 1,
