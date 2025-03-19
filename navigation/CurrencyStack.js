@@ -34,7 +34,7 @@ export default function CurrencyStackNavigator() {
         headerStyle: {
           backgroundColor: "#f7f9fc",
         },
-        headerTitle: `OPS COND: ${authUser.opscond}             ${currentasof}`,
+        headerTitle: `OPS COND: ${authUser.opscond}`,
       }}
     >
       <Stack.Screen name="Currency" component={CurrencyScreen} />

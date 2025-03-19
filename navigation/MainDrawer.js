@@ -216,8 +216,7 @@ export function CustomDrawerContent(props) {
             }
           />
 
-
-          <DrawerItem
+          {authUser.perstype === "student" ? (null) : (<DrawerItem
             label="Pending Authorizations"
             icon={({ color, size }) => (
               <Icon name="clipboard-clock-outline" color={color} size={size} />
@@ -226,7 +225,9 @@ export function CustomDrawerContent(props) {
             onPress={() =>
               props.navigation.navigate("HomeStack", { screen: "PendingAuth" })
             }
-          />
+          />)}
+
+
           {/* <DrawerItem
             label="Request"
             icon={({ color, size }) => (
@@ -250,8 +251,18 @@ export function CustomDrawerContent(props) {
               openInDrawerWebView("module=home&page=m&mode=mGetPreGantt")
             }
           />
-
-          <DrawerItem
+          {authUser.perstype === "student" ? (<DrawerItem
+            label="Courses"
+            icon={({ color, size }) => (
+              <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", {
+                screen: "StudentScreen",
+              })
+            }
+          />) : (<DrawerItem
             label="Students"
             icon={({ color, size }) => (
               <Icon name="account-group-outline" color={color} size={size} />
@@ -262,7 +273,8 @@ export function CustomDrawerContent(props) {
                 screen: "StudentScreen",
               })
             }
-          />
+          />)}
+
 
           <DrawerItem
             label="Settings"

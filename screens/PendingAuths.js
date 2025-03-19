@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { StyleSheet, SafeAreaView, View, TouchableOpacity } from "react-native";
-import { Layout, Text, Button, Card } from "@ui-kitten/components";
+import { StyleSheet, SafeAreaView, View, TouchableOpacity, Alert } from "react-native";
+import { Layout, Text, Card } from "@ui-kitten/components";
 import { SelectList } from "react-native-dropdown-select-list";
-import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { useAuth } from "./ThemeContext";
 import { FlashList } from "@shopify/flash-list";
 import { handleFetchError } from "./ExtraImports";
@@ -12,7 +11,6 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { ScrollView } from "react-native-gesture-handler";
 
 
 
@@ -48,7 +46,7 @@ const RenderAuth = React.memo(({ item, onPressTime, onPressAuth }) => {
             <View style={styles.row}>
               <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
                 <Icon name="check-bold" size={18} color="#07a61c" />
-                <Text style={styles.buttonText}>Approve</Text>
+                <Text style={styles.buttonText}>Approve/Deny</Text>
               </TouchableOpacity>
             </View>
             <Text style={styles.cardText}>
@@ -86,7 +84,7 @@ const RenderAuth = React.memo(({ item, onPressTime, onPressAuth }) => {
             <View style={styles.row}>
               <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
                 <Icon name="check-bold" size={18} color="#07a61c" />
-                <Text style={styles.buttonText}>Approve</Text>
+                <Text style={styles.buttonText}>Approve/Deny</Text>
               </TouchableOpacity>
             </View>
             <Text style={styles.cardText}>
@@ -119,7 +117,7 @@ const RenderAuth = React.memo(({ item, onPressTime, onPressAuth }) => {
             <View style={styles.row}>
               <TouchableOpacity onPress={() => onPressAuth(item)} style={styles.button}>
                 <Icon name="check-bold" size={18} color="#07a61c" />
-                <Text style={styles.buttonText}>Approve</Text>
+                <Text style={styles.buttonText}>Approve/Deny</Text>
               </TouchableOpacity>
             </View>
             <Text style={styles.cardText}>
@@ -189,20 +187,11 @@ const PendingAuth = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (route.params?.PendData) {
-        const { pdataid } = route.params.PendData;
-        //console.log("Receieved",pdataid);
-
-        const result = requests.find((item) => item.ID === pdataid);
-        setConfirmedItems((prev) => new Set([...prev, result.ID]));
-        PendRef.current.delete(result.ID);
-        let newPendAuth = PendRef.current.filter(requests => {
-          return requests.ID !== pdataid;
-        });
-        setRequests(newPendAuth);
-
+      if (route.params?.processed) {
+        const reqid = route.params.reqid;
+        setRequests(requests.filter(item => item.ID !== reqid));
       }
-    }, [route.params?.PendData])
+    }, [route.params])//route.params?.PendData
   )
 
   const handleRefresh = async () => {
@@ -337,6 +326,9 @@ const PendingAuth = () => {
           contentContainerStyle={styles.list}
           estimatedItemSize={100}
         />
+        <View style={styles.currentasof}>
+          <Text>Current as of: {authUser.currentasof}</Text>
+        </View>
       </SafeAreaView>
     </Layout>
   );
@@ -346,6 +338,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F9FC",
+  },
+  currentasof: {
+    alignItems: 'center',
+    marginTop: 30
   },
   safeArea: {
     flex: 1,

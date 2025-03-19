@@ -211,18 +211,16 @@ export function CustomDrawerContentQuali(props) {
             }
           />
 
-          <DrawerItem
+          {authUser.perstype === "student" ? (null) : (<DrawerItem
             label="Pending Authorizations"
             icon={({ color, size }) => (
               <Icon name="clipboard-clock-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
             onPress={() =>
-              props.navigation.navigate("QualiStack", {
-                screen: "PendingAuth",
-              })
+              props.navigation.navigate("QualiStack", { screen: "PendingAuth" })
             }
-          />
+          />)}
 
           <DrawerItem
             label="Scheduling"
@@ -233,7 +231,18 @@ export function CustomDrawerContentQuali(props) {
             onPress={() => openInDrawerWebView("module=home&page=m&mode=mGetPreGantt")}
           />
 
-          <DrawerItem
+          {authUser.perstype === "student" ? (<DrawerItem
+            label="Courses"
+            icon={({ color, size }) => (
+              <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("QualiStack", {
+                screen: "StudentScreen",
+              })
+            }
+          />) : (<DrawerItem
             label="Students"
             icon={({ color, size }) => (
               <Icon name="account-group-outline" color={color} size={size} />
@@ -244,7 +253,7 @@ export function CustomDrawerContentQuali(props) {
                 screen: "StudentScreen",
               })
             }
-          />
+          />)}
 
           <DrawerItem
             label="Settings"

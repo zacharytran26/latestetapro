@@ -343,6 +343,9 @@ const MessagesScreen = () => {
             </TouchableWithoutFeedback>
           </Modal>
         )}
+        <View style={styles.currentasof}>
+          <Text>Current as of: {authUser.currentasof}</Text>
+        </View>
       </SafeAreaView>
     </Layout>
   );
@@ -353,6 +356,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  currentasof: {
+    alignItems: 'center',
+    marginTop: 30
   },
   headerText: {
     fontWeight: "bold",

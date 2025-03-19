@@ -26,43 +26,20 @@ export const handleBiometricAuth = async (message = "Authenticate with Biometric
     }
 };
 
-// 🔹 Create or Retrieve Biometric Key
-export const createOrGetBiometricKey = async () => {
-    try {
-        const { keysExist } = await rnBiometrics.biometricKeysExist();
-
-        if (keysExist) {
-            console.log("Biometric keys already exist.");
-            return true;
-        }
-
-        const { publicKey } = await rnBiometrics.createKeys();
-        if (publicKey) {
-            Alert.alert("Success", "Biometric Key Created!");
-            return publicKey;
-        } else {
-            Alert.alert("Error", "Failed to generate biometric key.");
-            return null;
-        }
-    } catch (error) {
-        console.log("Error creating biometric key:", error);
-        return null;
-    }
-};
-
-// 🔹 Store Credentials Securely with Face ID
 export const storeCredentials = async (username, password, accesscode) => {
     try {
+        console.log("🔹 Storing Credentials:", { username, password, accesscode });
+
         const payload = `${username}:${password}:${accesscode}`;
 
-        // 🔹 Ensure biometric keys exist before signing credentials
+        // 🔹 Ensure biometric keys exist
         const { keysExist } = await rnBiometrics.biometricKeysExist();
         if (!keysExist) {
-            console.log("Biometric keys do not exist. Creating new keys...");
+            console.log("🔹 Biometric keys not found. Creating new keys...");
             await rnBiometrics.createKeys();
         }
 
-        // 🔹 Now create a signature with the biometric key
+        // 🔹 Create a biometric signature
         const { success, signature } = await rnBiometrics.createSignature({
             promptMessage: "Authenticate to Store Credentials",
             payload,
@@ -71,48 +48,21 @@ export const storeCredentials = async (username, password, accesscode) => {
         if (success) {
             const credentialData = { signature, username, password, accesscode };
             await AsyncStorage.setItem("biometricCredentials", JSON.stringify(credentialData));
+
+            // 🔹 Reset biometric scan requirement for next login
+            await AsyncStorage.setItem("biometricScanned", "false");
+
+            console.log("✅ Credentials stored successfully!");
         } else {
             Alert.alert("Error", "Failed to store credentials.");
         }
     } catch (error) {
         Alert.alert("Error", "Failed to store credentials: " + error.message);
-        console.error("Biometric Storage Error:", error);
+        console.error("❌ Biometric Storage Error:", error);
     }
 };
 
 
-
-// export const retrieveCredentials = async () => {
-//     try {
-//         const storedData = await AsyncStorage.getItem("biometricCredentials");
-//         console.log("sotred data", storedData);
-//         if (!storedData) {
-//             Alert.alert("Error", "No credentials found.");
-//             return null;
-//         }
-
-//         const { signature, username, password } = JSON.parse(storedData);
-//         const payload = `${username}:${password}`; // Must match the format used when storing
-//         console.log("✅ Stored credentials retrieved:", { username, password });
-
-//         const { success } = await rnBiometrics.createSignature({
-//             promptMessage: "Authenticate to Retrieve Credentials",
-//             payload,
-//             signature,
-//         });
-
-//         if (success) {
-//             Alert.alert("Success", `Welcome back, ${username}!`);
-//             return username;
-//         } else {
-//             Alert.alert("Error", "Biometric verification failed.");
-//             return null;
-//         }
-//     } catch (error) {
-//         console.log("Error", "Failed to retrieve credentials: " + error.message);
-//         return null;
-//     }
-// };
 export const retrieveCredentials = async () => {
     try {
         const storedData = await AsyncStorage.getItem("biometricCredentials");
@@ -124,17 +74,25 @@ export const retrieveCredentials = async () => {
         }
 
         const { signature, username, password, accesscode } = JSON.parse(storedData);
-        const payload = `${username}:${password}:${accesscode}`; // Must match format used when storing
+        const payload = `${username}:${password}:${accesscode}`;
         console.log("✅ Stored credentials retrieved:", { username, password, accesscode });
 
-        // 🔹 Verify authentication using biometrics
+        // 🔹 Check if biometric authentication is needed
+        const biometricScanned = await AsyncStorage.getItem("biometricScanned");
+        if (biometricScanned === "true") {
+            console.log("🔹 Skipping biometric scan - User already authenticated this session.");
+            return { username, password, accesscode };
+        }
+
+        // 🔹 Perform biometric authentication
         const { success, signature: newSignature } = await rnBiometrics.createSignature({
             promptMessage: "Authenticate to Retrieve Credentials",
             payload,
         });
 
         if (success && newSignature === signature) {
-            return { username, password, accesscode }; // ✅ Return both username & password
+            await AsyncStorage.setItem("biometricScanned", "true"); // Mark as authenticated
+            return { username, password, accesscode };
         } else {
             Alert.alert("Error", "Biometric verification failed.");
             return null;

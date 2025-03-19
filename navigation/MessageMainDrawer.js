@@ -209,18 +209,16 @@ export function CustomDrawerContentMsg(props) {
             }
           />
 
-          <DrawerItem
+          {authUser.perstype === "student" ? (null) : (<DrawerItem
             label="Pending Authorizations"
             icon={({ color, size }) => (
               <Icon name="clipboard-clock-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
             onPress={() =>
-              props.navigation.navigate("MessageStack", {
-                screen: "PendingAuth",
-              })
+              props.navigation.navigate("MessageStack", { screen: "PendingAuth" })
             }
-          />
+          />)}
 
           <DrawerItem
             label="Scheduling"
@@ -230,7 +228,18 @@ export function CustomDrawerContentMsg(props) {
             labelStyle={styles.drawerItemLabel}
             onPress={() => openInDrawerWebView("module=home&page=m&mode=mGetPreGantt")}
           />
-          <DrawerItem
+          {authUser.perstype === "student" ? (<DrawerItem
+            label="Courses"
+            icon={({ color, size }) => (
+              <Icon name="account-group-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={() =>
+              props.navigation.navigate("MessageStack", {
+                screen: "StudentScreen",
+              })
+            }
+          />) : (<DrawerItem
             label="Students"
             icon={({ color, size }) => (
               <Icon name="account-group-outline" color={color} size={size} />
@@ -241,7 +250,7 @@ export function CustomDrawerContentMsg(props) {
                 screen: "StudentScreen",
               })
             }
-          />
+          />)}
 
           <DrawerItem
             label="Settings"

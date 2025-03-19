@@ -22,6 +22,7 @@ import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 import Contacts from "react-native-contacts";
 import { handleFetchError } from "./ExtraImports";
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const InstructorActivity = ({ navigation }) => {
   const route = useRoute();
@@ -31,6 +32,9 @@ const InstructorActivity = ({ navigation }) => {
   const [imageUri, setImageUri] = useState(null);
   const [instDetail, setInstDetail] = useState({});
   const [imageError, setImageError] = useState(false);
+  const [imageURI, setImageURI] = useState(null);
+  const [localQualURIs, setLocalQualURIs] = useState({});
+  const [imageUploaded, setImageUploaded] = useState(false);
   useEffect(() => {
     FetchInstructorDetail();
   }, []);
@@ -48,19 +52,76 @@ const InstructorActivity = ({ navigation }) => {
     }
   }, [instDetail]);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+  const openImagePickerI = async (selected) => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+    var selectedImage = 0;
+    var imageUri;
+    launchImageLibrary(options, (result) => {
+      if (result.didCancel) {
+        Alert.alert('User cancelled image picker');
+      } else if (result.error) {
+        Alert.alert('Image picker error: ', result.error);
+      } else {
+        imageUri = result.uri || result.assets?.[0]?.uri;
+        selectedImage = 1;
+        setImageURI(imageUri);
+
+        if (selectedImage == 1) {
+          const formData = new FormData();
+          formData.append("photo", {
+            uri: imageUri,
+            type: "image/png",
+            name: result.assets[0].fileName,
+          });
+          formData.append("pers_id", `${authUser.currpersid}`);
+          formData.append("pers_type", `${authUser.perstype}`);
+          formData.append("any_type", "qual_id");
+          formData.append("any_id", selectedQual.QID);
+          if (authUser.perstype === "instructor") {
+            formData.append("doc_type", "instQual");
+            formData.append("title", "Instructor Qualification");
+          } else if (authUser.perstype === "student") {
+            formData.append("doc_type", "studQual");
+            formData.append("title", "Student Qualification");
+          }
+          formData.append("file_type", result.assets[0].type);
+          formData.append("etaaction", "new");
+
+          const myurl = `${authUser.host}uploadBlobETAAll?`;
+          fetch(myurl, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Content-Type": "multipart/form-data;",
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                setLocalQualURIs((prevURIs) => ({
+                  ...prevURIs,
+                  [selectedQual.QID]: imageUri,
+                }));
+                setImageUploaded(true);
+                alert("Image uploaded successfully!");
+              } else {
+                alert("Image upload failed.");
+              }
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
+        }
+
+      }
     });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setImageError(false); // Reset image error when a new image is picked
-    }
   };
+
 
   const addContact = async () => {
     const contact = {
@@ -134,23 +195,30 @@ const InstructorActivity = ({ navigation }) => {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.profileSection}>
-            <TouchableOpacity
-              appearance="ghost"
-              style={styles.editButton}
-              onPress={pickImage}
-            >
+            {authUser.perstype === "instructor" ? (<TouchableOpacity onPress={() => openImagePickerI()}>
               <Avatar
                 source={
                   image
                     ? { uri: image }
                     : imageError || !instDetail.SYSDOCID
-                      ? require("../assets/person-icon.png") // Fallback image
+                      ? require("../assets/person-icon.png")
                       : { uri: image }
                 }
                 style={styles.profileAvatar}
                 onError={() => setImageError(true)} // Handle image load error
               />
-            </TouchableOpacity>
+            </TouchableOpacity>) : (<Avatar
+              source={
+                image
+                  ? { uri: image }
+                  : imageError || !instDetail.SYSDOCID
+                    ? require("../assets/person-icon.png")
+                    : { uri: image }
+              }
+              style={styles.profileAvatar}
+              onError={() => setImageError(true)} // Handle image load error
+            />)}
+
             <Text category="h1" style={styles.profileName}>
               {instDetail.DISNAME}
             </Text>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -9,20 +9,20 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from "react-native";
-import { Button, Layout, Text, Icon, Input } from "@ui-kitten/components";
+import { Button, Layout, Text, Icon, Input, Select, SelectItem } from "@ui-kitten/components";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
-import { SelectList } from "react-native-dropdown-select-list";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { handleFetchError } from "./ExtraImports";
+import { FlashList } from "@shopify/flash-list";
 
 const SendIcon = (props) => <Icon {...props} name="paper-plane-outline" />;
 
 const DeleteIcon = (props) => <Icon {...props} name="trash-2-outline" />;
 
-const useInputState = (initialValue = "") => {
-  const [value, setValue] = useState(initialValue);
-  return { value, onChangeText: setValue, reset: () => setValue(initialValue) };
+const useInputState = (initialValue) => {
+  const [value, setValue] = useState(initialValue ?? ""); // Ensure default fallback
+  return { value, onChangeText: setValue, reset: () => setValue(initialValue ?? "") };
 };
 
 const NewMessage = () => {
@@ -33,14 +33,24 @@ const NewMessage = () => {
   const [sentmail, setSentMail] = useState(false);
   const [selected, setSelected] = useState("");
   const [dropdown, setDropDown] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const { authUser, setTabBarBadge, setAuthUser, setIsLoggedIn } = useAuth();
+  const [focused, setFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const message = multilineInputState.value;
 
   useEffect(() => {
     FetchAllRecipients();
   }, []);
+  useEffect(() => {
+    const filtered = dropdown.filter((item) =>
+      item.value.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchQuery, dropdown]); // Runs when searchQuery or dropdown changes
+
 
   const FetchAllRecipients = async () => {
     try {
@@ -63,12 +73,14 @@ const NewMessage = () => {
       }));
 
       setDropDown(formattedData);
+      setFilteredData(formattedData);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setRefreshing(false);
     }
   };
+
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -106,30 +118,64 @@ const NewMessage = () => {
       contentContainerStyle={{ flexGrow: 1 }}
       enableOnAndroid={true}
       enableAutomaticScroll={true}
+      keyboardShouldPersistTaps="handled"
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Layout style={styles.container}>
           <SafeAreaView style={styles.safeArea}>
-            <Text category="s1" style={styles.label}>
-              To:
-            </Text>
-            <SelectList
-              data={dropdown}
-              setSelected={setSelected}
-              placeholder="Select a contact"
-              boxStyles={styles.selectListBox}
-              value={selected}
-              dropdownStyles={styles.dropdownStyles}
-            />
+            <View style={styles.headerContainer}>
+              {/* "To:" and Input Field Side by Side */}
+              <View style={styles.toContainer}>
+                <Text category="s1" style={styles.label}>
+                  To:
+                </Text>
+                <Input
+                  multiline={false}
+                  textStyle={{ minHeight: 20 }}
+                  placeholder="Search recipients"
+                  returnKeyType="default"
+                  onFocus={() => setFocused(true)}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  style={styles.inputField} // New style for proper spacing
+                />
+              </View>
+
+              {/* FlashList - Shows only when input is focused */}
+              {focused && filteredData.length > 0 && (
+                <FlashList
+                  data={filteredData}
+                  estimatedItemSize={50}
+                  keyExtractor={(item) => item.peris}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.inputRecipient}
+                      onPress={() => {
+                        setSearchQuery(item.value);
+                        setSelected(item.key);
+                        setFocused(false);
+                      }}
+                      activeOpacity={0.6}
+                    >
+                      <Text>{item.value}</Text>
+                    </TouchableOpacity>
+                  )}
+                  style={styles.dropdownlist}
+                />
+              )}
+            </View>
+
+            {/* Message Input */}
             <Input
               multiline={true}
-              textStyle={{ minHeight: 200 }} // Extended input height
+              textStyle={{ minHeight: 200 }}
               placeholder="Type your message"
-              returnKeyType="default" // Add this line to change return key to "Done" on iOS
-              //blurOnSubmit={false} // Add this line to dismiss keyboard on submit
+              returnKeyType="default"
               {...multilineInputState}
               style={styles.input}
             />
+
+            {/* Buttons */}
             <View style={styles.buttonContainer}>
               <Button
                 style={styles.sendButton}
@@ -163,6 +209,39 @@ const NewMessage = () => {
 };
 
 const styles = StyleSheet.create({
+
+  toContainer: {
+    flexDirection: "row", // Aligns items side by side
+    alignItems: "center", // Centers text with input
+    width: "100%", // Ensures full width
+    marginBottom: 10, // Adds spacing below
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginRight: 10, // Adds spacing between "To:" and input
+  },
+  inputField: {
+    flex: 1, // Makes the input take the remaining space
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+  },
+  dropdownlist: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    maxHeight: 200,
+    backgroundColor: "white",
+    marginTop: 10
+  },
+  inputRecipient: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    backgroundColor: "white"
+  },
   container: {
     flex: 1,
     backgroundColor: "#F7F9FC",

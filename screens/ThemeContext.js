@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
     CountCurr,
     setCountCurrency,
     ExpiringCurr,
-    setExpiringCurr
+    setExpiringCurr,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

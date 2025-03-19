@@ -22,6 +22,7 @@ import { useAuth } from "./ThemeContext";
 import { handleFetchError } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Contacts from "react-native-contacts";
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const InstructorList = ({ navigation }) => {
   const route = useRoute();
@@ -30,6 +31,9 @@ const InstructorList = ({ navigation }) => {
   const [image, setImage] = useState(null);
   const [instDetail, setInstDetail] = useState({});
   const [imageError, setImageError] = useState(false); // Track image loading error
+  const [imageURI, setImageURI] = useState(null);
+  const [localQualURIs, setLocalQualURIs] = useState({});
+  const [imageUploaded, setImageUploaded] = useState(false);
 
   useEffect(() => {
     FetchInstructorDetail();
@@ -80,38 +84,6 @@ const InstructorList = ({ navigation }) => {
       .catch((err) => console.log(error));
   }
 
-  // const addContact = async () => {
-  //   // const contact = {
-  //   //   [Contacts.Fields.FirstName]: instDetail.DISNAME || "Unknown",
-  //   //   [Contacts.Fields.PhoneNumbers]: instDetail.PHONE
-  //   //     ? [{ label: "mobile", number: instDetail.PHONE }]
-  //   //     : [],
-  //   //   [Contacts.Fields.Emails]: instDetail.EMAIL1
-  //   //     ? [{ label: "work", email: instDetail.EMAIL1 }]
-  //   //     : [],
-  //   // };
-  //   const contact = {
-  //     firstName: instDetail.DISNAME || 'unknown',
-  //     phoneNumber: [{ label: 'mobile', number: instDetail.PHONE }],
-  //     emailAddress: [{ label: 'work', email: instDetail.EMAIL1 }]
-  //   }
-  //   try {
-  //     //const contactId = await Contacts.addContactAsync(contact);
-  //     const contactId = await Contacts.addContact(contact).then(
-  //       (contactId) => {
-  //         if (contactId) {
-  //           Alert.alert("Success", "Contact added successfully!");
-  //         } else {
-  //           Alert.alert("Failed", "Failed to add contact.");
-  //         }
-  //       }
-  //     );
-
-  //   } catch (error) {
-  //     //console.error("Error adding contact:"+error.toString());
-  //     Alert.alert("Error", "An error occurred while adding the contact.");
-  //   }
-  // };
   const addContact = async () => {
     const contact = {
       familyName: instDetail.DISNAME || "Unknown",
@@ -136,6 +108,76 @@ const InstructorList = ({ navigation }) => {
       //console.error("Error adding contact:"+error.toString());
       Alert.alert("Error", "An error occurred while adding the contact.");
     }
+  };
+
+  const openImagePickerI = async (selected) => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+    var selectedImage = 0;
+    var imageUri;
+    launchImageLibrary(options, (result) => {
+      if (result.didCancel) {
+        Alert.alert('User cancelled image picker');
+      } else if (result.error) {
+        Alert.alert('Image picker error: ', result.error);
+      } else {
+        imageUri = result.uri || result.assets?.[0]?.uri;
+        selectedImage = 1;
+        setImageURI(imageUri);
+
+        if (selectedImage == 1) {
+          const formData = new FormData();
+          formData.append("photo", {
+            uri: imageUri,
+            type: "image/png",
+            name: result.assets[0].fileName,
+          });
+          formData.append("pers_id", `${authUser.currpersid}`);
+          formData.append("pers_type", `${authUser.perstype}`);
+          formData.append("any_type", "qual_id");
+          formData.append("any_id", selectedQual.QID);
+          if (authUser.perstype === "instructor") {
+            formData.append("doc_type", "instQual");
+            formData.append("title", "Instructor Qualification");
+          } else if (authUser.perstype === "student") {
+            formData.append("doc_type", "studQual");
+            formData.append("title", "Student Qualification");
+          }
+          formData.append("file_type", result.assets[0].type);
+          formData.append("etaaction", "new");
+
+          const myurl = `${authUser.host}uploadBlobETAAll?`;
+          fetch(myurl, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Content-Type": "multipart/form-data;",
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                setLocalQualURIs((prevURIs) => ({
+                  ...prevURIs,
+                  [selectedQual.QID]: imageUri,
+                }));
+                setImageUploaded(true);
+                alert("Image uploaded successfully!");
+              } else {
+                alert("Image upload failed.");
+              }
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
+        }
+
+      }
+    });
+
   };
 
   //from home cal screen : ${detail.ID}  == ${detail.picid}
@@ -168,7 +210,21 @@ const InstructorList = ({ navigation }) => {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.profileSection}>
-            <Avatar
+            {authUser.perstype === "instructor" ? (<TouchableOpacity onPress={() => openImagePickerI()}>
+
+
+              <Avatar
+                source={
+                  image
+                    ? { uri: image }
+                    : imageError || !instDetail.SYSDOCID
+                      ? require("../assets/person-icon.png")
+                      : { uri: image }
+                }
+                style={styles.profileAvatar}
+                onError={() => setImageError(true)} // Handle image load error
+              />
+            </TouchableOpacity>) : (<Avatar
               source={
                 image
                   ? { uri: image }
@@ -178,7 +234,8 @@ const InstructorList = ({ navigation }) => {
               }
               style={styles.profileAvatar}
               onError={() => setImageError(true)} // Handle image load error
-            />
+            />)}
+
             <Text category="h1" style={styles.profileName}>
               {instDetail.DISNAME}
             </Text>
@@ -247,6 +304,9 @@ const InstructorList = ({ navigation }) => {
               )}
             </Card>
           </View>
+          <View style={styles.currentasof}>
+            <Text>Current as of: {authUser.currentasof}</Text>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </Layout>
@@ -258,6 +318,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F7F9FC",
     padding: 16,
+  },
+  currentasof: {
+    alignItems: 'center',
+    marginTop: 30
   },
   safeArea: {
     flex: 1,

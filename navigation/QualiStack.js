@@ -32,7 +32,7 @@ export default function MessagesStackNavigator({ }) {
         headerTitleStyle: {
           fontSize: 13,
         },
-        headerTitle: `OPS COND: ${authUser.opscond}             ${currentasof}`,
+        headerTitle: `OPS COND: ${authUser.opscond}`,
         headerBackTitleVisible: false,
       }}
     >
