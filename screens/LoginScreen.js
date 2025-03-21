@@ -46,6 +46,7 @@ const LoginScreen = ({ navigation }) => {
   const route = useRoute();
   const webViewRef = useRef(null);
   const BiometricAuthRef = useRef(false);
+  const isAutoFillRef = useRef(false);
 
   const [urlview, setUrlview] = useState("https://apps5.talonsystems.com/tseta/tc.htm");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -67,12 +68,12 @@ const LoginScreen = ({ navigation }) => {
       if (!isAuthenticated) return;
 
       BiometricAuthRef.current = true;
+      isAutoFillRef.current = true;
 
       // Auto-fill credentials
       setAccesscode(storedCredentials.accesscode);
       setUsername(storedCredentials.username);
       setPassword(storedCredentials.password);
-      faceIDLogin = 1;
     } else {
       // Don't alert anything – silently ignore for first-time users
       return;
@@ -90,15 +91,17 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     if (faceIDLogin === 0) {
       handleAutoFillAndAuth();
+      faceIDLogin = 1;
     };
   }, []);
 
   useEffect(() => {
-    if (logIn === 0) {
+    if (logIn === 0 && isAutoFillRef.current) {
       if (username && password && accesscode && faceIDLogin === 1) {
         fLogin();
         // setIsAutoFill(false); // Reset flag after auto-login
         logIn = 1;
+        isAutoFillRef.current = false; // Reset flag
       }
     }
   }, [username, password, accesscode]);
