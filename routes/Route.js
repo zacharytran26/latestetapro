@@ -45,20 +45,20 @@ import { ChgPwdStack } from "./ChgPwdStack";
 import { useAuth } from "../screens/ThemeContext";
 
 export function Router() {
-  const { authUser, isLoggedIn, chgPwd, setChgPwd} = useAuth();
+  const { authUser, isLoggedIn, chgPwd, setChgPwd } = useAuth();
 
   /*const nav = (
     <NavigationContainer>
       {isLoggedIn ? (authUser.sso==1 ? <AppStackSSO /> : <AppStack />) : <AuthStack />}
     </NavigationContainer>
   );*/
-//console.log('authUser',authUser);
+  //console.log('authUser',authUser);
   const nav = (
     <NavigationContainer>
       {isLoggedIn ? (
-        authUser.validated === 1 ? (   
-          authUser.chgpwd === "1" ? (          
-            <AuthStack />          
+        authUser.validated === 1 ? (
+          authUser?.chgpwd === "1" ? (
+            <AuthStack />
           ) : (
             <AppStack />
           )

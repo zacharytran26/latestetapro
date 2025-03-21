@@ -390,6 +390,9 @@ const CurrencyScreen = () => {
             </TouchableWithoutFeedback>
           </Modal>
         )}
+        <View style={styles.currentasof}>
+          <Text>Current as of: {authUser.currentasof}</Text>
+        </View>
       </SafeAreaView>
     </Layout>
   );
@@ -407,6 +410,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: -15,
     marginBottom: 10
+  },
+  currentasof: {
+    alignItems: 'center',
+    marginTop: 30
   },
   headerContainer: {
     alignItems: "center",

@@ -146,7 +146,7 @@ const NewMessage = () => {
                 <FlashList
                   data={filteredData}
                   estimatedItemSize={50}
-                  keyExtractor={(item) => item.peris}
+                  keyExtractor={(item) => item.key}
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={styles.inputRecipient}
@@ -220,12 +220,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginRight: 10, // Adds spacing between "To:" and input
+    marginLeft: 10
   },
   inputField: {
     flex: 1, // Makes the input take the remaining space
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
+    padding: 5,
     borderRadius: 5,
   },
   dropdownlist: {
@@ -249,9 +250,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     padding: 16,
-  },
-  label: {
-    marginVertical: 10,
   },
   selectListBox: {
     marginBottom: 16,

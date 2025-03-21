@@ -47,12 +47,9 @@ const StudentsScreen = ({ navigation }) => {
     try {
       const statusParam = showActiveOnly ? "" : "&status=completed";
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getstudents&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getstudents&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}${statusParam}`
       );
       const text = await response.text();
@@ -98,12 +95,9 @@ const StudentsScreen = ({ navigation }) => {
   const fetchTeam = async (teamId) => {
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-          authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-          authUser.sessionid
-        }&mode=getstudents&etamobilepro=1&nocache=${
-          Math.random().toString().split(".")[1]
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=getstudents&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}&teamid=${teamId}`
       );
       const data = await response.json();
@@ -201,6 +195,7 @@ const StudentsScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Search students"
+            placeholderTextColor={'grey'}
             value={filter}
             onChangeText={setFilter}
           />

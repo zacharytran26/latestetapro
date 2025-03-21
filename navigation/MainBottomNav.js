@@ -28,19 +28,18 @@ const BottomTabBar = ({ navigation, state }) => {
     } else if (route.name === "mQualifications") {
       iconColor = focused ? "blue" : "white"; // Yellow when active
     } else if (route.name === "mCurrency") {
-      if (CountCurr > 0) {
-        iconColor = "red"
-      } else if (ExpiringCurr > 0) {
-        iconColor = 'yellow'
-      } else if (CountCurr == 0 && ExpiringCurr == 0) {
-        iconColor = "white"
-      }
+      iconColor =
+        CountCurr > 0 ? "red" :
+          ExpiringCurr > 0 ? "yellow" :
+            focused ? "blue" : "white";
     } else if (route.name === "mMessages") {
       iconColor = focused ? "blue" : "white"; // Orange when active
     }
 
     return iconColor;
   };
+  console.log("CurrencyCount", CountCurr);
+  console.log("ExpiringCurr", ExpiringCurr);
 
   // Custom function to render a badge only for the currency tab
   const renderIconWithBadge = (iconName, routeName, index) => (props) => {

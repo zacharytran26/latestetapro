@@ -21,7 +21,7 @@ export const handleBiometricAuth = async (message = "Authenticate with Biometric
 
         return success;
     } catch (error) {
-        console.log("Biometric Authentication Error:", error);
+        Alert.alert("Biometric Authentication Error:", error);
         return false;
     }
 };
@@ -30,32 +30,11 @@ export const storeCredentials = async (username, password, accesscode) => {
     try {
         console.log("🔹 Storing Credentials:", { username, password, accesscode });
 
-        const payload = `${username}:${password}:${accesscode}`;
+        // Store credentials directly in AsyncStorage (No Face ID needed)
+        const credentialData = { username, password, accesscode };
+        await AsyncStorage.setItem("biometricCredentials", JSON.stringify(credentialData));
 
-        // 🔹 Ensure biometric keys exist
-        const { keysExist } = await rnBiometrics.biometricKeysExist();
-        if (!keysExist) {
-            console.log("🔹 Biometric keys not found. Creating new keys...");
-            await rnBiometrics.createKeys();
-        }
-
-        // 🔹 Create a biometric signature
-        const { success, signature } = await rnBiometrics.createSignature({
-            promptMessage: "Authenticate to Store Credentials",
-            payload,
-        });
-
-        if (success) {
-            const credentialData = { signature, username, password, accesscode };
-            await AsyncStorage.setItem("biometricCredentials", JSON.stringify(credentialData));
-
-            // 🔹 Reset biometric scan requirement for next login
-            await AsyncStorage.setItem("biometricScanned", "false");
-
-            console.log("✅ Credentials stored successfully!");
-        } else {
-            Alert.alert("Error", "Failed to store credentials.");
-        }
+        console.log("✅ Credentials stored successfully!");
     } catch (error) {
         Alert.alert("Error", "Failed to store credentials: " + error.message);
         console.error("❌ Biometric Storage Error:", error);

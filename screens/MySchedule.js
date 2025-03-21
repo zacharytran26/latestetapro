@@ -22,6 +22,84 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 const LeftIcon = () => <Icon name="arrow-left" size={20} />;
 const RightIcon = () => <Icon name="arrow-right" size={20} />;
 
+const RenderActivity = ({ item, openActivityDetails, openStudentDetails, openInstructorDetails, setSelectedActivity, setPreviewVisible }) => {
+  return (
+    <TouchableOpacity
+      onPress={() => openActivityDetails(item)}
+      onLongPress={() => {
+        setSelectedActivity(item);
+        setPreviewVisible(true);
+      }}
+      activeOpacity={0.9}
+      style={styles.cardContainer}
+    >
+      {/* Card Header */}
+      <View style={styles.cardHeader}>
+        <Icon
+          name="calendar-check"
+          size={20}
+          color="#4CAF50"
+          style={styles.icon}
+        />
+        <Text style={styles.cardTitle}>{item.title}</Text>
+      </View>
+
+      {/* Card Content */}
+      <View style={styles.cardContent}>
+        {item.subtype === "Rental" || item.subtype === "Admin" ? (
+          <TouchableOpacity
+            onPress={() => openInstructorDetails(item)}
+            style={styles.infoRow}
+          >
+            <Icon name="account-tie" size={18} color="#3366FF" />
+            <Text style={styles.cardTextlink}>
+              <Text style={styles.label}>PIC:</Text> {item.pic}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            {item.s1 ? ( // Only render this block if item.s1 is not empty
+              <TouchableOpacity
+                onPress={() => openStudentDetails(item)}
+                style={styles.infoRow}
+              >
+                <Icon name="account" size={18} color="#3366FF" />
+                <Text style={styles.cardTextlink}>
+                  <Text style={styles.label}>Student:</Text> {item.s1}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity
+              onPress={() => openInstructorDetails(item)}
+              style={styles.infoRow}
+            >
+              <Icon name="account-tie" size={18} color="#3366FF" />
+              <Text style={styles.cardTextlink}>
+                <Text style={styles.label}>Instructor:</Text> {item.pic}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+        <View style={styles.infoRow}>
+          <Icon name="clipboard-text-outline" size={18} color="#FFC107" />
+          <Text style={styles.cardText}>
+            <Text style={styles.label}>Type:</Text> {item.activitytype} {item.subtype ? `(${item.subtype})` : ""}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Icon
+            name="checkbox-marked-circle-outline"
+            size={18}
+            color="#FF5722"
+          />
+          <Text style={styles.cardText}>
+            <Text style={styles.label}>Status:</Text> {item.status}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 const TimelineCalendarScreen = () => {
   const navigation = useNavigation();
   const [appState, setAppState] = useState(AppState.currentState);
@@ -66,15 +144,12 @@ const TimelineCalendarScreen = () => {
       if (jsonData.openmsg > 0) {
         setTabBarBadge(jsonData.openmsg);
       }
-      if (jsonData.expiredcurrency > 0) {
-        setCountCurrency(jsonData.expiredcurrency);
-      }
-      if (jsonData.expiringcurrency > 0) {
-        setExpiringCurr(jsonData.expiringcurrency);
-      }
+      setCountCurrency(jsonData.expiredcurrency);
+      setExpiringCurr(jsonData.expiringcurrency);
+
       setActivities(jsonData.activities);
       authUser.calstart = jsonData.calstart;
-      // console.log(jsonData);
+      console.log(jsonData);
     } catch (error) {
       Alert.alert("Error fetching data:", error);
     } finally {
@@ -155,84 +230,6 @@ const TimelineCalendarScreen = () => {
       screen: "InstructorDetailScreen",
       params: { detail },
     });
-  };
-
-  const RenderActivity = ({ item }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => openActivityDetails(item)}
-        onLongPress={() => {
-          setSelectedActivity(item);
-          setPreviewVisible(true);
-        }}
-        activeOpacity={0.9}
-        style={styles.cardContainer}
-      >
-        {/* Card Header */}
-        <View style={styles.cardHeader}>
-          <Icon
-            name="calendar-check"
-            size={20}
-            color="#4CAF50"
-            style={styles.icon}
-          />
-          <Text style={styles.cardTitle}>{item.title}</Text>
-        </View>
-
-        {/* Card Content */}
-        <View style={styles.cardContent}>
-          {item.subtype === "Rental" || item.subtype === "Admin" ? (
-            <TouchableOpacity
-              onPress={() => openInstructorDetails(item)}
-              style={styles.infoRow}
-            >
-              <Icon name="account-tie" size={18} color="#3366FF" />
-              <Text style={styles.cardTextlink}>
-                <Text style={styles.label}>PIC:</Text> {item.pic}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <>
-              <TouchableOpacity
-                onPress={() => openStudentDetails(item)}
-                style={styles.infoRow}
-              >
-                <Icon name="account" size={18} color="#3366FF" />
-                <Text style={styles.cardTextlink}>
-                  <Text style={styles.label}>Student:</Text> {item.s1}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => openInstructorDetails(item)}
-                style={styles.infoRow}
-              >
-                <Icon name="account-tie" size={18} color="#3366FF" />
-                <Text style={styles.cardTextlink}>
-                  <Text style={styles.label}>Instructor:</Text> {item.pic}
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-          <View style={styles.infoRow}>
-            <Icon name="clipboard-text-outline" size={18} color="#FFC107" />
-            <Text style={styles.cardText}>
-              <Text style={styles.label}>Type:</Text> {item.activitytype} (
-              {item.subtype})
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Icon
-              name="checkbox-marked-circle-outline"
-              size={18}
-              color="#FF5722"
-            />
-            <Text style={styles.cardText}>
-              <Text style={styles.label}>Status:</Text> {item.status}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
   };
 
   if (loading && !refreshing) {

@@ -285,6 +285,9 @@ const QualiScreen = ({ navigation }) => {
             </TouchableWithoutFeedback>
           </Modal>
         )}
+        <View style={styles.currentasof}>
+          <Text>Current as of: {authUser.currentasof}</Text>
+        </View>
       </SafeAreaView>
     </Layout>
   );
@@ -295,6 +298,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#F7F9FC",
+  },
+  currentasof: {
+    alignItems: 'center',
+    marginTop: 30
   },
   headerContainer: {
     alignItems: "center",
