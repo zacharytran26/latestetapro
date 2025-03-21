@@ -43,46 +43,42 @@ const LoginScreen = ({ navigation }) => {
   const [isSelected, setIsSelected] = useState(false);
   const [etaPushToken, setEtaPushToken] = useState("");
   const [isLoginEnabled, setIsLoginEnabled] = useState(false);
-  const [isAutoFill, setIsAutoFill] = useState(false);
   const route = useRoute();
   const webViewRef = useRef(null);
   const BiometricAuthRef = useRef(false);
-  const UsernameRef = useRef(null);
 
   const [urlview, setUrlview] = useState("https://apps5.talonsystems.com/tseta/tc.htm");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const url = "https://apps5.talonsystems.com/tseta/tc.htm";
 
 
-
   const handleAutoFillAndAuth = async () => {
+    if (BiometricAuthRef.current) return; // Already authenticated
 
-    if (BiometricAuthRef.current) {
-      return; // Exit if already authenticated
-    }
 
     const isAuthenticated = await handleBiometricAuth("Authenticate to Autofill Credentials");
-
-    if (!isAuthenticated) {
-      return; // Stop execution if Face ID fails
-    }
-
-    // Mark as authenticated after success
-    BiometricAuthRef.current = true;
-    setIsAutoFill(true);
-
-    // 🔹 Step 2: Retrieve stored credentials
     const storedCredentials = await retrieveCredentials();
+    // ✅ Only proceed if stored credentials exist
+    if (
+      storedCredentials?.username &&
+      storedCredentials?.password &&
+      storedCredentials?.accesscode
+    ) {
+      if (!isAuthenticated) return;
 
-    if (storedCredentials?.username && storedCredentials?.password && storedCredentials?.accesscode) {
+      BiometricAuthRef.current = true;
+
+      // Auto-fill credentials
       setAccesscode(storedCredentials.accesscode);
       setUsername(storedCredentials.username);
       setPassword(storedCredentials.password);
       faceIDLogin = 1;
     } else {
-      Alert.alert(" No stored credentials found.");
+      // Don't alert anything – silently ignore for first-time users
+      return;
     }
   };
+
   // whenever I change the three fields, it will trigger fLogin(). Need to find a way that allows the user to input own 
   // data that does not call the fLogin() whenever it changes
   // useEffect(() => {
@@ -107,7 +103,6 @@ const LoginScreen = ({ navigation }) => {
     }
   }, [username, password, accesscode]);
 
-  //when i remove the autofill, why does it not work
 
 
   useEffect(() => {

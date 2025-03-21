@@ -149,7 +149,6 @@ const TimelineCalendarScreen = () => {
 
       setActivities(jsonData.activities);
       authUser.calstart = jsonData.calstart;
-      console.log(jsonData);
     } catch (error) {
       Alert.alert("Error fetching data:", error);
     } finally {

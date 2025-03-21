@@ -38,8 +38,6 @@ const BottomTabBar = ({ navigation, state }) => {
 
     return iconColor;
   };
-  console.log("CurrencyCount", CountCurr);
-  console.log("ExpiringCurr", ExpiringCurr);
 
   // Custom function to render a badge only for the currency tab
   const renderIconWithBadge = (iconName, routeName, index) => (props) => {
