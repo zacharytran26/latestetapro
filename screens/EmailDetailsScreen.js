@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, SafeAreaView, View } from "react-native";
 import { Button, ButtonGroup, Icon, Layout, Text } from "@ui-kitten/components";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { handleFetchError } from "./ExtraImports";
 import { useAuth } from "./ThemeContext";
 
 const TrashIcon = (props) => <Icon {...props} name="trash-2-outline" />;
@@ -26,15 +27,11 @@ const EmailList = ({ navigation }) => {
   };
 
   const archiveEmails = async (id) => {
-    const querystring = `${
-      authUser.host
-    }content?module=home&page=m&reactnative=1&uname=${
-      authUser.uname
-    }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-      authUser.sessionid
-    }&mode=archivemessage&etamobilepro=1&nocache=${
-      Math.random().toString().split(".")[1]
-    }&persid=${authUser.currpersid}&msgid=${id}`;
+    const querystring = `${authUser.host
+      }content?module=home&page=m&reactnative=1&uname=${authUser.uname
+      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+      }&mode=archivemessage&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&persid=${authUser.currpersid}&msgid=${id}`;
     try {
       const response = await fetch(querystring);
       const data = await response.json();

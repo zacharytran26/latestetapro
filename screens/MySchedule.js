@@ -279,7 +279,13 @@ const TimelineCalendarScreen = () => {
           <FlashList
             data={activities}
             renderItem={({ item }) => (
-              <RenderActivity item={item} navigation={navigation} />
+              <RenderActivity item={item} navigation={navigation}
+                openActivityDetails={openActivityDetails}
+                openStudentDetails={openStudentDetails}
+                openInstructorDetails={openInstructorDetails}
+                setSelectedActivity={setSelectedActivity}
+                setPreviewVisible={setPreviewVisible}
+              />
             )}
             keyExtractor={(item) =>
               item.id ? item.id.toString() : Math.random().toString()
