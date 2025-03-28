@@ -34,6 +34,7 @@ const StudentsScreen = ({ navigation }) => {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showActiveOnly, setShowActiveOnly] = useState(true);
+  const [selectedTeamId, setSelectedTeamId] = useState("");
   const [selectedStatusIndex, setSelectedStatusIndex] = useState(0); // 0: Active, 1: Completed
   const [filterByTeam, setFilterByTeam] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -53,10 +54,8 @@ const StudentsScreen = ({ navigation }) => {
         }&mode=getstudents&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}${statusParam}`
       );
-      console.log(response);
       const text = await response.text();
       const data = JSON.parse(text);
-      console.log("data", data);
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
@@ -93,7 +92,6 @@ const StudentsScreen = ({ navigation }) => {
       setRefreshing(false);
     }
   };
-  console.log("students", students);
 
   const fetchTeam = async (teamId) => {
     try {
@@ -104,7 +102,6 @@ const StudentsScreen = ({ navigation }) => {
         }&persid=${authUser.currpersid}&teamid=${teamId}`
       );
       const data = await response.json();
-      console.log(`teamdata`, data);
       return data;
     } catch (error) {
       console.error("Error fetching team data:", error);
@@ -129,6 +126,7 @@ const StudentsScreen = ({ navigation }) => {
   };
 
   const handleTeamSelect = async (teamId) => {
+    setSelectedTeamId(teamId);
     if (teamId) {
       const teamData = await fetchTeam(teamId);
       if (teamData) {
@@ -207,15 +205,40 @@ const StudentsScreen = ({ navigation }) => {
           />
           <RadioGroup
             selectedIndex={selectedStatusIndex}
-            onChange={(index) => {
+            onChange={async (index) => {
               setSelectedStatusIndex(index);
-              setShowActiveOnly(index === 0); // index 0 = Active, index 1 = Completed
+              const newStatus = index === 0; // Active or not
+              setShowActiveOnly(newStatus);
+
+              if (selectedTeamId) {
+                // Re-fetch with new status and existing team
+                const teamData = await fetchTeam(selectedTeamId, newStatus);
+                if (teamData) {
+                  const teamStudents = teamData.studentdata.reduce((acc, item) => {
+                    if (item.students) {
+                      acc = acc.concat(
+                        item.students.map((student) => ({
+                          key: student.id,
+                          value: student.disname,
+                          teamId: item.team_id,
+                          ...student,
+                        }))
+                      );
+                    }
+                    return acc;
+                  }, []);
+                  setStudents(teamStudents);
+                }
+              } else {
+                await fetchStudents(); // Fetch normally if no team is selected
+              }
             }}
             style={styles.radioGroup}
           >
             <Radio>Active</Radio>
             <Radio>Completed</Radio>
           </RadioGroup>
+
 
           <SelectList
             data={[{ key: "", value: "All Teams" }, ...teams]}

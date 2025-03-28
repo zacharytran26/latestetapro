@@ -18,36 +18,36 @@ import {
   ProgressBar,
 } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
-import Icon  from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 
 export default function ChgPwdScreen({ navigation }) {
-  const { authUser, setAuthUser, chgPwd, setChgPwd, setIsLoggedIn} = useAuth();
+  const { authUser, setAuthUser, chgPwd, setChgPwd, setIsLoggedIn } = useAuth();
   const [newpassword, setNewPassword] = useState("");
   const [confirmpass, setConfirmPass] = useState("");
-  const [secureTextEntry,setSecureTextEntry] = useState(true);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
-  
-  const updatePWD = () => {
-    const logoutURL=authUser.host;    
-    //setChgPwd(0);
-    var surl=`${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=chgpwd&etamobilepro=1&newpwd=${newpassword}`;
-    fetch(surl)
-          .then((response) => response.json())
-          .then((json) => {
-            authUser.chgpwd = json.chgpwd;
-            authUser.validated = json.validated;
-            setAuthUser(authUser);
-            //console.log("authUser2",authUser);
 
-            return json;
-          })
-          .catch((error) => {            
-            Alert.alert(error.message);
-            setIsLoggedIn(false);
-            setAuthUser(null);
-          });      
-          return true;
+  const updatePWD = () => {
+    const logoutURL = authUser.host;
+    //setChgPwd(0);
+    var surl = `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=chgpwd&etamobilepro=1&newpwd=${newpassword}`;
+    fetch(surl)
+      .then((response) => response.json())
+      .then((json) => {
+        authUser.chgpwd = json.chgpwd;
+        authUser.validated = json.validated;
+        setAuthUser(authUser);
+        //console.log("authUser2",authUser);
+
+        return json;
+      })
+      .catch((error) => {
+        Alert.alert(error.message);
+        setIsLoggedIn(false);
+        setAuthUser(null);
+      });
+    return true;
   };
 
   const toggleSecurity = () => {
@@ -55,14 +55,13 @@ export default function ChgPwdScreen({ navigation }) {
   }
 
 
-  const handlePress = () =>{
-    if(newpassword === confirmpass){
-      const updatedData = {validated : authUser.validated, chgpwd: authUser.chgpwd}
-      console.log("updatedData",updatedData);
+  const handlePress = () => {
+    if (newpassword === confirmpass) {
+      const updatedData = { validated: authUser.validated, chgpwd: authUser.chgpwd }
       updatePWD();
       setChgPwd("0");
-      navigation.popTo("Login", {updatedData})
-    }else{
+      navigation.popTo("Login", { updatedData })
+    } else {
       Alert.alert("Your password and confirmation password do not match.")
     }
   }
@@ -91,24 +90,24 @@ export default function ChgPwdScreen({ navigation }) {
         Your existing password has expired or is no longer valid.  Please enter a new password
       </Text>
       <Input
-          style={styles.input}
-          value={newpassword}
-          label="Enter New Password"
-          placeholder="Enter New Password"
-          returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-          secureTextEntry={secureTextEntry}
-          onChangeText={(text) => setNewPassword(text)}
-          accessoryRight={RenderIcon}
-        />
-        <Input
-          style={styles.input}
-          value={confirmpass}
-          label="Re-enter New Password"
-          placeholder="Enter your username"
-          returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-          secureTextEntry={secureTextEntry}
-          onChangeText={(text) => setConfirmPass(text)}
-        />
+        style={styles.input}
+        value={newpassword}
+        label="Enter New Password"
+        placeholder="Enter New Password"
+        returnKeyType={Platform.OS === "ios" ? "done" : "next"}
+        secureTextEntry={secureTextEntry}
+        onChangeText={(text) => setNewPassword(text)}
+        accessoryRight={RenderIcon}
+      />
+      <Input
+        style={styles.input}
+        value={confirmpass}
+        label="Re-enter New Password"
+        placeholder="Enter your username"
+        returnKeyType={Platform.OS === "ios" ? "done" : "next"}
+        secureTextEntry={secureTextEntry}
+        onChangeText={(text) => setConfirmPass(text)}
+      />
       <Button
         style={[
           styles.button,
