@@ -316,6 +316,9 @@ const TimelineCalendarScreen = () => {
             </TouchableWithoutFeedback>
           </Modal>
         )}
+        <View style={styles.currentasof}>
+          <Text>Current as of: {authUser.currentasof}</Text>
+        </View>
       </SafeAreaView>
     </Layout>
   );
@@ -325,6 +328,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f7f9fc",
+  },
+  currentasof: {
+    alignItems: 'center',
+    marginTop: 30
   },
   datePickerWrapper: {
     justifyContent: "center", // Center vertically

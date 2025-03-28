@@ -10,6 +10,7 @@ import {
 } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { useRoute } from "@react-navigation/native";
+import { handleFetchError } from "./ExtraImports";
 
 const useInputState = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
@@ -36,16 +37,11 @@ const ApproveActivity = ({ navigation }) => {
     const pin = pinInputState.value;
 
     const response = await fetch(
-      `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-        authUser.uname
-      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-        authUser.sessionid
-      }&mode=authrequest&etamobilepro=1&nocache=${
-        Math.random().toString().split(".")[1]
-      }&schactid=${activity.scheduleid}&requestid=${
-        activity.requestid
-      }&approval=${approved}&pinnum=${pin}&comment=${comment}&submittoscheduling=${submitToScheduling}&persid=${
-        authUser.currpersid
+      `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+      }&mode=authrequest&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&schactid=${activity.scheduleid}&requestid=${activity.requestid
+      }&approval=${approved}&pinnum=${pin}&comment=${comment}&submittoscheduling=${submitToScheduling}&persid=${authUser.currpersid
       }`,
       {
         method: "POST",

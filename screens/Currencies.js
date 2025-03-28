@@ -182,8 +182,6 @@ const CurrencyScreen = () => {
       const data = await response.json();
       setExpcurrencies(data.currencies);
       setExpiredCurrCount(data.currencies.length);
-      setCountCurrency(data.currencies.length);
-
       const serverURIs = {};
       data.currencies.forEach((curr) => {
         if (curr.SYSDOCID > 0) {

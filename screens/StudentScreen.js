@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Layout, Text, Spinner, Toggle } from "@ui-kitten/components";
+import { Layout, Text, Spinner, Toggle, Radio, RadioGroup } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { FlashList } from "@shopify/flash-list";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -34,6 +34,7 @@ const StudentsScreen = ({ navigation }) => {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showActiveOnly, setShowActiveOnly] = useState(true);
+  const [selectedStatusIndex, setSelectedStatusIndex] = useState(0); // 0: Active, 1: Completed
   const [filterByTeam, setFilterByTeam] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { authUser, setAuthUser, setIsLoggedIn } = useAuth();
@@ -52,8 +53,10 @@ const StudentsScreen = ({ navigation }) => {
         }&mode=getstudents&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
         }&persid=${authUser.currpersid}${statusParam}`
       );
+      console.log(response);
       const text = await response.text();
       const data = JSON.parse(text);
+      console.log("data", data);
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
@@ -64,7 +67,6 @@ const StudentsScreen = ({ navigation }) => {
               item.students.map((student) => ({
                 key: student.id,
                 value: student.disname,
-                teamId: item.team_id,
                 ...student,
               }))
             );
@@ -91,6 +93,7 @@ const StudentsScreen = ({ navigation }) => {
       setRefreshing(false);
     }
   };
+  console.log("students", students);
 
   const fetchTeam = async (teamId) => {
     try {
@@ -101,6 +104,7 @@ const StudentsScreen = ({ navigation }) => {
         }&persid=${authUser.currpersid}&teamid=${teamId}`
       );
       const data = await response.json();
+      console.log(`teamdata`, data);
       return data;
     } catch (error) {
       console.error("Error fetching team data:", error);
@@ -125,7 +129,6 @@ const StudentsScreen = ({ navigation }) => {
   };
 
   const handleTeamSelect = async (teamId) => {
-    setFilterByTeam(teamId);
     if (teamId) {
       const teamData = await fetchTeam(teamId);
       if (teamData) {
@@ -140,6 +143,9 @@ const StudentsScreen = ({ navigation }) => {
               }))
             );
           }
+          const teamInfo = teamData.studentdata[1].teams;
+          const selectedTeam = teamInfo.find((team) => team.id === teamId);
+          setFilterByTeam(selectedTeam.disname);
           return acc;
         }, []);
         setStudents(teamStudents);
@@ -199,13 +205,18 @@ const StudentsScreen = ({ navigation }) => {
             value={filter}
             onChangeText={setFilter}
           />
-          <Toggle
-            checked={showActiveOnly}
-            onChange={handleToggle}
-            style={styles.toggle}
+          <RadioGroup
+            selectedIndex={selectedStatusIndex}
+            onChange={(index) => {
+              setSelectedStatusIndex(index);
+              setShowActiveOnly(index === 0); // index 0 = Active, index 1 = Completed
+            }}
+            style={styles.radioGroup}
           >
-            {showActiveOnly ? "Active" : "Completed"}
-          </Toggle>
+            <Radio>Active</Radio>
+            <Radio>Completed</Radio>
+          </RadioGroup>
+
           <SelectList
             data={[{ key: "", value: "All Teams" }, ...teams]}
             setSelected={handleTeamSelect}
@@ -258,8 +269,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderColor: "#E4E9F2",
   },
-  toggle: {
+  radioGroup: {
+    flexDirection: "row",
     marginBottom: 8,
+    justifyContent: "space-around",
   },
   selectListBox: {
     marginBottom: 8,
