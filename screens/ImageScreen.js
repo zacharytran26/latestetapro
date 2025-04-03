@@ -8,10 +8,11 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
+import {
+  useRoute,
+} from "@react-navigation/native";
 
 const DisplayImage = () => {
   const route = useRoute();

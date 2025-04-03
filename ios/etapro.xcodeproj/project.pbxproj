@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0BEDEF452D5FB7D000644278 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0BEDEF442D5FB7D000644278 /* GoogleService-Info.plist */; };
-		0BEDEF4B2D5FF68900644278 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0BEDEF4A2D5FF68900644278 /* MaterialCommunityIcons.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1ADACCD7E283876403248892 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
@@ -176,7 +175,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				0BEDEF4B2D5FF68900644278 /* MaterialCommunityIcons.ttf in Resources */,
 				0BEDEF452D5FB7D000644278 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				1ADACCD7E283876403248892 /* PrivacyInfo.xcprivacy in Resources */,
