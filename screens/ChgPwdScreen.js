@@ -27,6 +27,7 @@ export default function ChgPwdScreen({ navigation }) {
   const [confirmpass, setConfirmPass] = useState("");
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const updatePWD = () => {
     const logoutURL = authUser.host;
@@ -98,16 +99,33 @@ export default function ChgPwdScreen({ navigation }) {
         secureTextEntry={secureTextEntry}
         onChangeText={(text) => setNewPassword(text)}
         accessoryRight={RenderIcon}
+        onFocus={() => setIsFocused(true)}
       />
+      {isFocused && (
+  <Text style={{ color: newpassword.length === 4 ? 'green' : 'red', marginTop: 4 }}>
+    {newpassword.length === 4
+      ? 'Password length is good'
+      : `Password must be at least 4 characters (${newpassword.length}/4)`}
+  </Text>
+)}
       <Input
         style={styles.input}
         value={confirmpass}
         label="Re-enter New Password"
-        placeholder="Enter your username"
+        placeholder="Enter your Password"
         returnKeyType={Platform.OS === "ios" ? "done" : "next"}
         secureTextEntry={secureTextEntry}
         onChangeText={(text) => setConfirmPass(text)}
+        accessoryRight={RenderIcon}
+        onFocus={() => setIsFocused(true)}
       />
+            {isFocused && (
+  <Text style={{ color: confirmpass === newpassword ? 'green' : 'red', marginTop: 4 }}>
+    {confirmpass === newpassword
+      ? 'Passwords match'
+      : 'Passwords do not match'}
+  </Text>
+)}
       <Button
         style={[
           styles.button,
