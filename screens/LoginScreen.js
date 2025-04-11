@@ -116,7 +116,7 @@ const LoginScreen = ({ navigation }) => {
     });
   }, []);
 
-  const { setUrl, authUser, setAuthUser, isLoggedIn, setIsLoggedIn, chgPwd, onetime, setOneTime } = useAuth();
+  const { setUrl, authUser, setAuthUser, isLoggedIn, setIsLoggedIn, chgPwd, onetime, setOneTime,setPinFormat,setPwdFormat } = useAuth();
   useEffect(() => {
     if (authUser?.chgpwd === "1") {
       navigation.navigate("ChgPwd");
@@ -302,6 +302,8 @@ const LoginScreen = ({ navigation }) => {
                 json.svr = "TS" + svr + "P";
               }
               setAuthUser(json);
+              setPinFormat(json.pinformat);
+              setPwdFormat(json.pwdformat);
               setPassedData(json);
               setIsLoggedIn(true);
               saveAccessCode(accesscode);

@@ -17,8 +17,14 @@ export function AuthProvider({ children }) {
   const [currentasof, setCurrasof] = useState("");
   const [CountCurr, setCountCurrency] = useState(0);
   const [ExpiringCurr, setExpiringCurr] = useState(0);
+  const [pinformat, setPinFormat] = useState("");
+  const [pwdformat, setPwdFormat] = useState("");
 
   const value = {
+    pwdformat,
+    setPwdFormat,
+    pinformat,
+    setPinFormat,
     url,
     setUrl,
     authUser,

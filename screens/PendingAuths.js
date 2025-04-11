@@ -235,6 +235,7 @@ const PendingAuth = () => {
                 actStart: pendauth.ACT_START,
                 actStop: pendauth.ACT_STOP,
                 scheduleid: pendauth.SCH_ACT_ID,
+                teamId: pendauth.TEAMID,
                 ...pendauth,
               }))
             );

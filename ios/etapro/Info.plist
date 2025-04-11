@@ -6,6 +6,8 @@
 	<array>
 		<string>MaterialCommunityIcons.ttf</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+		<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to your camera to enhance user interactions.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

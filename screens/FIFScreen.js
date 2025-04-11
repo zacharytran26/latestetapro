@@ -37,7 +37,7 @@ const FIFScreen = ({ navigation }) => {
     }
   }, [goFetch]);
 
-
+  // This useFocusEffect calls whenever the user goes to the confirm screen, inputs fields, and goes back to the FIF Screen
   useFocusEffect(
     //useref fif should have original list?
 
@@ -87,6 +87,23 @@ const FIFScreen = ({ navigation }) => {
     }
     setLoading(false);
   };
+
+  const viewFif = async (item) => {
+    setLoading(true);
+    const url = `${authUser.host
+      }content?module=home&page=m&reactnative=1&uname=${authUser.uname
+      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+      }&mode=viewfif&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&persid=${authUser.currpersid}&fifid=${item.ID}`;
+    console.log(url);
+    const response = await fetch(url);
+    const data = await response.json();
+    if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+      return; // Stop further processing if an error is handled
+    }
+    setLoading(false);
+  };
+
   const handleConfirm = (item) => {
     //set useref to fif use state
     if (!fifRef.current.has(item.ID)) {
@@ -109,10 +126,10 @@ const FIFScreen = ({ navigation }) => {
     fifRef.current.add(item.ID);
     await fetchFif();
   };
-
   const renderFif = ({ item }) => {
-    const isViewed = fifRef.current.has(item.ID);
+    const isViewed = fifRef.current.has(item.ID); //isViewed is true if the ID is in the useRef Set()
     const isConfirmed = confirmedItems.has(item.ID); //confirmedItems.has(item.ID) should return true
+    const canConfirm = isViewed && item.OPENED === '0';
     return (
       <Card
         style={styles.card}
@@ -130,7 +147,10 @@ const FIFScreen = ({ navigation }) => {
             status="primary"
             appearance="ghost"
             accessoryLeft={(props) => <Icon {...props} name="eye-outline" />}
-            onPress={() => openInWebView(item.LINK, item)} // Open in WebView
+            onPress={() => {
+              openInWebView(item.LINK, item);
+              viewFif(item);
+            }}
           >
             View
           </Button>
@@ -140,11 +160,12 @@ const FIFScreen = ({ navigation }) => {
             accessoryLeft={(props) => (
               <Icon {...props} name="checkmark-outline" />
             )}
-            disabled={!isViewed || isConfirmed} // Disable until item is viewed
+            disabled={!canConfirm || isConfirmed} // Disable until item is viewed default value should be false and if it is true then the button cannot be clicked
             onPress={() => handleConfirm(item)}
           >
             Confirm
           </Button>
+
 
         </View>
       </Card>
@@ -153,7 +174,7 @@ const FIFScreen = ({ navigation }) => {
 
   if (loading && !refreshing) {
     return (
-      <Layout style={styles.container}>
+      <Layout style={styles.loadingcontainer}>
         <Spinner />
       </Layout>
     );
@@ -168,8 +189,6 @@ const FIFScreen = ({ navigation }) => {
             FIF: {fifcount}
           </Text>
         </View>
-
-
 
         <FlashList
           data={fif}
@@ -207,6 +226,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "#f7f9fc",
+  },
+  loadingcontainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerContainer: {
     alignItems: "center",
