@@ -239,13 +239,6 @@ export default function ChgPwdScreen({ navigation }) {
                 onFocus={() => setFocusNewPwd(true)}
                 onBlur={() => setFocusNewPwd(false)}
               />
-              {focusNewPwd && (
-                <Text style={{ color: newpassword.length >= 4 && !forbiddenChars.test(newpassword) ? 'green' : 'red', marginTop: 4 }}>
-                  {newpassword.length >= 4 && !forbiddenChars.test(newpassword)
-                    ? 'Password is valid'
-                    : `Password must be at least 4 characters or your password contains special characters`}
-                </Text>
-              )}
               <Input
                 style={styles.input}
                 value={confirmpass}
@@ -293,18 +286,6 @@ export default function ChgPwdScreen({ navigation }) {
                 onFocus={() => setFocusNewPin(true)}
                 onBlur={() => setFocusNewPin(false)}
               />
-              {focusNewPin && (
-                <Text
-                  style={{
-                    color: errors.length === 0 ? "green" : "red",
-                    marginTop: 4,
-                  }}
-                >
-                  {errors.length === 0
-                    ? " Password is valid"
-                    : `Password must include: ${errors.join(", ")}`}
-                </Text>
-              )}
               <Input
                 style={styles.input}
                 value={confirmpin}
