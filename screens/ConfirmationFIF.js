@@ -97,20 +97,25 @@ const ConfirmFIF = ({ navigation }) => {
       return;
     }
     if (confirm) {
-      if (fifdata.CONFIRM_CODE != confirmInputState.value) {
+      if (fifdata.CONFIRM_CODE != confirmInputState.value ) {
         Alert.alert("Invalid Confirmation Code. Please Try Again");
       } else {
-        const FifId = {
-          id: String(fifdata.ID), // Ensure ID is a string
-        };
-        // navigation.navigate("FIF", { FifId });
-        navigation.popTo("FIF", { FifId, isConfirmed: true })
+        if (response.status === "confirm") {
+          Alert.alert("The FIF has been confirmed");
+          const FifId = {
+            id: String(fifdata.ID), // Ensure ID is a string
+          };
+          // navigation.navigate("FIF", { FifId });
+          navigation.popTo("FIF", { FifId, isConfirmed: true })
+        }else{
+          Alert.alert(response.msg);
+        }
       }
     }
 
-    if (response.status === "confirm") {
-      Alert.alert("The FIF has been confirmed");
-    }
+    // if (response.status === "confirm") {
+    //   Alert.alert("The FIF has been confirmed");
+    // }
   };
 
   return (

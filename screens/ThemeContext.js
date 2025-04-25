@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   const [ExpiringCurr, setExpiringCurr] = useState(0);
   const [pinformat, setPinFormat] = useState("");
   const [pwdformat, setPwdFormat] = useState("");
+  const [formPreferences, setFormPreferences] = useState({});
 
   const value = {
     pwdformat,
@@ -43,6 +44,8 @@ export function AuthProvider({ children }) {
     setCountCurrency,
     ExpiringCurr,
     setExpiringCurr,
+    formPreferences,
+    setFormPreferences
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

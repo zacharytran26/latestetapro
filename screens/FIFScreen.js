@@ -95,7 +95,6 @@ const FIFScreen = ({ navigation }) => {
       }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
       }&mode=viewfif&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
       }&persid=${authUser.currpersid}&fifid=${item.ID}`;
-    console.log(url);
     const response = await fetch(url);
     const data = await response.json();
     if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
@@ -106,10 +105,10 @@ const FIFScreen = ({ navigation }) => {
 
   const handleConfirm = (item) => {
     //set useref to fif use state
-    if (!fifRef.current.has(item.ID)) {
-      Alert.alert("Please press View to confirm FIF");
-    } else {
+    if (fifRef.current.has(item.ID)|| item.OPENED === '1') {
       navigation.navigate("Confirm", { fifdata: item });
+    } else {
+      Alert.alert("Please press View to confirm FIF");
     }
   };
 
@@ -127,9 +126,9 @@ const FIFScreen = ({ navigation }) => {
     await fetchFif();
   };
   const renderFif = ({ item }) => {
-    const isViewed = fifRef.current.has(item.ID); //isViewed is true if the ID is in the useRef Set()
+    const isViewed = fifRef.current.has(item.ID); //isViewed is true if the ID is in the useRef Set() //LOOK HERE FOR THE BUG 
     const isConfirmed = confirmedItems.has(item.ID); //confirmedItems.has(item.ID) should return true
-    const canConfirm = isViewed && item.OPENED === '0';
+    const canConfirm = isViewed || item.OPENED === '1';
     return (
       <Card
         style={styles.card}

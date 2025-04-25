@@ -234,7 +234,7 @@ export default function ChgPwdScreen({ navigation }) {
                 label="Enter New Password"
                 placeholder="Enter New Password"
                 returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-                secureTextEntry={secureTextEntry}
+               
                 onChangeText={(text) => setNewPassword(text)}
                 onFocus={() => setFocusNewPwd(true)}
                 onBlur={() => setFocusNewPwd(false)}
@@ -245,7 +245,7 @@ export default function ChgPwdScreen({ navigation }) {
                 label="Re-enter New Password"
                 placeholder="Enter your Password"
                 returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-                secureTextEntry={secureTextEntry}
+                
                 onChangeText={(text) => setConfirmPass(text)}
                 onFocus={() => setFocusConfirmPwd(true)}
                 onBlur={() => setFocusConfirmPwd(false)}
@@ -281,7 +281,7 @@ export default function ChgPwdScreen({ navigation }) {
                 label="Enter New Pin"
                 placeholder="Enter New Pin"
                 returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-                secureTextEntry={secureTextEntry}
+               
                 onChangeText={(text) => setNewPin(text)}
                 onFocus={() => setFocusNewPin(true)}
                 onBlur={() => setFocusNewPin(false)}
@@ -292,7 +292,7 @@ export default function ChgPwdScreen({ navigation }) {
                 label="Re-enter New Pin"
                 placeholder="Enter your Pin"
                 returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-                secureTextEntry={secureTextEntry}
+                
                 onChangeText={(text) => setConfirmPin(text)}
                 onFocus={() => setFocusConfirmPin(true)}
                 onBlur={() => setFocusConfirmPin(false)}

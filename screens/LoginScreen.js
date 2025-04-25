@@ -433,7 +433,8 @@ const styles = StyleSheet.create({
     resizeMode: "contain", // Ensures the image is not distorted
     alignSelf: "center", // Centers the image
     marginVertical: 20, // Adds spacing above and below
-    marginTop: -80
+    marginTop: -80,
+    ...(Platform.OS === 'android' ? { alignSelf: 'center' } : {}),
   },
   input: {
     marginVertical: 8,
