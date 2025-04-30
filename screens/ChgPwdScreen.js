@@ -21,6 +21,7 @@ import { useAuth } from "./ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { EtaAlert } from "./ExtraImports";
 
 export default function ChgPwdScreen({ navigation }) {
   const { authUser, setAuthUser, chgPwd, setChgPwd, setIsLoggedIn, pinformat, pwdformat } = useAuth();
@@ -114,19 +115,37 @@ export default function ChgPwdScreen({ navigation }) {
           //setMsg(json.msg);
           const updatedData = { validated: authUser.validated, chgpwd: authUser.chgpwd, chgpin: authUser.chgpin}
           setChgPwd("0");
-          Alert.alert(json.msg);
+          //Alert.alert(json.msg);
+          EtaAlert(
+                  "Alert",
+                  json.msg,
+                  "Ok",
+                  ""
+                );
           navigation.popTo("Login", { updatedData })
         } else {
           const pwdviolation = json.pwdformat.split(".").map((s) => s.trim()).filter(Boolean);
           const pinviolation = json.pinformat.split(".").map((s) => s.trim()).filter(Boolean);
           setViolation([...pwdviolation, ...pinviolation]);
-          Alert.alert("Your password/pin is not valid. Please try again");
+          //Alert.alert("Your password/pin is not valid. Please try again");
+          EtaAlert(
+            "Alert",
+            "Your password/pin is not valid. Please try again",
+            "Ok",
+            ""
+          );
         }
         return json;
       })
       .catch((error) => {
         console.log("error",error);
-        Alert.alert(error.message);
+        //Alert.alert(error.message);
+        EtaAlert(
+          "Erro",
+          error.message,
+          "Ok",
+          ""
+        );
         setIsLoggedIn(false);
         setAuthUser(null);
       });

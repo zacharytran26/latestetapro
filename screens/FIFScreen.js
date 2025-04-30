@@ -12,8 +12,9 @@ import { useAuth } from "./ThemeContext";
 import { FlashList } from "@shopify/flash-list";
 import { WebView } from "react-native-webview";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const FIFScreen = ({ navigation }) => {
   const [fif, setFif] = useState([]);
@@ -105,10 +106,16 @@ const FIFScreen = ({ navigation }) => {
 
   const handleConfirm = (item) => {
     //set useref to fif use state
-    if (fifRef.current.has(item.ID)|| item.OPENED === '1') {
+    if (fifRef.current.has(item.ID) || item.OPENED === '1') {
       navigation.navigate("Confirm", { fifdata: item });
     } else {
-      Alert.alert("Please press View to confirm FIF");
+      //Alert.alert("Please press View to confirm FIF");
+      EtaAlert(
+        "Alert",
+        "Please press View to confirm FIF",
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -129,6 +136,7 @@ const FIFScreen = ({ navigation }) => {
     const isViewed = fifRef.current.has(item.ID); //isViewed is true if the ID is in the useRef Set() //LOOK HERE FOR THE BUG 
     const isConfirmed = confirmedItems.has(item.ID); //confirmedItems.has(item.ID) should return true
     const canConfirm = isViewed || item.OPENED === '1';
+    console.log(item);
     return (
       <Card
         style={styles.card}
@@ -153,24 +161,28 @@ const FIFScreen = ({ navigation }) => {
           >
             View
           </Button>
-          <Button
-            style={styles.confirmButton}
-            status="success"
-            accessoryLeft={(props) => (
-              <Icon {...props} name="checkmark-outline" />
-            )}
-            disabled={!canConfirm || isConfirmed} // Disable until item is viewed default value should be false and if it is true then the button cannot be clicked
-            onPress={() => handleConfirm(item)}
-          >
-            Confirm
-          </Button>
+          {item.CONF === '' ? (
+            <Button
+              style={styles.confirmButton}
+              status="success"
+              accessoryLeft={(props) => (
+                <Icon {...props} name="checkmark-outline" />
+              )}
+              disabled={!canConfirm || isConfirmed}
+              onPress={() => handleConfirm(item)}
+            >
+              Confirm
+            </Button>
+          ) : (
+            <Text style={styles.confirmed}>Confirmed</Text> // Optional: some text or badge
+          )}
 
 
         </View>
       </Card>
     );
   };
-
+  //item.CONF if that is null = can confirm, not null means confirmed
   if (loading && !refreshing) {
     return (
       <Layout style={styles.loadingcontainer}>
@@ -180,6 +192,8 @@ const FIFScreen = ({ navigation }) => {
   }
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+
     <Layout style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f7f9fc" />
       <SafeAreaView style={{ flex: 1 }}>
@@ -217,6 +231,7 @@ const FIFScreen = ({ navigation }) => {
         </Modal>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -225,6 +240,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "#f7f9fc",
+  },
+  confirmed: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginTop: 10
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   loadingcontainer: {
     flex: 1,

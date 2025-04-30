@@ -22,7 +22,7 @@ import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 //import * as Contacts from "expo-contacts";
 import Contacts from "react-native-contacts";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const StudentDetailScreen = ({ navigation }) => {
@@ -60,7 +60,13 @@ const StudentDetailScreen = ({ navigation }) => {
       }
       setStudDetail(data);
     } catch (error) {
-      Alert.alert("Error", error.message || "An error occurred");
+      //Alert.alert("Error", error.message || "An error occurred");
+      EtaAlert(
+        "Error",
+        error.message || "An error occurred",
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -98,20 +104,39 @@ const StudentDetailScreen = ({ navigation }) => {
       const contactId = await Contacts.addContact(contact).then(
         (contactId) => {
           if (contactId) {
-            Alert.alert("Success", "Contact added successfully!");
+            //Alert.alert("Success", "Contact added successfully!");
+            EtaAlert(
+              "Success",
+              "Contact added successfully!",
+              "Ok",
+              ""
+            );
           } else {
-            Alert.alert("Failed", "Failed to add contact.");
+            //Alert.alert("Failed", "Failed to add contact.");
+            EtaAlert(
+              "Failure",
+              "Failed to add contact.",
+              "Ok",
+              ""
+            );
           }
         }
       );
 
     } catch (error) {
       //console.error("Error adding contact:"+error.toString());
-      Alert.alert("Error", "An error occurred while adding the contact.");
+      //Alert.alert("Error", "An error occurred while adding the contact.");
+      EtaAlert(
+        "Error",
+        "An error occurred while adding the contact.",
+        "Ok",
+        ""
+      );
     }
   };
 
   return (
+    <ScrollView>
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView>
@@ -342,6 +367,7 @@ const StudentDetailScreen = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </Layout>
+    </ScrollView>
   );
 };
 

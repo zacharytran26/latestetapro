@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, SafeAreaView, View, Switch } from "react-native";
+import { StyleSheet, SafeAreaView, View, Switch, ScrollView } from "react-native";
 import { Layout, Text, Card, Divider } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
@@ -94,6 +94,7 @@ const StudentCourse = () => {
     : units;
 
   return (
+    <ScrollView>
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.summaryContainer}>
@@ -134,6 +135,7 @@ const StudentCourse = () => {
         />
       </SafeAreaView>
     </Layout>
+    </ScrollView>
   );
 };
 

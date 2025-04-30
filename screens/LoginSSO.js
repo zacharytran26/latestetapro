@@ -5,6 +5,7 @@ import { WebView } from "react-native-webview";
 import { useAuth } from "./ThemeContext";
 import { Button, Layout, Text, Icon, Card } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
+import { EtaAlert } from "./ExtraImports";
 
 export default function LoginSSOScreen({ navigation }) {
   const route = useRoute();
@@ -23,7 +24,13 @@ export default function LoginSSOScreen({ navigation }) {
   const handleWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     console.warn("WebView error: ", nativeEvent);
-    Alert.alert("WebView Error", nativeEvent.description);
+    //Alert.alert("WebView Error", nativeEvent.description);
+    EtaAlert(
+      "WebView Error",
+      nativeEvent.description,
+      "Ok",
+      ""
+    );
   };
 
   const logoutSSO = () => {
@@ -36,7 +43,13 @@ export default function LoginSSOScreen({ navigation }) {
       sessionid = ssojson.sessionid;
       currpersid = ssojson.currpersid;
       getSSOLoginData();
-    } else Alert.alert("Unable to login to ETA via Single Sign On.");
+    } else //Alert.alert("Unable to login to ETA via Single Sign On.");
+      EtaAlert(
+        "Error",
+        "Unable to login to ETA via Single Sign On.",
+        "Ok",
+        ""
+      );
   };
 
   function getSSOLoginData() {
@@ -59,7 +72,13 @@ export default function LoginSSOScreen({ navigation }) {
           //saveAccessCode(accesscode);
           //saveUsername(username);
         } else {
-          Alert.alert("You are not authorized to access ETA.");
+          //Alert.alert("You are not authorized to access ETA.");
+          EtaAlert(
+            "Error",
+            "You are not authorized to access ETA.",
+            "Ok",
+            ""
+          );
           setIsLoggedIn(false);
           setAuthUser(null);
         }
@@ -68,7 +87,13 @@ export default function LoginSSOScreen({ navigation }) {
       .catch((error) => {
         //setLoading(false); // Stop loading
         //setProgress(0); // Reset progress
-        Alert.alert(error.message);
+        //Alert.alert(error.message);
+        EtaAlert(
+          "Error",
+          error.message,
+          "Ok",
+          ""
+        );
         console.error(error.message);
       });
   }

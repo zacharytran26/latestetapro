@@ -13,7 +13,7 @@ import { Button, Layout, Text, Icon, Input, Select, SelectItem } from "@ui-kitte
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import { FlashList } from "@shopify/flash-list";
 
 const SendIcon = (props) => <Icon {...props} name="paper-plane-outline" />;
@@ -183,7 +183,13 @@ const NewMessage = () => {
                 accessoryLeft={SendIcon}
                 onPress={() => {
                   SendNewMessages();
-                  Alert.alert("Message Sent");
+                  //Alert.alert("Message Sent");
+                  EtaAlert(
+                    "Success",
+                    "Message Sent",
+                    "Ok",
+                    ""
+                  );
                   handleSentMessage();
                 }}
               >

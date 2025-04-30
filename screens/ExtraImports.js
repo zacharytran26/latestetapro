@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Image, StyleSheet, View, Text } from "react-native";
+import { Alert, Image, StyleSheet, View, Text, Dimensions} from "react-native";
 import { useAuth } from "./ThemeContext";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
 import messaging from '@react-native-firebase/messaging';
@@ -76,7 +76,38 @@ export const handleBackgroundNotification = messaging().setBackgroundMessageHand
   return Promise.resolve();
 });
 
+export function useOrientation() {
+  const [isPortrait, setIsPortrait] = useState(true);
 
+  useEffect(() => {
+    const updateOrientation = () => {
+      const { width, height } = Dimensions.get('window');
+      setIsPortrait(height >= width); // Portrait if height >= width
+    };
+
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+
+    updateOrientation(); // Set initially when component loads
+
+    return () => subscription?.remove(); // Cleanup on unmount
+  }, []);
+
+  return isPortrait;
+}
+
+export const EtaAlert = (title, msg, textAlert, customstr, onOkPress, onCancelPress) => {
+  const buttons = [];
+
+  if (customstr.includes("okay")) {
+    buttons.push({ text: textAlert, onPress: onOkPress });
+  }
+
+  if (customstr.includes("cancel")) {
+    buttons.push({ text: "Cancel", onPress: onCancelPress, style: "cancel" });
+  }
+
+  Alert.alert(title, msg, buttons);
+};
 
 const styles = StyleSheet.create({
   chevron: {

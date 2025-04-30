@@ -18,7 +18,8 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import RNCalendarEvents from "react-native-calendar-events";
-import { handleForegroundNotification } from "./ExtraImports";
+import { handleForegroundNotification, EtaAlert} from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Activity = () => {
   const route = useRoute();
@@ -64,13 +65,21 @@ const Activity = () => {
       const permissionStatus = await RNCalendarEvents.requestPermissions();
 
       if (permissionStatus !== 'authorized') {
-        Alert.alert(
+        // Alert.alert(
+        //   "Calendar Permission Required",
+        //   "This feature requires access to your calendar. Please enable permissions in settings.",
+        //   [
+        //     { text: "Cancel", style: "cancel" },
+        //     { text: "Open Settings", onPress: () => Linking.openSettings() }
+        //   ]
+        // );
+        EtaAlert(
           "Calendar Permission Required",
           "This feature requires access to your calendar. Please enable permissions in settings.",
-          [
-            { text: "Cancel", style: "cancel" },
-            { text: "Open Settings", onPress: () => Linking.openSettings() }
-          ]
+          "Open Settings",
+          "okay,cancel", // include both buttons
+          () => Linking.openSettings(), // on OK press
+          () => {} // optional: handle cancel press if needed
         );
         return;
       }
@@ -101,11 +110,23 @@ const Activity = () => {
       });
 
       if (savedEventId) {
-        Alert.alert("Success", "Event added to your calendar successfully.");
+        //Alert.alert("Success", "Event added to your calendar successfully.");
+        EtaAlert(
+                "Success",
+                "Event added to your calendar successfully.",
+                "Ok",
+                ""
+              );
       }
 
     } catch (error) {
-      Alert.alert('Error', 'Failed to add event to calendar: ' + error.toString());
+      //Alert.alert('Error', 'Failed to add event to calendar: ' + error.toString());
+      EtaAlert(
+              'Error',
+              'Failed to add event to calendar: ' + error.toString(),
+              "Ok",
+              ""
+            );
     }
   };
 
@@ -317,6 +338,8 @@ const Activity = () => {
   };
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+
     <SafeAreaView style={styles.container}>
       <FlashList
         data={[activity]} // Pass the activity data as an array
@@ -325,6 +348,7 @@ const Activity = () => {
         estimatedItemSize={100}
       />
     </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -332,6 +356,10 @@ const styles = StyleSheet.create({
   header: {
     paddingBottom: 10,
     alignItems: "center",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   title: {
     fontWeight: "bold",

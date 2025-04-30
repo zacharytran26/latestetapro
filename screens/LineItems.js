@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet } from "react-native";
 import { Input, Layout, ListItem } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const LineItem = () => {
   const { params: { data } } = useRoute();
@@ -18,6 +19,7 @@ const LineItem = () => {
   }, [filter, data.lineitems]);
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <SafeAreaView style={styles.container}>
       <Layout style={styles.searchContainer}>
         <Input
@@ -41,6 +43,7 @@ const LineItem = () => {
         estimatedItemSize={70}
       />
     </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -54,6 +57,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 5,
     elevation: 2,
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
 });
 

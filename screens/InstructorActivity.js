@@ -21,8 +21,9 @@ import {
 import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 import Contacts from "react-native-contacts";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import { launchImageLibrary } from 'react-native-image-picker';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const InstructorActivity = ({ navigation }) => {
   const route = useRoute();
@@ -63,9 +64,21 @@ const InstructorActivity = ({ navigation }) => {
     var imageUri;
     launchImageLibrary(options, (result) => {
       if (result.didCancel) {
-        Alert.alert('User cancelled image picker');
+        //Alert.alert('User cancelled image picker');
+        EtaAlert(
+          "Alert",
+          'User cancelled image picker',
+          "Ok",
+          ""
+        );
       } else if (result.error) {
-        Alert.alert('Image picker error: ', result.error);
+        //Alert.alert('Image picker error: ', result.error);
+        EtaAlert(
+          "Alert",
+          'Image picker error: ', result.error,
+          "Ok",
+          ""
+        );
       } else {
         imageUri = result.uri || result.assets?.[0]?.uri;
         selectedImage = 1;
@@ -134,16 +147,34 @@ const InstructorActivity = ({ navigation }) => {
       const contactId = await Contacts.addContact(contact).then(
         (contactId) => {
           if (contactId) {
-            Alert.alert("Success", "Contact added successfully!");
+            //Alert.alert("Success", "Contact added successfully!");
+            EtaAlert(
+              "Success",
+              "Contact added successfully!",
+              "Ok",
+              ""
+            );
           } else {
-            Alert.alert("Failed", "Failed to add contact.");
+            //Alert.alert("Failed", "Failed to add contact.");
+            EtaAlert(
+              "Failed",
+              "Failed to add contact.",
+              "Ok",
+              ""
+            );
           }
         }
       );
 
     } catch (error) {
       //console.error("Error adding contact:"+error.toString());
-      Alert.alert("Error", "An error occurred while adding the contact.");
+      //Alert.alert("Error", "An error occurred while adding the contact.");
+      EtaAlert(
+        "Error",
+        "An error occurred while adding the contact.",
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -191,6 +222,7 @@ const InstructorActivity = ({ navigation }) => {
   };
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} >
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -288,6 +320,7 @@ const InstructorActivity = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -296,6 +329,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F7F9FC",
     padding: 16,
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   safeArea: {
     flex: 1,

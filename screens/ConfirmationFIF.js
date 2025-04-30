@@ -10,7 +10,8 @@ import {
 import { Layout, Text, Button, Input, Icon, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const useInputState = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
@@ -97,18 +98,36 @@ const ConfirmFIF = ({ navigation }) => {
       return;
     }
     if (confirm) {
-      if (fifdata.CONFIRM_CODE != confirmInputState.value ) {
-        Alert.alert("Invalid Confirmation Code. Please Try Again");
+      if (fifdata.CONFIRM_CODE != confirmInputState.value) {
+        //Alert.alert("Invalid Confirmation Code. Please Try Again");
+        EtaAlert(
+          "Alert",
+          "Invalid Confirmation Code. Please Try Again",
+          "Ok",
+          ""
+        );
       } else {
         if (response.status === "confirm") {
-          Alert.alert("The FIF has been confirmed");
+          //Alert.alert("The FIF has been confirmed");
+          EtaAlert(
+            "Success",
+            "The FIF has been confirmed",
+            "Ok",
+            ""
+          );
           const FifId = {
             id: String(fifdata.ID), // Ensure ID is a string
           };
           // navigation.navigate("FIF", { FifId });
           navigation.popTo("FIF", { FifId, isConfirmed: true })
-        }else{
-          Alert.alert(response.msg);
+        } else {
+          //Alert.alert(response.msg);
+          EtaAlert(
+            "Alert",
+            response.msg,
+            "Ok",
+            ""
+          );
         }
       }
     }
@@ -119,6 +138,7 @@ const ConfirmFIF = ({ navigation }) => {
   };
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <Layout style={styles.container}>
       <SafeAreaView>
         <Text style={styles.title}>Confirm FIF Activity</Text>
@@ -156,6 +176,7 @@ const ConfirmFIF = ({ navigation }) => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -164,6 +185,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   card: {
     padding: 20,

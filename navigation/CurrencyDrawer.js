@@ -3,10 +3,14 @@ import { TouchableOpacity, Image } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import CurrencyStackNavigator from "./CurrencyStack";
 import { CustomDrawerContentCurrency } from "./CurrencyMainDrawer";
+import { useOrientation } from "../screens/ExtraImports";
 
 const Drawer = createDrawerNavigator();
 
+
+
 export default function CurrencyDrawerNavigator() {
+  const isPortrait = useOrientation();
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContentCurrency {...props} />}
@@ -14,7 +18,7 @@ export default function CurrencyDrawerNavigator() {
         headerTitle: () => <LogoTitle navigation={navigation} />,
         headerBackTitleVisible: false,
         headerTintColor: "white",
-        headerStyle: { height: 130, backgroundColor: "#5d95e8" },
+        headerStyle: { height: isPortrait ? 130 : 80, backgroundColor: "#5d95e8" },
       })}
     >
       <Drawer.Screen name="CurrencyStack" component={CurrencyStackNavigator} />

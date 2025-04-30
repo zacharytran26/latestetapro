@@ -67,6 +67,7 @@ const StudentMapDetails = ({ navigation }) => {
   };
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
@@ -102,6 +103,7 @@ const StudentMapDetails = ({ navigation }) => {
         </Layout>
       </ScrollView>
     </SafeAreaView>
+    </ScrollView>
   );
 };
 

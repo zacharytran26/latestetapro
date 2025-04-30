@@ -28,7 +28,7 @@ import { useFocusEffect, useRoute } from "@react-navigation/native";
 import messaging from '@react-native-firebase/messaging';
 import { PermissionsAndroid } from "react-native";
 import { handleBiometricAuth, storeCredentials, retrieveCredentials } from "./BiometricStorage";
-
+import { EtaAlert } from "./ExtraImports";
 var ssoLogin = 0;
 var faceIDLogin = 0; //whenever a screen re-renders, the value is reverted back to the original value
 var logIn = 0;
@@ -133,6 +133,18 @@ const LoginScreen = ({ navigation }) => {
       },
     ]);
   };
+  // const CreateTermsAndConditionAlert = () => {
+  //   const onViewPress = () => setIsTermsAccepted(true); // Show WebView
+  
+  //   EtaAlert(
+  //     "Terms & Conditions",
+  //     "Please review our terms:",
+  //     "view",
+  //     "",
+  //     onViewPress,
+  //     null // No cancel button needed
+  //   );
+  // };
 
   const checkAlertStatus = async () => {
     const termsAcknowledged = await AsyncStorage.getItem("termsAcknowledged");
@@ -214,15 +226,33 @@ const LoginScreen = ({ navigation }) => {
 
   async function fLogin() {
     if (accesscode === "" && ssoLogin === 0) {
-      Alert.alert("You must specify an Access Code.");
+      // Alert.alert("You must specify an Access Code.");
+      EtaAlert(
+        "Alert",
+        "You must specify an Access Code.",
+        "Ok",
+        "",
+      );
       return;
     }
     if (username === "" && ssoLogin === 0) {
-      Alert.alert("You must specify a User Name.");
+      //Alert.alert("You must specify a User Name.");
+      EtaAlert(
+        "Alert",
+        "You must specify a User Name.",
+        "Ok",
+        "",
+      );
       return;
     }
     if (password === "" && ssoLogin === 0) {
-      Alert.alert("You must specify a Password.");
+      //Alert.alert("You must specify a Password.");
+      EtaAlert(
+        "Alert",
+        "You must specify a Password.",
+        "Ok",
+        ""
+      );
       return;
     }
 
@@ -232,7 +262,13 @@ const LoginScreen = ({ navigation }) => {
     const conn = ""; //checkConnection();
 
     if (conn === "No network connection" || conn === "Unknown connection") {
-      Alert.alert("You do not have an internet connection!");
+      //Alert.alert("You do not have an internet connection!");
+      EtaAlert(
+        "Alert",
+        "You do not have an internet connection!",
+        "Ok",
+        ""
+      );
       setLoading(false);
       setProgress(0);
     } else {
@@ -257,8 +293,14 @@ const LoginScreen = ({ navigation }) => {
       }
 
       if (ssoLogin === 0 && isNaN(accesscode)) {
-        Alert.alert(
-          "You have entered an invalid access code. Only numeric characters are allowed."
+        // Alert.alert(
+        //   "You have entered an invalid access code. Only numeric characters are allowed."
+        // );
+        EtaAlert(
+          "Alert",
+         "You have entered an invalid access code. Only numeric characters are allowed.",
+          "Ok",
+          ""
         );
         setLoading(false);
         setProgress(0);
@@ -311,7 +353,13 @@ const LoginScreen = ({ navigation }) => {
               // Store Credentials with Face ID for Future Logins
               await storeCredentials(username, password, accesscode);
             } else {
-              Alert.alert(json.msg);
+              // Alert.alert(json.msg);
+              EtaAlert(
+                "Alert",
+               json.msg,
+                "Ok",
+                ""
+              );
               setIsLoggedIn(false);
               setAuthUser(json);
             }
@@ -320,7 +368,13 @@ const LoginScreen = ({ navigation }) => {
           .catch((error) => {
             setLoading(false);
             setProgress(0);
-            Alert.alert(error.message);
+            //Alert.alert(error.message);
+            EtaAlert(
+              "Alert",
+              error.message,
+              "Ok",
+              ""
+            );
             console.error(error.message);
           });
       }

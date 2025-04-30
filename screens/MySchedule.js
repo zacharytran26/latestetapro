@@ -10,13 +10,14 @@ import {
   Platform,
   Alert,
   AppState,
+  ScrollView,
 } from "react-native";
 import { Layout, Text, Spinner, Button } from "@ui-kitten/components";
 import { FlashList } from "@shopify/flash-list";
 import { useAuth } from "./ThemeContext";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const LeftIcon = () => <Icon name="arrow-left" size={20} />;
@@ -141,16 +142,20 @@ const TimelineCalendarScreen = () => {
         jsonData = JSON.parse(jsonString);
       }
       setOpsCond(jsonData.opscondition);
-      if (jsonData.openmsg > 0) {
-        setTabBarBadge(jsonData.openmsg);
-      }
+      setTabBarBadge(jsonData.openmsg);
       setCountCurrency(jsonData.expiredcurrency);
       setExpiringCurr(jsonData.expiringcurrency);
 
       setActivities(jsonData.activities);
       authUser.calstart = jsonData.calstart;
     } catch (error) {
-      Alert.alert("Error fetching data:", error);
+      //Alert.alert("Error fetching data:", error);
+      EtaAlert(
+        "Error",
+        error,
+        "Ok",
+        ""
+      );
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -240,6 +245,7 @@ const TimelineCalendarScreen = () => {
   }
 
   return (
+    <ScrollView>
     <Layout style={styles.container}>
       <StatusBar />
       <SafeAreaView style={{ flex: 1 }}>
@@ -327,6 +333,7 @@ const TimelineCalendarScreen = () => {
         </View>
       </SafeAreaView>
     </Layout>
+    </ScrollView>
   );
 };
 

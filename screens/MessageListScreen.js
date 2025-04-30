@@ -19,7 +19,8 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const TrashIcon = (props) => <Icon {...props} name="trash-2-outline" />;
 const ReplyIcon = (props) => <Icon {...props} name="corner-up-left-outline" />;
@@ -104,7 +105,13 @@ const MessagesScreen = () => {
       const response = await fetch(querystring);
       const data = await response.json();
     } catch (error) {
-      Alert.alert("Error archiving email:", error);
+      //Alert.alert("Error archiving email:", error);
+      EtaAlert(
+        "Error archiving email:",
+        error,
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -150,10 +157,22 @@ const MessagesScreen = () => {
       //console.log("After", messages);
       const data = await response.text();
       if (!response.ok) {
-        Alert.alert("Failed to update message status on server.");
+        //Alert.alert("Failed to update message status on server.");
+        EtaAlert(
+          "Failure",
+          "Failed to update message status on server.",
+          "Ok",
+          ""
+        );
       }
     } catch (error) {
-      Alert.alert("Error updating message status on server:", error);
+      //Alert.alert("Error updating message status on server:", error);
+      EtaAlert(
+        "Error",
+        "Error updating message status on server:", error,
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -259,6 +278,7 @@ const MessagesScreen = () => {
     );
   }
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <Layout style={styles.container}>
       <StatusBar />
       <SafeAreaView style={{ flex: 1 }}>
@@ -348,6 +368,7 @@ const MessagesScreen = () => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -356,6 +377,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   currentasof: {
     alignItems: 'center',

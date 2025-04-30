@@ -10,8 +10,9 @@ import {
 import { Layout, Text, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { FlashList } from "@shopify/flash-list";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const MyIssues = () => {
   const [myissues, setMyIssues] = useState([]);
@@ -48,7 +49,13 @@ const MyIssues = () => {
         return; // Stop further processing if an error is handled
       }
     } catch (error) {
-      Alert.alert("Error", error.message);
+      //Alert.alert("Error", error.message);
+      EtaAlert(
+        "Error",
+        error.message,
+        "Ok",
+        ""
+      );
     } finally {
       setRefreshing(false);
       setLoading(false);
@@ -94,6 +101,7 @@ const MyIssues = () => {
   );
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} >
     <Layout style={styles.container}>
       <StatusBar />
       <SafeAreaView style={{ flex: 1 }}>
@@ -129,6 +137,7 @@ const MyIssues = () => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 const styles = StyleSheet.create({
@@ -136,6 +145,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   currentasof: {
     alignItems: 'center',

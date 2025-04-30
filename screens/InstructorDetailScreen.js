@@ -19,10 +19,11 @@ import {
 } from "@ui-kitten/components";
 import { useRoute } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Contacts from "react-native-contacts";
 import { launchImageLibrary } from 'react-native-image-picker';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const InstructorList = ({ navigation }) => {
   const route = useRoute();
@@ -97,16 +98,34 @@ const InstructorList = ({ navigation }) => {
       const contactId = await Contacts.addContact(contact).then(
         (contactId) => {
           if (contactId) {
-            Alert.alert("Success", "Contact added successfully!");
+            //Alert.alert("Success", "Contact added successfully!");
+            EtaAlert(
+              "Success",
+              "Contact added successfully!",
+              "Ok",
+              ""
+            );
           } else {
-            Alert.alert("Failed", "Failed to add contact.");
+            //Alert.alert("Failed", "Failed to add contact.");
+            EtaAlert(
+              "Failed",
+              "Failed to add contact.",
+              "Ok",
+              ""
+            );
           }
         }
       );
 
     } catch (error) {
       //console.error("Error adding contact:"+error.toString());
-      Alert.alert("Error", "An error occurred while adding the contact.");
+      //Alert.alert("Error", "An error occurred while adding the contact.");
+      EtaAlert(
+        "Error",
+        "An error occurred while adding the contact.",
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -121,9 +140,21 @@ const InstructorList = ({ navigation }) => {
     var imageUri;
     launchImageLibrary(options, (result) => {
       if (result.didCancel) {
-        Alert.alert('User cancelled image picker');
+        //Alert.alert('User cancelled image picker');
+        EtaAlert(
+          "Error",
+          'User cancelled image picker',
+          "Ok",
+          ""
+        );
       } else if (result.error) {
-        Alert.alert('Image picker error: ', result.error);
+        //Alert.alert('Image picker error: ', result.error);
+        EtaAlert(
+          "Error",
+          'Image picker error: ', result.error,
+          "Ok",
+          ""
+        );
       } else {
         imageUri = result.uri || result.assets?.[0]?.uri;
         selectedImage = 1;
@@ -206,6 +237,8 @@ const InstructorList = ({ navigation }) => {
   };
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -310,14 +343,19 @@ const InstructorList = ({ navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F9FC",
     padding: 16,
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   currentasof: {
     alignItems: 'center',

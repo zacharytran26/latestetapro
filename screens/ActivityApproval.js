@@ -11,6 +11,8 @@ import {
 import { useAuth } from "./ThemeContext";
 import { useRoute } from "@react-navigation/native";
 import { handleFetchError } from "./ExtraImports";
+import { EtaAlert } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const useInputState = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
@@ -65,10 +67,17 @@ const ApproveActivity = ({ navigation }) => {
   }, [etaresponse]);
 
   const AlertMessage = (item) => {
-    Alert.alert(item.msg);
+    //Alert.alert(item.msg);
+    EtaAlert(
+        "Alert",
+        item.msg,
+        "Ok",
+        ""
+      );
   };
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <Layout style={styles.container}>
       <SafeAreaView>
         <View style={styles.content}>
@@ -141,6 +150,7 @@ const ApproveActivity = ({ navigation }) => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -149,6 +159,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   header: {
     flexDirection: "row",

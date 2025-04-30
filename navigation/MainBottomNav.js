@@ -12,10 +12,11 @@ import CurrencyDrawerNavigator from "./CurrencyDrawer";
 import MessagesDrawerNavigator from "./MessagesDrawer";
 import QualiDrawerNavigator from "./QualiDrawer"; // Assuming this exists
 import { useAuth } from "../screens/ThemeContext"; // Assuming useAuth gives access to tabBarBadge
-
+import { useOrientation } from "../screens/ExtraImports";
 const { Navigator, Screen } = createBottomTabNavigator();
 
 const BottomTabBar = ({ navigation, state }) => {
+  const isPortrait = useOrientation();
   const { tabBarBadge, CountCurr, ExpiringCurr } = useAuth(); // Fetch tabBarBadge from context
   // Function to dynamically determine icon color
   const getIconColor = (route, focused) => {
@@ -76,7 +77,10 @@ const BottomTabBar = ({ navigation, state }) => {
     <BottomNavigation
       selectedIndex={state.index}
       onSelect={handleSelect}
-      style={styles.bottomnav}
+      style={[
+        styles.bottomnav,
+        { height: isPortrait ? 80 : 50 } // dynamic height based on orientation
+      ]}
     >
       <BottomNavigationTab
         icon={renderIconWithBadge("home-outline", "mHome", 0)}
@@ -136,7 +140,6 @@ const styles = StyleSheet.create({
     height: 24,
   },
   bottomnav: {
-    height: 80, // Increase the Bottom Navigation Bar height
     paddingVertical: 10, // Add padding for better spacing
     backgroundColor: "#5d95e8",
   },

@@ -11,6 +11,7 @@ import { useAuth } from "./ThemeContext";
 import { FlashList } from "@shopify/flash-list";
 import { SelectList } from "react-native-dropdown-select-list";
 import { handleFetchError } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // Memoized Item Component
 const StudentItem = React.memo(({ item, onPress }) => (
@@ -193,6 +194,8 @@ const StudentsScreen = ({ navigation }) => {
   }
 
   return (
+    <KeyboardAwareScrollView  enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.headerContainer}>
@@ -267,6 +270,7 @@ const StudentsScreen = ({ navigation }) => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -275,6 +279,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   safeArea: {
     flex: 1,

@@ -1,5 +1,5 @@
 import React, { useState,useEffect} from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { handleFetchError,Chevron } from "./ExtraImports";
 import { useAuth } from "./ThemeContext";
@@ -113,6 +113,7 @@ const StudentMap = () => {
   };
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.container}>
       {sections.map((section, index) => (
         <AccordionItem
@@ -122,6 +123,7 @@ const StudentMap = () => {
         />
       ))}
     </SafeAreaView>
+    </ScrollView>
   );
 };
 

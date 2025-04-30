@@ -14,7 +14,8 @@ import {
 import { Layout, Text, Icon, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { launchImageLibrary } from 'react-native-image-picker';
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const QualiScreen = ({ navigation }) => {
   const [quali, setQuali] = useState([]);
@@ -106,9 +107,21 @@ const QualiScreen = ({ navigation }) => {
     var imageUri;
     launchImageLibrary(options, (result) => {
       if (result.didCancel) {
-        Alert.alert('User cancelled image picker');
+        //Alert.alert('User cancelled image picker');
+        EtaAlert(
+          "Failure",
+          'User cancelled image picker',
+          "Ok",
+          ""
+        );
       } else if (result.error) {
-        Alert.alert('Image picker error: ', result.error);
+        //Alert.alert('Image picker error: ', result.error);
+        EtaAlert(
+          "Error",
+          'Image picker error: ', result.error,
+          "Ok",
+          ""
+        );
       } else {
         imageUri = result.uri || result.assets?.[0]?.uri;
         selectedImage = 1;
@@ -237,6 +250,7 @@ const QualiScreen = ({ navigation }) => {
   });
 
   return (
+    <KeyboardAwareScrollView  enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <Layout style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.headerContainer}>
@@ -290,6 +304,7 @@ const QualiScreen = ({ navigation }) => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -298,6 +313,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#F7F9FC",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   currentasof: {
     alignItems: 'center',

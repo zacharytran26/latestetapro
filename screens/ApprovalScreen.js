@@ -10,7 +10,7 @@ import {
 } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { useRoute } from "@react-navigation/native";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
 const useInputState = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
   return { value, onChangeText: setValue, reset: () => setValue(initialValue) };
@@ -59,7 +59,13 @@ const Approve = ({ navigation }) => {
 
       response.text().then((data) => { setWarnings((data.replace('\\n', '').replace('\\nClick OK to continue or CANCEL to stop.\\n', '').replace('.\\n', '.')).split('Note:')); });
     } catch (e) {
-      Alert.alert("Warning", "Unable to get warning(s) related to pending authorization request.");
+      //Alert.alert("Warning", "Unable to get warning(s) related to pending authorization request.");
+      EtaAlert(
+        'Warning',
+        "Unable to get warning(s) related to pending authorization request.",
+        "Ok",
+        ""
+      );
     }
   };
 
@@ -76,9 +82,21 @@ const Approve = ({ navigation }) => {
         activityType === "refresher"
       ) { } else {
         if (hours > pdata.hour) {
-          Alert.alert("Warning", "Hours approved cannot be greater than " + pdata.hour.toString() + ".");
+          //Alert.alert("Warning", "Hours approved cannot be greater than " + pdata.hour.toString() + ".");
+          EtaAlert(
+            'Warning',
+            "Hours approved cannot be greater than " + pdata.hour.toString() + ".",
+            "Ok",
+            ""
+          );
         } else
-          Alert.alert("Warning", "All fields are required.");
+          //Alert.alert("Warning", "All fields are required.");
+          EtaAlert(
+            'Warning',
+            "All fields are required.",
+            "Ok",
+            ""
+          );
         return;
       }
     }
@@ -118,21 +136,40 @@ const Approve = ({ navigation }) => {
 
   const handleConfirm = () => {
     if (etaresponse.status == "-1") {
-      Alert.alert("Error", etaresponse.msg);
+      //Alert.alert("Error", etaresponse.msg);
+      EtaAlert(
+        "Error",
+        etaresponse.msg,
+        "Ok",
+        ""
+      );
     } else if (etaresponse.status == "0") {
-      Alert.alert(
+      // Alert.alert(
+      //   "Alert",
+      //   etaresponse.msg,
+      //   [
+      //     {
+      //       text: "OK",
+      //       onPress: navigation.popTo("PendingAuth", {
+      //         isapprdeny: true,
+      //         reqid: pdata.requestid,
+      //       }),
+      //     }, //worked but seem like it is executed and go back instead of wait for acknowledgment
+      //   ],
+      //   { cancelable: false }
+      // );
+      EtaAlert(
         "Alert",
         etaresponse.msg,
-        [
-          {
-            text: "OK",
-            onPress: navigation.popTo("PendingAuth", {
-              isapprdeny: true,
-              reqid: pdata.requestid,
-            }),
-          }, //worked but seem like it is executed and go back instead of wait for acknowledgment
-        ],
-        { cancelable: false }
+        "OK",
+        "okay", // use "okay" only, since you only want an OK button
+        () => {
+          navigation.popTo("PendingAuth", {
+            isapprdeny: true,
+            reqid: pdata.requestid,
+          });
+        },
+        null // no cancel button, so this can be null or omitted
       );
     }
   };

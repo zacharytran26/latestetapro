@@ -10,6 +10,7 @@ import { Layout, Text, Spinner } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { FlashList } from "@shopify/flash-list";
 import { handleFetchError } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const InstructorItem = React.memo(({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item)}>
@@ -113,11 +114,14 @@ const InstructorsScreen = ({ navigation }) => {
   }
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <TextInput
           style={styles.input}
           placeholder="Search"
+          placeholderTextColor={'grey'}
           value={filter}
           onChangeText={setFilter}
         />
@@ -140,6 +144,7 @@ const InstructorsScreen = ({ navigation }) => {
         </View>
       </SafeAreaView>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -148,6 +153,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   safeArea: {
     flex: 1,

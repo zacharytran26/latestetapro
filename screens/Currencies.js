@@ -9,7 +9,8 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Image,
-  Alert
+  Alert,
+  ScrollView
 } from "react-native";
 import {
   Layout,
@@ -25,7 +26,8 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { useAuth } from "./ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
-import { handleFetchError } from "./ExtraImports";
+import { handleFetchError, EtaAlert } from "./ExtraImports";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const CurrencyScreen = () => {
   const [currencies, setCurrencies] = useState([]);
@@ -100,9 +102,21 @@ const CurrencyScreen = () => {
     var imageUri;
     launchImageLibrary(options, (result) => {
       if (result.didCancel) {
-        Alert.alert('User cancelled image picker');
+        //Alert.alert('User cancelled image picker');
+        EtaAlert(
+          "Alert",
+          'User cancelled image picker',
+          "Ok",
+          ""
+        );
       } else if (result.error) {
-        Alert.alert('Image picker error: ', result.error);
+        //Alert.alert('Image picker error: ', result.error);
+        EtaAlert(
+          "Alert",
+          'Image picker error: ', result.error,
+          "Ok",
+          ""
+        );
       } else {
         imageUri = result.uri || result.assets?.[0]?.uri;
         selectedImage = 1;
@@ -145,9 +159,21 @@ const CurrencyScreen = () => {
                   [selectedCurr.CID]: imageUri,
                 }));
                 setImageUploaded(true);
-                Alert.alert("Image uploaded successfully!");
+                //Alert.alert("Image uploaded successfully!");
+                EtaAlert(
+                  "Success",
+                  "Image uploaded successfully!",
+                  "Ok",
+                  ""
+                );
               } else {
-                Alert.alert("Image upload failed.");
+                //Alert.alert("Image upload failed.");
+                EtaAlert(
+                  "Failure",
+                  "Image upload failed.",
+                  "Ok",
+                  ""
+                );
               }
             })
             .catch((error) => {
@@ -327,72 +353,74 @@ const CurrencyScreen = () => {
   }
 
   return (
-    <Layout style={styles.container}>
-      <StatusBar />
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.headerContainer}>
-          <Text category="h5" style={styles.counterText}>
-            Currencies
-          </Text>
-        </View>
-        <View style={styles.header}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            value={filter}
-            onChangeText={setFilter}
-            placeholderTextColor="#8F9BB3"
-          />
-        </View>
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} >
+      <Layout style={styles.container}>
+        <StatusBar />
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.headerContainer}>
+            <Text category="h5" style={styles.counterText}>
+              Currencies
+            </Text>
+          </View>
+          <View style={styles.header}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search"
+              value={filter}
+              onChangeText={setFilter}
+              placeholderTextColor="#8F9BB3"
+            />
+          </View>
 
-        <CheckBox checked={showExpired} onChange={handleAlertPress} style={styles.radio}>
-          <Text style={styles.toggleText}>
-            Show Expired
-          </Text>
-        </CheckBox>
-        <View style={{ flex: 1 }}>
-          <FlashList
-            data={displayedCurrencies}
-            renderItem={renderCurrency}
-            keyExtractor={(item) => item.CID.toString()}
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            contentContainerStyle={styles.list}
-            estimatedItemSize={129}
-          />
-        </View>
-        {uploadedImageUri && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={previewVisible}
-            onRequestClose={() => {
-              setPreviewVisible(!previewVisible);
-            }}
-          >
-            <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
-              <View style={styles.modalOverlay}>
-                <TouchableOpacity
-                  style={styles.modalView}
-                  onPress={() => {
-                    setPreviewVisible(false);
-                    navigation.navigate("Image", { imageUri: uploadedImageUri });
-                  }}
-                >
-                  <Image
-                    source={{ uri: uploadedImageUri }}
-                    style={styles.imagePreview}
-                  />
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-        )}
-        <View style={styles.currentasof}>
-          <Text>Current as of: {authUser.currentasof}</Text>
-        </View>
-      </SafeAreaView>
-    </Layout>
+          <CheckBox checked={showExpired} onChange={handleAlertPress} style={styles.radio}>
+            <Text style={styles.toggleText}>
+              Show Expired
+            </Text>
+          </CheckBox>
+          <View style={{ flex: 1 }}>
+            <FlashList
+              data={displayedCurrencies}
+              renderItem={renderCurrency}
+              keyExtractor={(item) => item.CID.toString()}
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              contentContainerStyle={styles.list}
+              estimatedItemSize={129}
+            />
+          </View>
+          {uploadedImageUri && (
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={previewVisible}
+              onRequestClose={() => {
+                setPreviewVisible(!previewVisible);
+              }}
+            >
+              <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
+                <View style={styles.modalOverlay}>
+                  <TouchableOpacity
+                    style={styles.modalView}
+                    onPress={() => {
+                      setPreviewVisible(false);
+                      navigation.navigate("Image", { imageUri: uploadedImageUri });
+                    }}
+                  >
+                    <Image
+                      source={{ uri: uploadedImageUri }}
+                      style={styles.imagePreview}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+          )}
+          <View style={styles.currentasof}>
+            <Text>Current as of: {authUser.currentasof}</Text>
+          </View>
+        </SafeAreaView>
+      </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -401,6 +429,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f7f9fc",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   radio: {
     flexDirection: 'row',

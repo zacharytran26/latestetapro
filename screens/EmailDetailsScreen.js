@@ -4,6 +4,7 @@ import { Button, ButtonGroup, Icon, Layout, Text } from "@ui-kitten/components";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { handleFetchError } from "./ExtraImports";
 import { useAuth } from "./ThemeContext";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const TrashIcon = (props) => <Icon {...props} name="trash-2-outline" />;
 const ReplyIcon = (props) => <Icon {...props} name="corner-up-left-outline" />;
@@ -51,6 +52,8 @@ const EmailList = ({ navigation }) => {
   };
 
   return (
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+
     <Layout style={styles.container}>
       <SafeAreaView>
         <View style={styles.emailHeader}>
@@ -83,6 +86,7 @@ const EmailList = ({ navigation }) => {
         </ButtonGroup>
       </View>
     </Layout>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -91,6 +95,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#F7F9FC",
+  },
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   emailHeader: {
     flexDirection: "row",

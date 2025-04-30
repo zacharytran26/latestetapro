@@ -1,6 +1,7 @@
 import ReactNativeBiometrics from "react-native-biometrics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
+import { EtaAlert } from "./ExtraImports";
 
 const rnBiometrics = new ReactNativeBiometrics({
     allowDeviceCredentials: true, // Allows Face ID / Touch ID
@@ -20,7 +21,13 @@ export const handleBiometricAuth = async (message = "Authenticate with Biometric
 
         return success;
     } catch (error) {
-        Alert.alert("Biometric Authentication Error:", error);
+        //Alert.alert("Biometric Authentication Error:", error);
+        EtaAlert(
+             "Biometric Authentication Error:",
+              error,
+              "Ok",
+              ""
+            );
         return false;
     }
 };
@@ -61,9 +68,21 @@ export const deleteBiometricData = async () => {
         const { keysDeleted } = await rnBiometrics.deleteKeys();
 
         if (keysDeleted) {
-            Alert.alert("Success", "Biometric keys and credentials deleted.");
+            //Alert.alert("Success", "Biometric keys and credentials deleted.");
+            EtaAlert(
+                "Success",
+                 "Biometric keys and credentials deleted.",
+                 "Ok",
+                 ""
+               );
         } else {
-            Alert.alert("Warning", "Credentials deleted, but biometric keys not found.");
+            //Alert.alert("Warning", "Credentials deleted, but biometric keys not found.");
+            EtaAlert(
+                "Warning",
+                 "Credentials deleted, but biometric keys not found.",
+                 "Ok",
+                 ""
+               );
         }
     } catch (error) {
         console.log("Error deleting biometric data:", error);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { StyleSheet, SafeAreaView, View, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, SafeAreaView, View, TouchableOpacity, Alert, ScrollView } from "react-native";
 import { Layout, Text, Card } from "@ui-kitten/components";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useAuth } from "./ThemeContext";
@@ -303,6 +303,7 @@ const PendingAuth = () => {
     : requests;
 
   return (
+    <ScrollView>
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <SelectList
@@ -332,6 +333,7 @@ const PendingAuth = () => {
         </View>
       </SafeAreaView>
     </Layout>
+    </ScrollView>
   );
 };
 

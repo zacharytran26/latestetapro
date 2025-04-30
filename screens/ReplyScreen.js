@@ -20,6 +20,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useAuth } from "./ThemeContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { EtaAlert } from "./ExtraImports";
 
 const SendIcon = (props) => <Icon {...props} name="paper-plane-outline" />;
 const DeleteIcon = (props) => <Icon {...props} name="trash-2-outline" />;
@@ -38,14 +39,10 @@ export const ReplyScreen = ({ navigation }) => {
 
   const ReplyEmails = async () => {
     const response = await fetch(
-      `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-        authUser.uname
-      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-        authUser.sessionid
-      }&mode=replymessage&etamobilepro=1&nocache=${
-        Math.random().toString().split(".")[1]
-      }&persid=${authUser.currpersid}&msgid=${email.id}&topersid=${
-        email.sender
+      `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+      }&mode=replymessage&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&persid=${authUser.currpersid}&msgid=${email.id}&topersid=${email.sender
       }&string=${message}`,
       {
         method: "POST",
@@ -74,7 +71,7 @@ export const ReplyScreen = ({ navigation }) => {
             <View style={styles.emailInfoContainer}>
               <Text category="s1" style={styles.emailInfo}>
                 To: {email.from}
-              </Text>              
+              </Text>
             </View>
             <Input
               multiline={true}
@@ -93,7 +90,13 @@ export const ReplyScreen = ({ navigation }) => {
                 onPress={() => {
                   ReplyEmails();
                   navigation.goBack();
-                  Alert.alert("Message Sent");
+                  //Alert.alert("Message Sent");
+                  EtaAlert(
+                    "Success",
+                    'Message Sent',
+                    "Ok",
+                    ""
+                  );
                 }}
               >
                 Send
@@ -119,6 +122,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F9FC",
+  },  
+  scrollcontainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   safeArea: {
     flex: 1,

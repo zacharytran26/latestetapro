@@ -3,16 +3,18 @@ import { TouchableOpacity, Image } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import QualiStackNavigator from "./QualiStack";
 import { CustomDrawerContentQuali } from "./QualiMainDrawer";
+import { useOrientation } from "../screens/ExtraImports";
 
 const Drawer = createDrawerNavigator();
 
 export default function QualiDrawerNavigator() {
+  const isPortrait = useOrientation();
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContentQuali {...props} />}
       screenOptions={({ navigation }) => ({
         headerTitle: () => <LogoTitle navigation={navigation} />,
-        headerStyle: { height: 130, backgroundColor: "#5d95e8" },
+        headerStyle: { height: isPortrait ? 130 : 80, backgroundColor: "#5d95e8" },
         headerBackTitleVisible: false,
         headerTintColor: "white",
       })}

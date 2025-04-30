@@ -37,7 +37,6 @@ const SettingsScreen = ({ setProfileImage }) => {
     accessCode: "",
     username: "",
   });
-  console.log("for",form);
 
   const openInDrawerWebView = (url) => {
     setWebViewUrl(url);
