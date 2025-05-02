@@ -79,7 +79,7 @@ const BottomTabBar = ({ navigation, state }) => {
       onSelect={handleSelect}
       style={[
         styles.bottomnav,
-        { height: isPortrait ? 80 : 50 } // dynamic height based on orientation
+        { height: isPortrait ? 65 : 50 } // dynamic height based on orientation
       ]}
     >
       <BottomNavigationTab

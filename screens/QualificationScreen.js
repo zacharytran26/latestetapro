@@ -4,7 +4,6 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
-  FlatList,
   Modal,
   TextInput,
   TouchableWithoutFeedback,
@@ -15,6 +14,7 @@ import { Layout, Text, Icon, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
 import { launchImageLibrary } from 'react-native-image-picker';
 import { handleFetchError, EtaAlert } from "./ExtraImports";
+import { FlashList } from "@shopify/flash-list";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const QualiScreen = ({ navigation }) => {
@@ -250,61 +250,72 @@ const QualiScreen = ({ navigation }) => {
   });
 
   return (
-    <KeyboardAwareScrollView  enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <Layout style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.headerContainer}>
-          <Text category="h5" style={styles.headerText}>
-            Qualifications
-          </Text>
-        </View>
-        <View style={styles.header}>
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Search"
-              value={filter}
-              onChangeText={setFilter}
-              placeholderTextColor="#8F9BB3"
-            />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.screenWrapper}>
+
+        {/* Scrollable Section */}
+        <KeyboardAwareScrollView
+          enableAutomaticScroll={true}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <View style={styles.headerContainer}>
+            <Text category="h5" style={styles.headerText}>
+              Qualifications
+            </Text>
           </View>
-        </View>
-        <FlatList
-          data={filteredQualis}
-          renderItem={renderQuali}
-          keyExtractor={(item, index) => index.toString()}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          contentContainerStyle={styles.list}
-        />
-        {imageURI && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={previewVisible}
-            onRequestClose={() => setPreviewVisible(false)}
-          >
-            <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
-              <View style={styles.modalOverlay}>
-                <TouchableOpacity
-                  style={styles.modalView}
-                  onPress={() => {
-                    setPreviewVisible(false);
-                    navigation.navigate("Image", { imageUri: imageURI });
-                  }}
-                >
-                  <Image source={{ uri: imageURI }} style={styles.imagePreview} />
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-        )}
+          <View style={styles.header}>
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Search"
+                value={filter}
+                onChangeText={setFilter}
+                placeholderTextColor="#8F9BB3"
+              />
+            </View>
+          </View>
+
+          <FlashList
+            data={filteredQualis}
+            renderItem={renderQuali}
+            keyExtractor={(item, index) => index.toString()}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            contentContainerStyle={styles.list}
+          />
+
+          {imageURI && (
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={previewVisible}
+              onRequestClose={() => setPreviewVisible(false)}
+            >
+              <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
+                <View style={styles.modalOverlay}>
+                  <TouchableOpacity
+                    style={styles.modalView}
+                    onPress={() => {
+                      setPreviewVisible(false);
+                      navigation.navigate("Image", { imageUri: imageURI });
+                    }}
+                  >
+                    <Image source={{ uri: imageURI }} style={styles.imagePreview} />
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+          )}
+        </KeyboardAwareScrollView>
+
+        {/* Fixed Bottom */}
         <View style={styles.currentasof}>
           <Text>Current as of: {authUser.currentasof}</Text>
         </View>
-      </SafeAreaView>
-    </Layout>
-    </KeyboardAwareScrollView>
+      </View>
+    </SafeAreaView>
+  </Layout>
   );
 };
 
@@ -318,6 +329,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 20,
   },
+  screenWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },  
   currentasof: {
     alignItems: 'center',
     marginTop: 30

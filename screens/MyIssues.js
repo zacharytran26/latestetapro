@@ -101,44 +101,49 @@ const MyIssues = () => {
   );
 
   return (
-    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} >
-    <Layout style={styles.container}>
-      <StatusBar />
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search Issues"
-            value={filter}
-            onChangeText={setFilter}
-            placeholderTextColor="#8F9BB3"
-          />
-        </View>
-        <View style={styles.headerContainer}>
-          <Text category="h5" style={styles.counterText}>
-            Issues
-          </Text>
-        </View>
-
-
-        <View style={{ flex: 1 }}>
-          <FlashList
-            data={filteredIssues}
-            renderItem={RenderIssue}
-            keyExtractor={(item) => item.id.toString()} // Ensure unique key
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            contentContainerStyle={styles.list}
-            estimatedItemSize={129}
-          />
-        </View>
-        <View style={styles.currentasof}>
-          <Text>Current as of: {authUser.currentasof}</Text>
-        </View>
-      </SafeAreaView>
-    </Layout>
-    </KeyboardAwareScrollView>
-  );
+      <Layout style={styles.container}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.screenWrapper}>
+            {/* Scrollable Section */}
+            <KeyboardAwareScrollView
+              enableAutomaticScroll={true}
+              contentContainerStyle={styles.scrollContent}
+            >
+              <View style={styles.searchContainer}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Search Issues"
+                  value={filter}
+                  onChangeText={setFilter}
+                  placeholderTextColor="#8F9BB3"
+                />
+              </View>
+              <View style={styles.headerContainer}>
+                <Text category="h5" style={styles.counterText}>
+                  Issues
+                </Text>
+              </View>
+    
+              <FlashList
+                data={filteredIssues}
+                renderItem={RenderIssue}
+                keyExtractor={(item) => item.id.toString()}
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                contentContainerStyle={styles.list}
+                estimatedItemSize={129}
+              />
+            </KeyboardAwareScrollView>
+    
+            {/* Fixed Bottom Section */}
+            <View style={styles.currentasof}>
+              <Text>Current as of: {authUser.currentasof}</Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Layout>
+    );
+    
 };
 const styles = StyleSheet.create({
   container: {
@@ -146,10 +151,15 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f7f9fc",
   },
-  scrollcontainer: {
-    flexGrow: 1,
+  screenWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  
+  scrollContent: {
     paddingBottom: 20,
   },
+  
   currentasof: {
     alignItems: 'center',
     marginTop: 30

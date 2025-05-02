@@ -245,96 +245,108 @@ const TimelineCalendarScreen = () => {
   }
 
   return (
-    <ScrollView>
     <Layout style={styles.container}>
-      <StatusBar />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.rowContainer}>
-          <Button
-            onPress={decrementDate}
-            accessoryLeft={LeftIcon}
-            appearance="ghost"
-            style={styles.button}
-          />
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={styles.datepickerButton}
-          >
-            <Text style={styles.datepickerText}>
-              {schedDate.toDateString()}
-            </Text>
-          </TouchableOpacity>
-          <Button
-            onPress={incrementDate}
-            accessoryRight={RightIcon}
-            appearance="ghost"
-            style={styles.button}
-          />
-        </View>
-        {showDatePicker && (
-          <View style={styles.datePickerWrapper}>
-            <DateTimePicker
-              value={schedDate}
-              mode="date"
-              display={Platform.OS === "ios" ? "inline" : "default"}
-              onChange={handleDateChange}
-            />
-          </View>
-        )}
-        <View style={styles.flashListContainer}>
-          <FlashList
-            data={activities}
-            renderItem={({ item }) => (
-              <RenderActivity item={item} navigation={navigation}
-                openActivityDetails={openActivityDetails}
-                openStudentDetails={openStudentDetails}
-                openInstructorDetails={openInstructorDetails}
-                setSelectedActivity={setSelectedActivity}
-                setPreviewVisible={setPreviewVisible}
-              />
-            )}
-            keyExtractor={(item) =>
-              item.id ? item.id.toString() : Math.random().toString()
-            }
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            contentContainerStyle={styles.list}
-            estimatedItemSize={100}
-          />
-        </View>
-
-        {selectedActivity && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={previewVisible}
-            onRequestClose={() => setPreviewVisible(false)}
-          >
-            <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
-              <View style={styles.modalOverlay}>
-                <TouchableOpacity style={styles.modalView}>
-                  <Text style={styles.modalText}>
-                    Title: {selectedActivity?.title || "No Title"}
-                  </Text>
-                  <Text style={styles.modalText}>
-                    Description:{" "}
-                    {selectedActivity?.description || "No Description"}
-                  </Text>
-                  <Text style={styles.modalText}>
-                    Time: {selectedActivity?.time || "No Time"}
+        <View style={styles.screenWrapper}>
+          {/* Scrollable Content */}
+          <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <View>
+              <StatusBar />
+              <View style={styles.rowContainer}>
+                <Button
+                  onPress={decrementDate}
+                  accessoryLeft={LeftIcon}
+                  appearance="ghost"
+                  style={styles.button}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  style={styles.datepickerButton}
+                >
+                  <Text style={styles.datepickerText}>
+                    {schedDate.toDateString()}
                   </Text>
                 </TouchableOpacity>
+                <Button
+                  onPress={incrementDate}
+                  accessoryRight={RightIcon}
+                  appearance="ghost"
+                  style={styles.button}
+                />
               </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-        )}
-        <View style={styles.currentasof}>
-          <Text>Current as of: {authUser.currentasof}</Text>
+  
+              {showDatePicker && (
+                <View style={styles.datePickerWrapper}>
+                  <DateTimePicker
+                    value={schedDate}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "inline" : "default"}
+                    onChange={handleDateChange}
+                  />
+                </View>
+              )}
+  
+              <View style={styles.flashListContainer}>
+                <FlashList
+                  data={activities}
+                  renderItem={({ item }) => (
+                    <RenderActivity
+                      item={item}
+                      openActivityDetails={openActivityDetails}
+                      openStudentDetails={openStudentDetails}
+                      openInstructorDetails={openInstructorDetails}
+                      setSelectedActivity={setSelectedActivity}
+                      setPreviewVisible={setPreviewVisible}
+                    />
+                  )}
+                  keyExtractor={(item) =>
+                    item.id ? item.id.toString() : Math.random().toString()
+                  }
+                  refreshing={refreshing}
+                  onRefresh={handleRefresh}
+                  contentContainerStyle={styles.list}
+                  estimatedItemSize={100}
+                />
+              </View>
+  
+              {selectedActivity && (
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={previewVisible}
+                  onRequestClose={() => setPreviewVisible(false)}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => setPreviewVisible(false)}
+                  >
+                    <View style={styles.modalOverlay}>
+                      <TouchableOpacity style={styles.modalView}>
+                        <Text style={styles.modalText}>
+                          Title: {selectedActivity?.title || "No Title"}
+                        </Text>
+                        <Text style={styles.modalText}>
+                          Description:{" "}
+                          {selectedActivity?.description || "No Description"}
+                        </Text>
+                        <Text style={styles.modalText}>
+                          Time: {selectedActivity?.time || "No Time"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </Modal>
+              )}
+            </View>
+          </ScrollView>
+  
+          {/* Fixed Bottom */}
+          <View style={styles.currentasof}>
+            <Text>Current as of: {authUser.currentasof}</Text>
+          </View>
         </View>
       </SafeAreaView>
     </Layout>
-    </ScrollView>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
@@ -342,9 +354,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f7f9fc",
   },
+  screenWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  
+  scrollViewContent: {
+    paddingBottom: 16,
+  },
+  
   currentasof: {
+    backgroundColor: '#f7f9fc',
     alignItems: 'center',
-    marginTop: 30
   },
   datePickerWrapper: {
     justifyContent: "center", // Center vertically

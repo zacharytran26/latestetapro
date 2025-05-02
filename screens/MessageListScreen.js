@@ -278,97 +278,99 @@ const MessagesScreen = () => {
     );
   }
   return (
-    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
     <Layout style={styles.container}>
-      <StatusBar />
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            value={filter}
-            onChangeText={setFilter}
-          />
-        </View>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() =>
-              CreateNewMessage({ from: messages.topersid, topersid: "" })
-            }
-          >
-            <Icon
-              name="edit-2-outline"
-              width={32}
-              height={32}
-              fill={"#0c4bc9"}
+    <StatusBar />
+    <SafeAreaView style={{ flex: 1 }}>
+      {/* Scrollable content with keyboard handling */}
+      <KeyboardAwareScrollView
+        enableAutomaticScroll={true}
+        contentContainerStyle={styles.scrollcontainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{ flex: 1 }}>
+          {/* search, header, list, modal */}
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search"
+              value={filter}
+              onChangeText={setFilter}
             />
-          </TouchableOpacity>
+          </View>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() =>
+                CreateNewMessage({ from: messages.topersid, topersid: "" })
+              }
+            >
+              <Icon
+                name="edit-2-outline"
+                width={32}
+                height={32}
+                fill={"#0c4bc9"}
+              />
+            </TouchableOpacity>
 
+            <Text category="h5" style={styles.headerText}> Messages</Text>
 
-          <Text category="h5" style={styles.headerText}> Messages</Text>
+            <TouchableOpacity onPress={toggleNewMessages}>
+              <Icon
+                name="list-outline"
+                width={32}
+                height={32}
+                fill={showNewOnly ? "#0c4bc9" : "#8F9BB3"}
+              />
+            </TouchableOpacity>
+          </View>
 
-
-          <TouchableOpacity onPress={toggleNewMessages}>
-            <Icon
-              name="list-outline"
-              width={32}
-              height={32}
-              fill={showNewOnly ? "#0c4bc9" : "#8F9BB3"}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <FlashList
-          data={filteredMessages}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          contentContainerStyle={styles.list}
-          estimatedItemSize={100}
-          ListEmptyComponent={<View style={styles.noDataContainer}>
-            <Text style={styles.noDataText}>No New Messages</Text>
-          </View>}
-        />
-
-        {selectedMessage && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={previewVisible}
-            onRequestClose={() => {
-              setPreviewVisible(!previewVisible);
-            }}
-          >
-            <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
-              <View style={styles.modalOverlay}>
-                <TouchableOpacity
-                  style={styles.modalView}
-                  onPress={() => {
-                    setPreviewVisible(false);
-                    handlePress(selectedMessage);
-                  }}
-                >
-                  <Text style={styles.modalText}>
-                    From: {selectedMessage.from}
-                  </Text>
-                  <Text style={styles.modalText}>
-                    Date: {selectedMessage.date}
-                  </Text>
-                  <Text style={styles.modalText}>
-                    {selectedMessage.message}
-                  </Text>
-                </TouchableOpacity>
+          <FlashList
+            data={filteredMessages}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            contentContainerStyle={styles.list}
+            estimatedItemSize={100}
+            ListEmptyComponent={
+              <View style={styles.noDataContainer}>
+                <Text style={styles.noDataText}>No New Messages</Text>
               </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-        )}
-        <View style={styles.currentasof}>
-          <Text>Current as of: {authUser.currentasof}</Text>
+            }
+          />
+
+          {selectedMessage && (
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={previewVisible}
+              onRequestClose={() => setPreviewVisible(false)}
+            >
+              <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
+                <View style={styles.modalOverlay}>
+                  <TouchableOpacity
+                    style={styles.modalView}
+                    onPress={() => {
+                      setPreviewVisible(false);
+                      handlePress(selectedMessage);
+                    }}
+                  >
+                    <Text style={styles.modalText}>From: {selectedMessage.from}</Text>
+                    <Text style={styles.modalText}>Date: {selectedMessage.date}</Text>
+                    <Text style={styles.modalText}>{selectedMessage.message}</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+          )}
         </View>
-      </SafeAreaView>
-    </Layout>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+
+      {/* Fixed at bottom, outside the scroll */}
+      <View style={styles.currentasof}>
+        <Text>Current as of: {authUser.currentasof}</Text>
+      </View>
+    </SafeAreaView>
+  </Layout>
   );
 };
 

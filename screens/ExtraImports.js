@@ -105,8 +105,11 @@ export const EtaAlert = (title, msg, textAlert, customstr, onOkPress, onCancelPr
   if (customstr.includes("cancel")) {
     buttons.push({ text: "Cancel", onPress: onCancelPress, style: "cancel" });
   }
-
-  Alert.alert(title, msg, buttons);
+  if(customstr === ""){
+    Alert.alert(title, msg);
+  }else{
+    Alert.alert(title, msg, buttons);
+  }
 };
 
 const styles = StyleSheet.create({

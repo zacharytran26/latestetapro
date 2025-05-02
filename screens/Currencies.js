@@ -353,31 +353,38 @@ const CurrencyScreen = () => {
   }
 
   return (
-    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} >
-      <Layout style={styles.container}>
-        <StatusBar />
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.headerContainer}>
-            <Text category="h5" style={styles.counterText}>
-              Currencies
-            </Text>
-          </View>
-          <View style={styles.header}>
-            <TextInput
-              style={styles.input}
-              placeholder="Search"
-              value={filter}
-              onChangeText={setFilter}
-              placeholderTextColor="#8F9BB3"
-            />
-          </View>
-
-          <CheckBox checked={showExpired} onChange={handleAlertPress} style={styles.radio}>
-            <Text style={styles.toggleText}>
-              Show Expired
-            </Text>
-          </CheckBox>
-          <View style={{ flex: 1 }}>
+    <Layout style={styles.container}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.screenWrapper}>
+          {/* Scrollable Section */}
+          <KeyboardAwareScrollView
+            enableAutomaticScroll={true}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <View style={styles.headerContainer}>
+              <Text category="h5" style={styles.counterText}>
+                Currencies
+              </Text>
+            </View>
+  
+            <View style={styles.header}>
+              <TextInput
+                style={styles.input}
+                placeholder="Search"
+                value={filter}
+                onChangeText={setFilter}
+                placeholderTextColor="#8F9BB3"
+              />
+            </View>
+  
+            <CheckBox
+              checked={showExpired}
+              onChange={handleAlertPress}
+              style={styles.radio}
+            >
+              <Text style={styles.toggleText}>Show Expired</Text>
+            </CheckBox>
+  
             <FlashList
               data={displayedCurrencies}
               renderItem={renderCurrency}
@@ -387,40 +394,38 @@ const CurrencyScreen = () => {
               contentContainerStyle={styles.list}
               estimatedItemSize={129}
             />
-          </View>
-          {uploadedImageUri && (
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={previewVisible}
-              onRequestClose={() => {
-                setPreviewVisible(!previewVisible);
-              }}
-            >
-              <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
-                <View style={styles.modalOverlay}>
-                  <TouchableOpacity
-                    style={styles.modalView}
-                    onPress={() => {
-                      setPreviewVisible(false);
-                      navigation.navigate("Image", { imageUri: uploadedImageUri });
-                    }}
-                  >
-                    <Image
-                      source={{ uri: uploadedImageUri }}
-                      style={styles.imagePreview}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </TouchableWithoutFeedback>
-            </Modal>
-          )}
+  
+            {uploadedImageUri && (
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={previewVisible}
+                onRequestClose={() => setPreviewVisible(false)}
+              >
+                <TouchableWithoutFeedback onPress={() => setPreviewVisible(false)}>
+                  <View style={styles.modalOverlay}>
+                    <TouchableOpacity
+                      style={styles.modalView}
+                      onPress={() => {
+                        setPreviewVisible(false);
+                        navigation.navigate("Image", { imageUri: uploadedImageUri });
+                      }}
+                    >
+                      <Image source={{ uri: uploadedImageUri }} style={styles.imagePreview} />
+                    </TouchableOpacity>
+                  </View>
+                </TouchableWithoutFeedback>
+              </Modal>
+            )}
+          </KeyboardAwareScrollView>
+  
+          {/* Fixed Bottom */}
           <View style={styles.currentasof}>
             <Text>Current as of: {authUser.currentasof}</Text>
           </View>
-        </SafeAreaView>
-      </Layout>
-    </KeyboardAwareScrollView>
+        </View>
+      </SafeAreaView>
+    </Layout>
   );
 };
 
@@ -434,6 +439,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 20,
   },
+  screenWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },  
   radio: {
     flexDirection: 'row',
     alignItems: 'center',
