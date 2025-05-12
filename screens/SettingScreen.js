@@ -53,7 +53,6 @@ const SettingsScreen = ({ setProfileImage }) => {
   const updatePreferences = (isChecked) => {
   
     var surl = `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname}&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid}&mode=updateperf&etamobilepro=1&isPushEnabled=${isChecked}&persid=${authUser.currpersid}`;
-    console.log("surl",surl);
     fetch(surl)
       .then((response) => response.json())
       .then((json) => {

@@ -6,6 +6,7 @@ import {
   View,
   Alert,
   StatusBar,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
@@ -101,49 +102,58 @@ const MyIssues = () => {
   );
 
   return (
-      <Layout style={styles.container}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.screenWrapper}>
-            {/* Scrollable Section */}
-            <KeyboardAwareScrollView
-              enableAutomaticScroll={true}
-              contentContainerStyle={styles.scrollContent}
-            >
-              <View style={styles.searchContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Search Issues"
-                  value={filter}
-                  onChangeText={setFilter}
-                  placeholderTextColor="#8F9BB3"
-                />
-              </View>
-              <View style={styles.headerContainer}>
-                <Text category="h5" style={styles.counterText}>
-                  Issues
-                </Text>
-              </View>
-    
-              <FlashList
-                data={filteredIssues}
-                renderItem={RenderIssue}
-                keyExtractor={(item) => item.id.toString()}
+    <Layout style={styles.container}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.screenWrapper}>
+          {/* Scrollable Section */}
+          <KeyboardAwareScrollView
+            enableAutomaticScroll={true}
+            contentContainerStyle={styles.scrollContent}
+            refreshControl={
+              <RefreshControl
                 refreshing={refreshing}
                 onRefresh={handleRefresh}
-                contentContainerStyle={styles.list}
-                estimatedItemSize={129}
+                tintColor="#3366FF" // Optional: iOS spinner color
+                colors={["#3366FF"]} // Optional: Android spinner colors
               />
-            </KeyboardAwareScrollView>
-    
-            {/* Fixed Bottom Section */}
-            <View style={styles.currentasof}>
-              <Text>Current as of: {authUser.currentasof}</Text>
+            }
+          >
+            <View style={styles.headerContainer}>
+              <Text category="h5" style={styles.counterText}>
+                Issues
+              </Text>
             </View>
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Search Issues"
+                value={filter}
+                onChangeText={setFilter}
+                placeholderTextColor="#8F9BB3"
+              />
+            </View>
+
+
+            <FlashList
+              data={filteredIssues}
+              renderItem={RenderIssue}
+              keyExtractor={(item) => item.id.toString()}
+              refreshing={refreshing}
+              //onRefresh={handleRefresh}
+              contentContainerStyle={styles.list}
+              estimatedItemSize={129}
+            />
+          </KeyboardAwareScrollView>
+
+          {/* Fixed Bottom Section */}
+          <View style={styles.currentasof}>
+            <Text>Current as of: {authUser.currentasof}</Text>
           </View>
-        </SafeAreaView>
-      </Layout>
-    );
-    
+        </View>
+      </SafeAreaView>
+    </Layout>
+  );
+
 };
 const styles = StyleSheet.create({
   container: {
@@ -155,18 +165,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  
+
   scrollContent: {
     paddingBottom: 20,
   },
-  
+
   currentasof: {
     alignItems: 'center',
     marginTop: 30
   },
   headerContainer: {
     alignItems: "center",
-    marginTop: -20,
     justifyContent: "center",
   },
   loadingContainer: {

@@ -9,6 +9,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Alert,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Button, Icon, Spinner } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
@@ -286,6 +287,14 @@ const MessagesScreen = () => {
         enableAutomaticScroll={true}
         contentContainerStyle={styles.scrollcontainer}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+        <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#3366FF" // Optional: iOS spinner color
+              colors={["#3366FF"]} // Optional: Android spinner colors
+            />
+          }
       >
         <View style={{ flex: 1 }}>
           {/* search, header, list, modal */}
@@ -295,6 +304,7 @@ const MessagesScreen = () => {
               placeholder="Search"
               value={filter}
               onChangeText={setFilter}
+              placeholderTextColor="#8F9BB3"
             />
           </View>
           <View style={styles.header}>
@@ -328,7 +338,7 @@ const MessagesScreen = () => {
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             refreshing={refreshing}
-            onRefresh={handleRefresh}
+            // onRefresh={handleRefresh}
             contentContainerStyle={styles.list}
             estimatedItemSize={100}
             ListEmptyComponent={

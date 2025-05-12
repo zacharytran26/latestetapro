@@ -6,6 +6,7 @@ import {
   StatusBar,
   Alert,
   Modal,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Button, Icon, Card, Spinner } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
@@ -76,6 +77,7 @@ const FIFScreen = ({ navigation }) => {
       }&persid=${authUser.currpersid}`;
     const response = await fetch(url);
     const data = await response.json();
+console.log(data);
     if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
       return; // Stop further processing if an error is handled
     }
@@ -136,7 +138,6 @@ const FIFScreen = ({ navigation }) => {
     const isViewed = fifRef.current.has(item.ID); //isViewed is true if the ID is in the useRef Set() //LOOK HERE FOR THE BUG 
     const isConfirmed = confirmedItems.has(item.ID); //confirmedItems.has(item.ID) should return true
     const canConfirm = isViewed || item.OPENED === '1';
-    console.log(item);
     return (
       <Card
         style={styles.card}
@@ -192,7 +193,14 @@ const FIFScreen = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} refreshControl={
+    <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor="#3366FF" // Optional: iOS spinner color
+          colors={["#3366FF"]} // Optional: Android spinner colors
+        />
+        }>
 
     <Layout style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f7f9fc" />
@@ -208,7 +216,7 @@ const FIFScreen = ({ navigation }) => {
           renderItem={renderFif}
           keyExtractor={(item) => item.ID.toString()}
           refreshing={refreshing}
-          onRefresh={handleRefresh}
+          //onRefresh={handleRefresh}
           contentContainerStyle={styles.list}
           estimatedItemSize={150}
           ListEmptyComponent={<View style={styles.noDataContainer}>

@@ -11,6 +11,7 @@ import {
   Alert,
   AppState,
   ScrollView,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Spinner, Button } from "@ui-kitten/components";
 import { FlashList } from "@shopify/flash-list";
@@ -249,7 +250,13 @@ const TimelineCalendarScreen = () => {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.screenWrapper}>
           {/* Scrollable Content */}
-          <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <ScrollView contentContainerStyle={styles.scrollViewContent} refreshControl={
+            <RefreshControl
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      tintColor="#3366FF" // Optional: iOS spinner color
+      colors={["#3366FF"]} // Optional: Android spinner colors
+    />}>
             <View>
               <StatusBar />
               <View style={styles.rowContainer}>
@@ -303,7 +310,7 @@ const TimelineCalendarScreen = () => {
                     item.id ? item.id.toString() : Math.random().toString()
                   }
                   refreshing={refreshing}
-                  onRefresh={handleRefresh}
+                  //onRefresh={handleRefresh}
                   contentContainerStyle={styles.list}
                   estimatedItemSize={100}
                 />

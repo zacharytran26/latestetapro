@@ -8,7 +8,8 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Image,
-  Alert
+  Alert,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Icon, Spinner, Card } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
@@ -258,6 +259,14 @@ const QualiScreen = ({ navigation }) => {
         <KeyboardAwareScrollView
           enableAutomaticScroll={true}
           contentContainerStyle={styles.scrollContent}
+          refreshControl={
+          <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#3366FF" // Optional: iOS spinner color
+                colors={["#3366FF"]} // Optional: Android spinner colors
+              />
+            }
         >
           <View style={styles.headerContainer}>
             <Text category="h5" style={styles.headerText}>
@@ -281,7 +290,7 @@ const QualiScreen = ({ navigation }) => {
             renderItem={renderQuali}
             keyExtractor={(item, index) => index.toString()}
             refreshing={refreshing}
-            onRefresh={handleRefresh}
+            //onRefresh={handleRefresh}
             contentContainerStyle={styles.list}
           />
 
