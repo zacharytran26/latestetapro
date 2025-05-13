@@ -116,7 +116,7 @@ const LoginScreen = ({ navigation }) => {
     });
   }, []);
 
-  const { setUrl, authUser, setAuthUser, isLoggedIn, setIsLoggedIn, chgPwd, onetime, setOneTime,setPinFormat,setPwdFormat } = useAuth();
+  const { setUrl, authUser, setAuthUser, isLoggedIn, setIsLoggedIn, chgPwd, onetime, setOneTime, setPinFormat, setPwdFormat } = useAuth();
   useEffect(() => {
     if (authUser?.chgpwd === "1") {
       navigation.navigate("ChgPwd");
@@ -135,7 +135,7 @@ const LoginScreen = ({ navigation }) => {
   };
   // const CreateTermsAndConditionAlert = () => {
   //   const onViewPress = () => setIsTermsAccepted(true); // Show WebView
-  
+
   //   EtaAlert(
   //     "Terms & Conditions",
   //     "Please review our terms:",
@@ -298,7 +298,7 @@ const LoginScreen = ({ navigation }) => {
         // );
         EtaAlert(
           "Alert",
-         "You have entered an invalid access code. Only numeric characters are allowed.",
+          "You have entered an invalid access code. Only numeric characters are allowed.",
           "Ok",
           ""
         );
@@ -356,7 +356,7 @@ const LoginScreen = ({ navigation }) => {
               // Alert.alert(json.msg);
               EtaAlert(
                 "Alert",
-               json.msg,
+                json.msg,
                 "Ok",
                 ""
               );
@@ -403,6 +403,8 @@ const LoginScreen = ({ navigation }) => {
                   Acknowledge
                 </Button>
                 <WebView
+                  scrollEnabled={true}
+                  nestedScrollEnabled={true}
                   ref={webViewRef}
                   source={{ uri: urlview }}
                   onError={handleWebViewError}

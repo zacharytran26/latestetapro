@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   View,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Spinner, Toggle, Radio, RadioGroup } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
@@ -194,82 +195,89 @@ const StudentsScreen = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAwareScrollView  enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
+        tintColor="#3366FF" // Optional: iOS spinner color
+        colors={["#3366FF"]} // Optional: Android spinner colors
+      />
+    }>
 
-    <Layout style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.headerContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search students"
-            placeholderTextColor={'grey'}
-            value={filter}
-            onChangeText={setFilter}
-          />
-          <RadioGroup
-            selectedIndex={selectedStatusIndex}
-            onChange={async (index) => {
-              setSelectedStatusIndex(index);
-              const newStatus = index === 0; // Active or not
-              setShowActiveOnly(newStatus);
+      <Layout style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.headerContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search students"
+              placeholderTextColor={'grey'}
+              value={filter}
+              onChangeText={setFilter}
+            />
+            <RadioGroup
+              selectedIndex={selectedStatusIndex}
+              onChange={async (index) => {
+                setSelectedStatusIndex(index);
+                const newStatus = index === 0; // Active or not
+                setShowActiveOnly(newStatus);
 
-              if (selectedTeamId) {
-                // Re-fetch with new status and existing team
-                const teamData = await fetchTeam(selectedTeamId, newStatus);
-                if (teamData) {
-                  const teamStudents = teamData.studentdata.reduce((acc, item) => {
-                    if (item.students) {
-                      acc = acc.concat(
-                        item.students.map((student) => ({
-                          key: student.id,
-                          value: student.disname,
-                          teamId: item.team_id,
-                          ...student,
-                        }))
-                      );
-                    }
-                    return acc;
-                  }, []);
-                  setStudents(teamStudents);
+                if (selectedTeamId) {
+                  // Re-fetch with new status and existing team
+                  const teamData = await fetchTeam(selectedTeamId, newStatus);
+                  if (teamData) {
+                    const teamStudents = teamData.studentdata.reduce((acc, item) => {
+                      if (item.students) {
+                        acc = acc.concat(
+                          item.students.map((student) => ({
+                            key: student.id,
+                            value: student.disname,
+                            teamId: item.team_id,
+                            ...student,
+                          }))
+                        );
+                      }
+                      return acc;
+                    }, []);
+                    setStudents(teamStudents);
+                  }
+                } else {
+                  await fetchStudents(); // Fetch normally if no team is selected
                 }
-              } else {
-                await fetchStudents(); // Fetch normally if no team is selected
-              }
-            }}
-            style={styles.radioGroup}
-          >
-            <Radio>Active</Radio>
-            <Radio>Completed</Radio>
-          </RadioGroup>
+              }}
+              style={styles.radioGroup}
+            >
+              <Radio>Active</Radio>
+              <Radio>Completed</Radio>
+            </RadioGroup>
 
 
-          <SelectList
-            data={[{ key: "", value: "All Teams" }, ...teams]}
-            setSelected={handleTeamSelect}
-            placeholder={filterByTeam || "Select a team"}
-            boxStyles={styles.selectListBox}
-            value={filterByTeam}
-          />
-        </View>
-        <View style={styles.listContainer}>
-          <FlashList
-            data={sectionedData}
-            renderItem={({ item }) => {
-              if (item.type === "sectionHeader") {
-                return <SectionHeader title={item.title} />;
+            <SelectList
+              data={[{ key: "", value: "All Teams" }, ...teams]}
+              setSelected={handleTeamSelect}
+              placeholder={filterByTeam || "Select a team"}
+              boxStyles={styles.selectListBox}
+              value={filterByTeam}
+            />
+          </View>
+          <View style={styles.listContainer}>
+            <FlashList
+              data={sectionedData}
+              renderItem={({ item }) => {
+                if (item.type === "sectionHeader") {
+                  return <SectionHeader title={item.title} />;
+                }
+                return <StudentItem item={item} onPress={handlePress} />;
+              }}
+              estimatedItemSize={50}
+              keyExtractor={(item, index) =>
+                item.type === "sectionHeader" ? `header-${item.title}` : item.key
               }
-              return <StudentItem item={item} onPress={handlePress} />;
-            }}
-            estimatedItemSize={50}
-            keyExtractor={(item, index) =>
-              item.type === "sectionHeader" ? `header-${item.title}` : item.key
-            }
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-          />
-        </View>
-      </SafeAreaView>
-    </Layout>
+              refreshing={refreshing}
+              //onRefresh={handleRefresh}
+            />
+          </View>
+        </SafeAreaView>
+      </Layout>
     </KeyboardAwareScrollView>
   );
 };

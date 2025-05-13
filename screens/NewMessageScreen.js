@@ -8,6 +8,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Platform,
+  RefreshControl
 } from "react-native";
 import { Button, Layout, Text, Icon, Input, Select, SelectItem } from "@ui-kitten/components";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -119,6 +120,14 @@ const NewMessage = () => {
       enableOnAndroid={true}
       enableAutomaticScroll={true}
       keyboardShouldPersistTaps="handled"
+      refreshControl={
+          <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#3366FF" // Optional: iOS spinner color
+                colors={["#3366FF"]} // Optional: Android spinner colors
+              />
+              }
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Layout style={styles.container}>

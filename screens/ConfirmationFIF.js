@@ -22,7 +22,6 @@ const useInputState = (initialValue = "") => {
 const ConfirmFIF = ({ navigation }) => {
   const route = useRoute();
   const { fifdata } = route.params; // Passed JSON array with CONFIRM_CODE
-  console.log(fifdata);
   const pinInputState = useInputState(""); // Input for PIN
   const confirmInputState = useInputState("");
   const [confirm, setConfirm] = useState(false); // Determines if confirmation code is needed

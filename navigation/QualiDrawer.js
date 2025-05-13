@@ -3,7 +3,7 @@ import { TouchableOpacity, Image } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import QualiStackNavigator from "./QualiStack";
 import { CustomDrawerContentQuali } from "./QualiMainDrawer";
-import { useOrientation } from "../screens/ExtraImports";
+import { useOrientation, LogoTitle} from "../screens/ExtraImports";
 
 const Drawer = createDrawerNavigator();
 
@@ -13,7 +13,7 @@ export default function QualiDrawerNavigator() {
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContentQuali {...props} />}
       screenOptions={({ navigation }) => ({
-        headerTitle: () => <LogoTitle navigation={navigation} />,
+        headerTitle: () => <LogoTitle routeName="QualiStack" screenName="Quali" />,
         headerStyle: { height: isPortrait ? 130 : 80, backgroundColor: "#5d95e8" },
         headerBackTitleVisible: false,
         headerTintColor: "white",
@@ -24,20 +24,3 @@ export default function QualiDrawerNavigator() {
   );
 }
 
-function LogoTitle({ navigation }) {
-  return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "QualiStack", params: { screen: "Quali" } }],
-        })
-      }
-    >
-      <Image
-        style={{ width: 150, height: 50 }}
-        source={require("../assets/logo-transparent.png")}
-      />
-    </TouchableOpacity>
-  );
-}

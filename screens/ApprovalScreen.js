@@ -123,7 +123,13 @@ const Approve = ({ navigation }) => {
     }
 
     setEtaresponse({ ...data, action: authtype });
-    navigation.popTo("PendingAuth", { reqid: pdata.requestid, processed: true })
+    //regardless of the approved or denied pending auth, it will go back to the PendingAuth Screen
+    if(data.status === "0"){
+      navigation.popTo("PendingAuth", { reqid: pdata.requestid, processed: true }) 
+      EtaAlert('Success',data.msg,"Ok","");
+    }else if(data.status === "-1"){
+      EtaAlert('Failure',data.msg,"Ok","");
+    }
   };
 
 

@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   View,
+  RefreshControl
 } from "react-native";
 import { Layout, Text, Spinner } from "@ui-kitten/components";
 import { useAuth } from "./ThemeContext";
@@ -114,7 +115,14 @@ const InstructorsScreen = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
+    <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer} refreshControl={
+        <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#3366FF" // Optional: iOS spinner color
+              colors={["#3366FF"]} // Optional: Android spinner colors
+            />
+            }>
 
     <Layout style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -139,7 +147,7 @@ const InstructorsScreen = ({ navigation }) => {
               item.type === "sectionHeader" ? `header-${item.title}` : item.key
             }
             refreshing={refreshing}
-            onRefresh={handleRefresh}
+            //onRefresh={handleRefresh}
           />
         </View>
       </SafeAreaView>

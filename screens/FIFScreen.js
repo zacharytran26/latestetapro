@@ -77,7 +77,6 @@ const FIFScreen = ({ navigation }) => {
       }&persid=${authUser.currpersid}`;
     const response = await fetch(url);
     const data = await response.json();
-console.log(data);
     if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
       return; // Stop further processing if an error is handled
     }

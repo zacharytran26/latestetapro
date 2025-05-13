@@ -3,25 +3,8 @@ import { TouchableOpacity, Image } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeStackNavigator from "./HomeStack";
 import { CustomDrawerContent } from "./MainDrawer";
-import { useOrientation } from "../screens/ExtraImports";
+import { useOrientation, LogoTitle} from "../screens/ExtraImports";
 
-function LogoTitle({ navigation }) {
-  return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "HomeStack", params: { screen: "Home" } }],
-        })
-      }
-    >
-      <Image
-        style={{ width: 150, height: 50 }}
-        source={require("../assets/logo-transparent.png")}
-      />
-    </TouchableOpacity>
-  );
-}
 
 const Drawer = createDrawerNavigator();
 
@@ -32,7 +15,7 @@ const HomeDrawerNavigator = ({ navigation, route }) => {
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={({ navigation }) => ({
-        headerTitle: () => <LogoTitle navigation={navigation} />,
+        headerTitle: () => <LogoTitle routeName="HomeStack" screenName="Home" />,
         headerStyle: { height: isPortrait ? 130 : 80, backgroundColor: "#5d95e8" },
         headerBackTitleVisible: false,
         headerTintColor: "white",

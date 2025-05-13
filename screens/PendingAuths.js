@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { StyleSheet, SafeAreaView, View, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { StyleSheet, SafeAreaView, View, TouchableOpacity, Alert, ScrollView, RefreshControl } from "react-native";
 import { Layout, Text, Card } from "@ui-kitten/components";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useAuth } from "./ThemeContext";
@@ -303,36 +303,43 @@ const PendingAuth = () => {
     : requests;
 
   return (
-    <ScrollView>
-    <Layout style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <SelectList
-          data={[{ key: "", value: "All Teams" }, ...teams]}
-          setSelected={handleTeamSelect}
-          placeholder={filterByTeam || "Select a team"}
-          boxStyles={styles.selectListBox}
-          value={filterByTeam}
-        />
-        <FlashList
-          data={filteredRequests}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          renderItem={({ item }) => (
-            <RenderAuth
-              item={item}
-              onPressTime={handlePressTime}
-              onPressAuth={handlePressAuth}
-            />
-          )}
-          keyExtractor={(item) => item.key.toString()}
-          contentContainerStyle={styles.list}
-          estimatedItemSize={100}
-        />
-        <View style={styles.currentasof}>
-          <Text>Current as of: {authUser.currentasof}</Text>
-        </View>
-      </SafeAreaView>
-    </Layout>
+    <ScrollView refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
+        tintColor="#3366FF" // Optional: iOS spinner color
+        colors={["#3366FF"]} // Optional: Android spinner colors
+      />
+    }>
+      <Layout style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <SelectList
+            data={[{ key: "", value: "All Teams" }, ...teams]}
+            setSelected={handleTeamSelect}
+            placeholder={filterByTeam || "Select a team"}
+            boxStyles={styles.selectListBox}
+            value={filterByTeam}
+          />
+          <FlashList
+            data={filteredRequests}
+            refreshing={refreshing}
+            //onRefresh={handleRefresh}
+            renderItem={({ item }) => (
+              <RenderAuth
+                item={item}
+                onPressTime={handlePressTime}
+                onPressAuth={handlePressAuth}
+              />
+            )}
+            keyExtractor={(item) => item.key.toString()}
+            contentContainerStyle={styles.list}
+            estimatedItemSize={100}
+          />
+          <View style={styles.currentasof}>
+            <Text>Current as of: {authUser.currentasof}</Text>
+          </View>
+        </SafeAreaView>
+      </Layout>
     </ScrollView>
   );
 };

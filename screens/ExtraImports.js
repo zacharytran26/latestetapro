@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Image, StyleSheet, View, Text, Dimensions} from "react-native";
+import { Alert, Image, StyleSheet, View, Text, Dimensions, TouchableOpacity} from "react-native";
 import { useAuth } from "./ThemeContext";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
 import messaging from '@react-native-firebase/messaging';
+import { useNavigation } from '@react-navigation/native';
 
 export function handleFetchError(data, setAuthUser, setIsLoggedIn) {
   if (data.errcode === "-911") {
@@ -111,6 +112,35 @@ export const EtaAlert = (title, msg, textAlert, customstr, onOkPress, onCancelPr
     Alert.alert(title, msg, buttons);
   }
 };
+
+export function LogoTitle({routeName = '', screenName = ''}) {
+  const navigation = useNavigation();
+
+  const handlePress = () => {
+    if (routeName && screenName) {
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: routeName,
+            params: { screen: screenName},
+          },
+        ],
+      });
+    } else {
+      console.warn('Route name and screen name are required for navigation.');
+    }
+  };
+
+  return (
+    <TouchableOpacity onPress={handlePress}>
+      <Image
+        style={{ width: 150, height: 50 }}
+        source={require('../assets/logo-transparent.png')}
+      />
+    </TouchableOpacity>
+  );
+}
 
 const styles = StyleSheet.create({
   chevron: {
