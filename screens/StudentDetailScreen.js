@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -24,12 +24,19 @@ import { useAuth } from "./ThemeContext";
 import Contacts from "react-native-contacts";
 import { handleFetchError, EtaAlert } from "./ExtraImports";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useFocusEffect } from "@react-navigation/native";
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const StudentDetailScreen = ({ navigation }) => {
   const route = useRoute();
   const { detail } = route.params;
+console.log("detail", detail);
   const [image, setImage] = useState(null);
+  const [imageURI, setImageURI] = useState(null);
+  const [imageUploaded, setImageUploaded] = useState(false);
+  const [imageError, setImageError] = useState(false); // Track image loading error
   const [studDetail, setStudDetail] = useState({});
+  console.log("studDetail", studDetail);
   const { authUser, setAuthUser, setIsLoggedIn } = useAuth();
 
   const uric = `${authUser.host.replace(
@@ -39,9 +46,33 @@ const StudentDetailScreen = ({ navigation }) => {
     }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${studDetail.SYSDOCID
     }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
+
   useEffect(() => {
     fetchStudentDetails();
   }, []);
+
+
+  useEffect(() => {
+    const uri = `${authUser.host.replace(
+      "servlet/",
+      ""
+    )}/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
+      }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${studDetail.SYSDOCID
+      }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+
+    setImage(uri || imageURI || image);
+  }, [studDetail]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Run this when screen comes back into focus
+      if (imageUploaded) {
+        // fetchStudentDetails(); // Refresh details
+        setImageUploaded(false); // Reset the flag so it only runs once
+      }
+    }, [imageUploaded])
+  );
+
 
   //how to handle student 2
   var persRegId = 0;
@@ -135,238 +166,329 @@ const StudentDetailScreen = ({ navigation }) => {
     }
   };
 
+  const openImagePickerS = async (selected) => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+    var selectedImage = 0;
+    var imageUri;
+    launchImageLibrary(options, (result) => {
+      if (result.didCancel) {
+        //Alert.alert('User cancelled image picker');
+        EtaAlert(
+          "Error",
+          'User cancelled image picker',
+          "Ok",
+          ""
+        );
+      } else if (result.error) {
+        //Alert.alert('Image picker error: ', result.error);
+        EtaAlert(
+          "Error",
+          'Image picker error: ', result.error,
+          "Ok",
+          ""
+        );
+      } else {
+        imageUri = result.uri || result.assets?.[0]?.uri;
+        selectedImage = 1;
+        setImageURI(imageUri);
+        if (selectedImage == 1) {
+          const formData = new FormData();
+          formData.append("photo", {
+            uri: imageUri,
+            type: "image/png",
+            name: result.assets[0].fileName,
+          });
+          formData.append("pers_id", `${detail.id}`);
+          formData.append("pers_type", `${authUser.perstype}`);
+          formData.append("doc_type", "studProfilePic");
+          formData.append("title", "PersonProfile");
+          formData.append("file_type", result.assets[0].type);
+          formData.append("etaaction", "new");
+          formData.append("curuserid", `${authUser.currpersid}`);
+          formData.append("chg_tstamp", new Date());
+
+          const myurl = `${authUser.host}uploadBlobETAAll?`;
+          fetch(myurl, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "Content-Type": "multipart/form-data;",
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                setImage(imageUri);
+                setImageUploaded(true);
+                EtaAlert("Success", "Image uploaded successfully!", "Ok",
+                  "");
+              } else {
+                EtaAlert("Failure", "Image upload failed.", "Ok",
+                  "");
+              }
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
+        }
+
+      }
+    });
+
+  };
+
+  let avatarSource;
+  if (image) {
+    avatarSource = { uri: image }
+  } else {
+    avatarSource = require("../assets/person-icon.png")
+  }
+
+
   return (
     <ScrollView>
-    <Layout style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView>
-          <View style={styles.headerContainer}>
-            <Avatar
-              source={image ? { uri: image } : { uri: uric }}
-              style={styles.profileAvatar}
-            />
-            {studDetail && studDetail.isgrounded === "1" && (
-              <Text style={styles.groundedText}>
-                {studDetail.DISNAME} is GROUNDED
+      <Layout style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView>
+            <View style={styles.headerContainer}>
+              {studDetail.canEditPic === "1" ?
+                <TouchableOpacity onPress={() => openImagePickerS()} onLongPress={() => console.log("delete image")}>
+                  <Avatar
+                    source={avatarSource}
+                    style={styles.profileAvatar}
+                  />
+
+                </TouchableOpacity>
+                : <Avatar
+                  source={avatarSource}
+                  style={styles.profileAvatar}
+                />}
+              {studDetail && studDetail.isgrounded === "1" && (
+                <Text style={styles.groundedText}>
+                  {studDetail.DISNAME} is GROUNDED
+                </Text>
+              )}
+
+              <Text category="h1" style={styles.profileName}>
+                {studDetail ? studDetail.DISNAME : ""}
               </Text>
-            )}
+            </View>
 
-            <Text category="h1" style={styles.profileName}>
-              {studDetail ? studDetail.DISNAME : ""}
-            </Text>
-          </View>
+            <View style={styles.buttonGroup}>
+              <Button
+                onPress={addContact}
+                accessoryLeft={() => (
+                  <Icon name="account-plus" size={20} color="#fff" />
+                )}
+                style={styles.actionButton}
+              >
+                Add Contact
+              </Button>
+              <Button
+                onPress={() =>
+                  navigation.navigate("StudentMap", { course: studDetail })
+                }
+                accessoryLeft={() => <Icon name="map" size={20} color="#fff" />}
+                style={styles.actionButton}
+              >
+                Course Map
+              </Button>
+              <Button
+                onPress={() =>
+                  navigation.navigate("StudentCourse", { course: studDetail })
+                }
+                accessoryLeft={() => <Icon name="book" size={20} color="#fff" />}
+                style={styles.actionButton}
+              >
+                Course Details
+              </Button>
+            </View>
 
-          <View style={styles.buttonGroup}>
-            <Button
-              onPress={addContact}
-              accessoryLeft={() => (
-                <Icon name="account-plus" size={20} color="#fff" />
-              )}
-              style={styles.actionButton}
-            >
-              Add Contact
-            </Button>
-            <Button
-              onPress={() =>
-                navigation.navigate("StudentMap", { course: studDetail })
-              }
-              accessoryLeft={() => <Icon name="map" size={20} color="#fff" />}
-              style={styles.actionButton}
-            >
-              Course Map
-            </Button>
-            <Button
-              onPress={() =>
-                navigation.navigate("StudentCourse", { course: studDetail })
-              }
-              accessoryLeft={() => <Icon name="book" size={20} color="#fff" />}
-              style={styles.actionButton}
-            >
-              Course Details
-            </Button>
-          </View>
+            <View style={styles.sectionContainer}>
+              <Text category="h5" style={styles.sectionHeader}>
+                Contact Information
+              </Text>
+              <Card style={styles.card}>
+                {/* Email Row */}
+                {studDetail.EMAIL1 === "*not set*" ? (
+                  <View style={styles.contactRow}>
+                    <Icon name="email-outline" size={24} color="#4CAF50" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Email</Text>
+                      <Text style={styles.contactValue}>*not set*</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.contactRow}
+                    onPress={openAndFormatEmail}
+                  >
+                    <Icon name="email-outline" size={24} color="#4CAF50" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Email</Text>
+                      <Text style={styles.contactValue}>{studDetail.EMAIL1}</Text>
+                    </View>
+                    <Icon name="chevron-right" size={24} color="#AAA" />
+                  </TouchableOpacity>
+                )}
 
-          <View style={styles.sectionContainer}>
-            <Text category="h5" style={styles.sectionHeader}>
-              Contact Information
-            </Text>
-            <Card style={styles.card}>
-              {/* Email Row */}
-              {studDetail.EMAIL1 === "*not set*" ? (
-                <View style={styles.contactRow}>
-                  <Icon name="email-outline" size={24} color="#4CAF50" />
+                {/* Phone Row */}
+                {studDetail.PHONE === "*not set*" ? (
+                  <View style={styles.contactRow}>
+
+
+                    <Icon name="phone-outline" size={24} color="#3F51B5" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Phone</Text>
+                      <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.contactRow}
+                    onPress={callPhoneNumber}
+                  >
+                    <Icon name="phone-outline" size={24} color="#3F51B5" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Phone</Text>
+                      <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                    </View>
+                    <Icon name="chevron-right" size={24} color="#AAA" />
+                  </TouchableOpacity>
+                )}
+              </Card>
+            </View>
+
+            <View style={styles.sectionContainer}>
+              <Text category="h6" style={styles.sectionHeader}>
+                Course Information
+              </Text>
+              <Card style={styles.card}>
+                {/* Next Checkride */}
+                <View style={styles.infoRow}>
+                  <Icon name="calendar-check-outline" size={24} color="#4CAF50" />
                   <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Email</Text>
-                    <Text style={styles.contactValue}>*not set*</Text>
+                    <Text style={styles.label}>Next Checkride</Text>
+                    <Text style={styles.value}>{studDetail.NEXT_CHK}</Text>
                   </View>
                 </View>
-              ) : (
-                <TouchableOpacity
-                  style={styles.contactRow}
-                  onPress={openAndFormatEmail}
-                >
-                  <Icon name="email-outline" size={24} color="#4CAF50" />
+                <Divider style={styles.divider} />
+
+                {/* Last Flown */}
+                <View style={styles.infoRow}>
+                  <Icon name="airplane" size={24} color="#2196F3" />
                   <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Email</Text>
-                    <Text style={styles.contactValue}>{studDetail.EMAIL1}</Text>
-                  </View>
-                  <Icon name="chevron-right" size={24} color="#AAA" />
-                </TouchableOpacity>
-              )}
-
-              {/* Phone Row */}
-              {studDetail.PHONE === "*not set*" ? (
-                <View style={styles.contactRow}>
-
-
-                  <Icon name="phone-outline" size={24} color="#3F51B5" />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Phone</Text>
-                    <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                    <Text style={styles.label}>Last Flown</Text>
+                    <Text style={styles.value}>{studDetail.LAST_FLY}</Text>
                   </View>
                 </View>
-              ) : (
-                <TouchableOpacity
-                  style={styles.contactRow}
-                  onPress={callPhoneNumber}
-                >
-                  <Icon name="phone-outline" size={24} color="#3F51B5" />
+                <Divider style={styles.divider} />
+
+                {/* Course */}
+                <View style={styles.infoRow}>
+                  <Icon name="book-outline" size={24} color="#FF9800" />
                   <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Phone</Text>
-                    <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                    <Text style={styles.label}>Course</Text>
+                    <Text style={styles.value}>{studDetail.COURSE}</Text>
                   </View>
-                  <Icon name="chevron-right" size={24} color="#AAA" />
-                </TouchableOpacity>
-              )}
-            </Card>
-          </View>
-
-          <View style={styles.sectionContainer}>
-            <Text category="h6" style={styles.sectionHeader}>
-              Course Information
-            </Text>
-            <Card style={styles.card}>
-              {/* Next Checkride */}
-              <View style={styles.infoRow}>
-                <Icon name="calendar-check-outline" size={24} color="#4CAF50" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Next Checkride</Text>
-                  <Text style={styles.value}>{studDetail.NEXT_CHK}</Text>
                 </View>
-              </View>
-              <Divider style={styles.divider} />
+                <Divider style={styles.divider} />
 
-              {/* Last Flown */}
-              <View style={styles.infoRow}>
-                <Icon name="airplane" size={24} color="#2196F3" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Last Flown</Text>
-                  <Text style={styles.value}>{studDetail.LAST_FLY}</Text>
+                {/* Instructor */}
+                <View style={styles.infoRow}>
+                  <Icon name="account-tie-outline" size={24} color="#9C27B0" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>Instructor</Text>
+                    <Text style={styles.value}>{studDetail.INST}</Text>
+                  </View>
                 </View>
-              </View>
-              <Divider style={styles.divider} />
+                <Divider style={styles.divider} />
 
-              {/* Course */}
-              <View style={styles.infoRow}>
-                <Icon name="book-outline" size={24} color="#FF9800" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Course</Text>
-                  <Text style={styles.value}>{studDetail.COURSE}</Text>
+                {/* Team */}
+                <View style={styles.infoRow}>
+                  <Icon name="account-group-outline" size={24} color="#4CAF50" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>Team</Text>
+                    <Text style={styles.value}>{studDetail.TEAM}</Text>
+                  </View>
                 </View>
-              </View>
-              <Divider style={styles.divider} />
+                <Divider style={styles.divider} />
 
-              {/* Instructor */}
-              <View style={styles.infoRow}>
-                <Icon name="account-tie-outline" size={24} color="#9C27B0" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Instructor</Text>
-                  <Text style={styles.value}>{studDetail.INST}</Text>
+                {/* Training Calendar */}
+                <View style={styles.infoRow}>
+                  <Icon name="calendar-outline" size={24} color="#F44336" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>Training Calendar</Text>
+                    <Text style={styles.value}>{studDetail.TRAINCAL}</Text>
+                  </View>
                 </View>
-              </View>
-              <Divider style={styles.divider} />
+                <Divider style={styles.divider} />
 
-              {/* Team */}
-              <View style={styles.infoRow}>
-                <Icon name="account-group-outline" size={24} color="#4CAF50" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Team</Text>
-                  <Text style={styles.value}>{studDetail.TEAM}</Text>
+                {/* Flight Block */}
+                <View style={styles.infoRow}>
+                  <Icon name="clock-outline" size={24} color="#FFC107" />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>Flight Block</Text>
+                    <Text style={styles.value}>{studDetail.FLT_BLK}</Text>
+                  </View>
                 </View>
-              </View>
-              <Divider style={styles.divider} />
+              </Card>
+            </View>
 
-              {/* Training Calendar */}
-              <View style={styles.infoRow}>
-                <Icon name="calendar-outline" size={24} color="#F44336" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Training Calendar</Text>
-                  <Text style={styles.value}>{studDetail.TRAINCAL}</Text>
+            <View style={styles.sectionContainer}>
+              <Text category="h6" style={styles.sectionHeader}>
+                Progress Information
+              </Text>
+              <Card style={styles.card}>
+                <View style={styles.progressRow}>
+                  <Icon name="check-circle-outline" size={24} color="#4CAF50" />
+                  <Text style={styles.label}> Completed Units: </Text>
+                  <Text style={styles.value}>{studDetail.completed}</Text>
                 </View>
-              </View>
-              <Divider style={styles.divider} />
+                <Divider style={styles.divider} />
 
-              {/* Flight Block */}
-              <View style={styles.infoRow}>
-                <Icon name="clock-outline" size={24} color="#FFC107" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Flight Block</Text>
-                  <Text style={styles.value}>{studDetail.FLT_BLK}</Text>
+                <View style={styles.progressRow}>
+                  <Icon name="alert-circle" size={24} color="#FF9800" />
+                  <Text style={styles.label}> Remaining Units: </Text>
+                  <Text style={styles.value}>{studDetail.remaining}</Text>
                 </View>
-              </View>
-            </Card>
-          </View>
+                <Divider style={styles.divider} />
 
-          <View style={styles.sectionContainer}>
-            <Text category="h6" style={styles.sectionHeader}>
-              Progress Information
-            </Text>
-            <Card style={styles.card}>
-              <View style={styles.progressRow}>
-                <Icon name="check-circle-outline" size={24} color="#4CAF50" />
-                <Text style={styles.label}> Completed Units: </Text>
-                <Text style={styles.value}>{studDetail.completed}</Text>
-              </View>
-              <Divider style={styles.divider} />
+                <View style={styles.progressRow}>
+                  <Icon name="close-circle-outline" size={24} color="#F44336" />
+                  <Text style={styles.label}> Failed Units: </Text>
+                  <Text style={styles.value}>{studDetail.failures}</Text>
+                </View>
+                <Divider style={styles.divider} />
 
-              <View style={styles.progressRow}>
-                <Icon name="alert-circle" size={24} color="#FF9800" />
-                <Text style={styles.label}> Remaining Units: </Text>
-                <Text style={styles.value}>{studDetail.remaining}</Text>
-              </View>
-              <Divider style={styles.divider} />
+                <View style={styles.progressRow}>
+                  <Icon name="book-outline" size={24} color="#3F51B5" />
+                  <Text style={styles.label}> Attempted Units: </Text>
+                  <Text style={styles.value}>{studDetail.attempt}</Text>
+                </View>
+                <Divider style={styles.divider} />
 
-              <View style={styles.progressRow}>
-                <Icon name="close-circle-outline" size={24} color="#F44336" />
-                <Text style={styles.label}> Failed Units: </Text>
-                <Text style={styles.value}>{studDetail.failures}</Text>
-              </View>
-              <Divider style={styles.divider} />
+                <View style={styles.progressRow}>
+                  <Icon name="refresh-circle" size={24} color="#FF5722" />
+                  <Text style={styles.label}> Repeated Units: </Text>
+                  <Text style={styles.value}>{studDetail.repeat}</Text>
+                </View>
+                <Divider style={styles.divider} />
 
-              <View style={styles.progressRow}>
-                <Icon name="book-outline" size={24} color="#3F51B5" />
-                <Text style={styles.label}> Attempted Units: </Text>
-                <Text style={styles.value}>{studDetail.attempt}</Text>
-              </View>
-              <Divider style={styles.divider} />
-
-              <View style={styles.progressRow}>
-                <Icon name="refresh-circle" size={24} color="#FF5722" />
-                <Text style={styles.label}> Repeated Units: </Text>
-                <Text style={styles.value}>{studDetail.repeat}</Text>
-              </View>
-              <Divider style={styles.divider} />
-
-              <View style={styles.progressRow}>
-                <Icon name="clock-outline" size={24} color="#9E9E9E" />
-                <Text style={styles.label}> Incomplete Units: </Text>
-                <Text style={styles.value}>{studDetail.incomplete}</Text>
-              </View>
-            </Card>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Layout>
+                <View style={styles.progressRow}>
+                  <Icon name="clock-outline" size={24} color="#9E9E9E" />
+                  <Text style={styles.label}> Incomplete Units: </Text>
+                  <Text style={styles.value}>{studDetail.incomplete}</Text>
+                </View>
+              </Card>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Layout>
     </ScrollView>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -24,6 +24,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Contacts from "react-native-contacts";
 import { launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useFocusEffect } from "@react-navigation/native";
 
 const InstructorList = ({ navigation }) => {
   const route = useRoute();
@@ -33,8 +34,9 @@ const InstructorList = ({ navigation }) => {
   const [instDetail, setInstDetail] = useState({});
   const [imageError, setImageError] = useState(false); // Track image loading error
   const [imageURI, setImageURI] = useState(null);
-  const [localQualURIs, setLocalQualURIs] = useState({});
   const [imageUploaded, setImageUploaded] = useState(false);
+
+
 
   useEffect(() => {
     FetchInstructorDetail();
@@ -52,7 +54,7 @@ const InstructorList = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (instDetail.SYSDOCID) {
+    //if (instDetail.SYSDOCID){
       const uri = `${authUser.host.replace(
         "servlet/",
         ""
@@ -60,9 +62,22 @@ const InstructorList = ({ navigation }) => {
         }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${instDetail.SYSDOCID
         }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
-      setImage(uri);
-    }
+      setImage(uri || imageURI||image);
+    //}else{
+      //console.log("imageURI",imageURI);
+      //setImage(imageURI);
+    //}
   }, [instDetail]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Run this when screen comes back into focus
+      if (imageUploaded) {
+        FetchInstructorDetail(); // Refresh details
+        setImageUploaded(false); // Reset the flag so it only runs once
+      }
+    }, [imageUploaded])
+  );
 
   function callPhoneNumber() {
     const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${instDetail.PHONE
@@ -129,6 +144,7 @@ const InstructorList = ({ navigation }) => {
     }
   };
 
+
   const openImagePickerI = async (selected) => {
     const options = {
       mediaType: 'photo',
@@ -159,7 +175,6 @@ const InstructorList = ({ navigation }) => {
         imageUri = result.uri || result.assets?.[0]?.uri;
         selectedImage = 1;
         setImageURI(imageUri);
-
         if (selectedImage == 1) {
           const formData = new FormData();
           formData.append("photo", {
@@ -167,19 +182,14 @@ const InstructorList = ({ navigation }) => {
             type: "image/png",
             name: result.assets[0].fileName,
           });
-          formData.append("pers_id", `${authUser.currpersid}`);
+          formData.append("pers_id", `${detail.ID}`);
           formData.append("pers_type", `${authUser.perstype}`);
-          formData.append("any_type", "qual_id");
-          formData.append("any_id", selectedQual.QID);
-          if (authUser.perstype === "instructor") {
-            formData.append("doc_type", "instQual");
-            formData.append("title", "Instructor Qualification");
-          } else if (authUser.perstype === "student") {
-            formData.append("doc_type", "studQual");
-            formData.append("title", "Student Qualification");
-          }
+          formData.append("doc_type", "instProfilePic");
+          formData.append("title", "PersonProfile");
           formData.append("file_type", result.assets[0].type);
           formData.append("etaaction", "new");
+          formData.append("curuserid", `${authUser.currpersid}`);
+          formData.append("chg_tstamp", new Date());
 
           const myurl = `${authUser.host}uploadBlobETAAll?`;
           fetch(myurl, {
@@ -191,14 +201,13 @@ const InstructorList = ({ navigation }) => {
           })
             .then((response) => {
               if (response.ok) {
-                setLocalQualURIs((prevURIs) => ({
-                  ...prevURIs,
-                  [selectedQual.QID]: imageUri,
-                }));
+                setImage(imageUri);
                 setImageUploaded(true);
-                alert("Image uploaded successfully!");
+                EtaAlert("Success","Image uploaded successfully!","Ok",
+          "");
               } else {
-                alert("Image upload failed.");
+                EtaAlert("Failure","Image upload failed.","Ok",
+          "");
               }
             })
             .catch((error) => {
@@ -209,6 +218,53 @@ const InstructorList = ({ navigation }) => {
       }
     });
 
+  };
+
+  const DeleteImage = async () => {
+    try{
+      const request = await fetch(`${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+      }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+      }&mode=delimage&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+      }&persid=${authUser.currpersid}&persinstid=${picId}`);
+
+      /*
+      front end:
+      sends a request to the middleware/backend via a url from a fetch. 
+      needs to specify the path to the correct route handler, specify what stored procedure to execute, and all the parameters that
+      the stored proceudre needs 
+      once done, it will wait for the middleware/backend to execute and is expecting a response from the DB in a 
+      form of a json formatted string to parse
+
+      middleware: java database connectivity (jdbc) connect to, query, and manipulate an oracle DB
+      acts like a bridge between Java applications and DBMS
+
+      backend:
+      oracle DB running PostgreSQL
+
+      once 'translated' from middleware will call a stored procedure that would execute a code block
+      based on the solution. 
+      the stored procedure will contain SQL code to either create, read, update, or delete data.
+      Will then return a json formatted string back to application
+      
+      
+      */
+      const data = await request.json();
+      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+        return; // Stop further processing if an error is handled
+      }
+      if (handleFetchError(data)) {
+        // If an authentication error occurred, stop further processing
+        return;
+      }
+      setInstDetail(prev => ({
+        ...prev,
+        SYSDOCID: data.SYSDOCID,
+      }));
+      
+    }catch(error){
+      console.error("Error deleting an image.", error)
+    }
+    
   };
 
   //from home cal screen : ${detail.ID}  == ${detail.picid}
@@ -231,118 +287,113 @@ const InstructorList = ({ navigation }) => {
         return;
       }
       setInstDetail(data);
+      
     } catch (error) {
       console.error("Error fetching instructor details:", error);
     }
   };
 
+  let avatarSource;
+  if (instDetail.SYSDOCID === ""){
+    avatarSource = require("../assets/person-icon.png");
+  }else{
+    avatarSource = { uri: image };
+  }
+
   return (
     <KeyboardAwareScrollView enableAutomaticScroll={true} contentContainerStyle={styles.scrollcontainer}>
 
-    <Layout style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.profileSection}>
-            {authUser.perstype === "instructor" ? (<TouchableOpacity onPress={() => openImagePickerI()}>
-
-
-              <Avatar
-                source={
-                  image
-                    ? { uri: image }
-                    : imageError || !instDetail.SYSDOCID
-                      ? require("../assets/person-icon.png")
-                      : { uri: image }
-                }
+      <Layout style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.profileSection}>
+              {authUser.perstype === "instructor" ? (
+                <TouchableOpacity onPress={() => openImagePickerI()} onLongPress={() => console.log("delete image")}>
+                <Avatar
+                  source={avatarSource}
+                  style={styles.profileAvatar}
+                  onError={() => setImageError(true)} // Handle image load error
+                />
+              </TouchableOpacity>) : (<Avatar
+                source={avatarSource}
                 style={styles.profileAvatar}
                 onError={() => setImageError(true)} // Handle image load error
-              />
-            </TouchableOpacity>) : (<Avatar
-              source={
-                image
-                  ? { uri: image }
-                  : imageError || !instDetail.SYSDOCID
-                    ? require("../assets/person-icon.png")
-                    : { uri: image }
-              }
-              style={styles.profileAvatar}
-              onError={() => setImageError(true)} // Handle image load error
-            />)}
+              />)}
 
-            <Text category="h1" style={styles.profileName}>
-              {instDetail.DISNAME}
-            </Text>
-            <Button
-              onPress={addContact}
-              accessoryLeft={() => (
-                <Icon name="account-plus" size={20} color="#fff" />
-              )}
-              style={styles.actionButton}
-            >
-              Add Contact
-            </Button>
-          </View>
-          <View style={styles.sectionContainer}>
-            <Text category="h5" style={styles.sectionHeader}>
-              Instructor Information
-            </Text>
-            <Card style={styles.card}>
-              {/* Email Row */}
-              {instDetail.EMAIL === "*not set*" || instDetail.EMAIL === "" ? (
-                <View style={styles.contactRow}>
-                  <Icon name="email-outline" size={24} color="#4CAF50" />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Email</Text>
-                    <Text style={styles.contactValue}>*not set*</Text>
+              <Text category="h1" style={styles.profileName}>
+                {instDetail.DISNAME}
+              </Text>
+              <Button
+                onPress={addContact}
+                accessoryLeft={() => (
+                  <Icon name="account-plus" size={20} color="#fff" />
+                )}
+                style={styles.actionButton}
+              >
+                Add Contact
+              </Button>
+            </View>
+            <View style={styles.sectionContainer}>
+              <Text category="h5" style={styles.sectionHeader}>
+                Instructor Information
+              </Text>
+              <Card style={styles.card}>
+                {/* Email Row */}
+                {instDetail.EMAIL === "*not set*" || instDetail.EMAIL === "" ? (
+                  <View style={styles.contactRow}>
+                    <Icon name="email-outline" size={24} color="#4CAF50" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Email</Text>
+                      <Text style={styles.contactValue}>*not set*</Text>
+                    </View>
                   </View>
-                </View>
-              ) : (
-                <TouchableOpacity
-                  style={styles.contactRow}
-                  onPress={openAndFormatEmail}
-                >
-                  <Icon name="email-outline" size={24} color="#4CAF50" />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Email</Text>
-                    <Text style={styles.contactValue}>{instDetail.EMAIL}</Text>
-                  </View>
-                  <Icon name="chevron-right" size={24} color="#AAA" />
-                </TouchableOpacity>
-              )}
-              <Divider style={styles.divider} />
+                ) : (
+                  <TouchableOpacity
+                    style={styles.contactRow}
+                    onPress={openAndFormatEmail}
+                  >
+                    <Icon name="email-outline" size={24} color="#4CAF50" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Email</Text>
+                      <Text style={styles.contactValue}>{instDetail.EMAIL}</Text>
+                    </View>
+                    <Icon name="chevron-right" size={24} color="#AAA" />
+                  </TouchableOpacity>
+                )}
+                <Divider style={styles.divider} />
 
-              {/* Phone Row */}
-              {instDetail.PHONE === "*not set*" || instDetail.PHONE === "" ? (
-                <View style={styles.contactRow}>
+                {/* Phone Row */}
+                {instDetail.PHONE === "*not set*" || instDetail.PHONE === "" ? (
+                  <View style={styles.contactRow}>
 
 
-                  <Icon name="phone-outline" size={24} color="#3F51B5" />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Phone</Text>
-                    <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                    <Icon name="phone-outline" size={24} color="#3F51B5" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Phone</Text>
+                      <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                    </View>
                   </View>
-                </View>
-              ) : (
-                <TouchableOpacity
-                  style={styles.contactRow}
-                  onPress={callPhoneNumber}
-                >
-                  <Icon name="phone-outline" size={24} color="#3F51B5" />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.contactLabel}>Phone</Text>
-                    <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
-                  </View>
-                  <Icon name="chevron-right" size={24} color="#AAA" />
-                </TouchableOpacity>
-              )}
-            </Card>
-          </View>
-          <View style={styles.currentasof}>
-            <Text>Current as of: {authUser.currentasof}</Text>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Layout>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.contactRow}
+                    onPress={callPhoneNumber}
+                  >
+                    <Icon name="phone-outline" size={24} color="#3F51B5" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.contactLabel}>Phone</Text>
+                      <Text style={styles.contactValue}>{instDetail.PHONE}</Text>
+                    </View>
+                    <Icon name="chevron-right" size={24} color="#AAA" />
+                  </TouchableOpacity>
+                )}
+              </Card>
+            </View>
+            <View style={styles.currentasof}>
+              <Text>Current as of: {authUser.currentasof}</Text>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Layout>
     </KeyboardAwareScrollView>
   );
 };

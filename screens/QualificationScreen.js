@@ -164,9 +164,9 @@ const QualiScreen = ({ navigation }) => {
                   [selectedQual.QID]: imageUri,
                 }));
                 setImageUploaded(true);
-                alert("Image uploaded successfully!");
+                EtaAlert("Success","Image uploaded successfully!","Ok","")
               } else {
-                alert("Image upload failed.");
+                 EtaAlert("Failure", "Image Upload Failed.","Ok",)
               }
             })
             .catch((error) => {
