@@ -500,8 +500,8 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 16,
     width: '100%',
-    backgroundColor: '#0c4bc9',
-    borderColor: '#0c4bc9',
+    backgroundColor: '#2b4d9c',
+    borderColor: '#2b4d9c',
   },
   sso: {
     marginTop: 8,
