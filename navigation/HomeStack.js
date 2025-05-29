@@ -21,6 +21,13 @@ import SettingsScreen from "../screens/SettingScreen";
 import PendingAuths from "../screens/PendingAuths";
 import FIFScreen from "../screens/FIFScreen";
 import { useAuth } from "../screens/ThemeContext";
+// import RequestScreen from "../screens/RequestScreen";
+// import RequestQuick from "../screens/RequestQuick";
+// import RequestStudent from "../screens/RequestStudent";
+// import RequestRefresher from "../screens/RequestRefresher";
+// import RequestConfirmS from "../screens/RequestConfirm";
+// import RequestAdmin from "../screens/RequestAdmin";
+// import RequestRental from "../screens/RequestRental";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +70,13 @@ const HomeStackNavigator = ({ navigation, route }) => {
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="PendingAuth" component={PendingAuths} />
       <Stack.Screen name="FIF" component={FIFScreen} />
+      {/* <Stack.Screen name="Request" component={RequestScreen}/>
+      <Stack.Screen name="RequestQuicK" component={RequestQuick}/>
+      <Stack.Screen name="RequestStudent" component={RequestStudent}/>
+      <Stack.Screen name="RequestRefresh" component={RequestRefresher}/>
+      <Stack.Screen name="RequestConfirm" component={RequestConfirmS}/>
+      <Stack.Screen name="RequestAdmin" component={RequestAdmin}/>
+      <Stack.Screen name="RequestRental" component={RequestRental}/> */}
     </Stack.Navigator>
   );
 }

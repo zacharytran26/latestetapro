@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "848229695502",
+    "project_id": "rn-etapro",
+    "storage_bucket": "rn-etapro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848229695502:android:315c4591b76cd23c4e7c5f",
+        "android_client_info": {
+          "package_name": "com.talonsystems.androidtesting"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgnhEakU4HRmMQYPe-xg_t63As1VfN7lM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848229695502:android:cd3c56449c38e4364e7c5f",
+        "android_client_info": {
+          "package_name": "com.talonsystems.latest.etapro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgnhEakU4HRmMQYPe-xg_t63As1VfN7lM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

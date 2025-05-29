@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -8,7 +8,7 @@ import {
   ScrollView,
   Linking,
   Platform,
-} from "react-native";
+} from 'react-native';
 import {
   Layout,
   Text,
@@ -17,48 +17,48 @@ import {
   Button,
   ButtonGroup,
   Divider,
-} from "@ui-kitten/components";
-import { useRoute } from "@react-navigation/native";
-import { useAuth } from "./ThemeContext";
+} from '@ui-kitten/components';
+import {useRoute} from '@react-navigation/native';
+import {useAuth} from './ThemeContext';
 //import * as Contacts from "expo-contacts";
-import Contacts from "react-native-contacts";
-import { handleFetchError, EtaAlert } from "./ExtraImports";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useFocusEffect } from "@react-navigation/native";
-import { launchImageLibrary } from 'react-native-image-picker';
+import Contacts from 'react-native-contacts';
+import {handleFetchError, EtaAlert} from './ExtraImports';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useFocusEffect} from '@react-navigation/native';
+import {launchImageLibrary} from 'react-native-image-picker';
 
-const StudentDetailScreen = ({ navigation }) => {
+const StudentDetailScreen = ({navigation}) => {
   const route = useRoute();
-  const { detail } = route.params;
-console.log("detail", detail);
+  const {detail} = route.params;
   const [image, setImage] = useState(null);
   const [imageURI, setImageURI] = useState(null);
   const [imageUploaded, setImageUploaded] = useState(false);
   const [imageError, setImageError] = useState(false); // Track image loading error
   const [studDetail, setStudDetail] = useState({});
-  console.log("studDetail", studDetail);
-  const { authUser, setAuthUser, setIsLoggedIn } = useAuth();
+  const {authUser, setAuthUser, setIsLoggedIn} = useAuth();
 
   const uric = `${authUser.host.replace(
-    "servlet/",
-    ""
-  )}/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
-    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${studDetail.SYSDOCID
-    }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
-
+    'servlet/',
+    '',
+  )}/php/upload/view.php?imgRes=10&viewPers=${
+    authUser.currpersid
+  }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
+    studDetail.SYSDOCID
+  }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
   useEffect(() => {
     fetchStudentDetails();
   }, []);
 
-
   useEffect(() => {
     const uri = `${authUser.host.replace(
-      "servlet/",
-      ""
-    )}/php/upload/view.php?imgRes=10&viewPers=${authUser.currpersid
-      }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${studDetail.SYSDOCID
-      }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+      'servlet/',
+      '',
+    )}/php/upload/view.php?imgRes=10&viewPers=${
+      authUser.currpersid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${
+      studDetail.SYSDOCID
+    }&svr=${authUser.svr}&s=${authUser.sessionid}&c=eta${authUser.schema}`;
 
     setImage(uri || imageURI || image);
   }, [studDetail]);
@@ -70,9 +70,8 @@ console.log("detail", detail);
         // fetchStudentDetails(); // Refresh details
         setImageUploaded(false); // Reset the flag so it only runs once
       }
-    }, [imageUploaded])
+    }, [imageUploaded]),
   );
-
 
   //how to handle student 2
   var persRegId = 0;
@@ -80,93 +79,80 @@ console.log("detail", detail);
   const fetchStudentDetails = async () => {
     try {
       const response = await fetch(
-        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
-        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
-        }&mode=getstudentdetail&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
-        }&persid=${authUser.currpersid}&persregid=${persRegId}`
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
+          authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
+          authUser.sessionid
+        }&mode=getstudentdetail&etamobilepro=1&nocache=${
+          Math.random().toString().split('.')[1]
+        }&persid=${authUser.currpersid}&persregid=${persRegId}`,
       );
       const data = await response.json();
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
+      console.log("data", data);
       setStudDetail(data);
     } catch (error) {
       //Alert.alert("Error", error.message || "An error occurred");
-      EtaAlert(
-        "Error",
-        error.message || "An error occurred",
-        "Ok",
-        ""
-      );
+      EtaAlert('Error', error.message || 'An error occurred', 'Ok', '');
     }
   };
 
   function callPhoneNumber() {
-    const phoneNumber = `${Platform.OS !== "android" ? "telprompt" : "tel"}:${studDetail.PHONE
-      }`;
+    const phoneNumber = `${Platform.OS !== 'android' ? 'telprompt' : 'tel'}:${
+      studDetail.PHONE
+    }`;
 
     Linking.canOpenURL(phoneNumber)
-      .then((supported) => {
+      .then(supported => {
         if (supported) Linking.openURL(phoneNumber);
       })
-      .catch((error) => console.log(error));
+      .catch(error => console.log(error));
   }
 
   function openAndFormatEmail() {
     const link = `mailto:${studDetail.EMAIL1}`;
 
     Linking.canOpenURL(link)
-      .then((supported) => {
+      .then(supported => {
         if (supported) Linking.openURL(link);
       })
-      .catch((err) => console.log(error));
+      .catch(err => console.log(error));
   }
 
   const addContact = async () => {
     const contact = {
-      familyName: studDetail.DISNAME || "Unknown",
+      familyName: studDetail.DISNAME || 'Unknown',
       //givenName:'',
-      emailAddresses: [{ label: 'work', email: studDetail.EMAIL1 }],
-      phoneNumbers: [{ label: 'mobile', number: studDetail.PHONE }],
+      emailAddresses: [{label: 'work', email: studDetail.EMAIL1}],
+      phoneNumbers: [{label: 'mobile', number: studDetail.PHONE}],
     };
 
     try {
       //const contactId = await Contacts.addContactAsync(contact);
-      const contactId = await Contacts.addContact(contact).then(
-        (contactId) => {
-          if (contactId) {
-            //Alert.alert("Success", "Contact added successfully!");
-            EtaAlert(
-              "Success",
-              "Contact added successfully!",
-              "Ok",
-              ""
-            );
-          } else {
-            //Alert.alert("Failed", "Failed to add contact.");
-            EtaAlert(
-              "Failure",
-              "Failed to add contact.",
-              "Ok",
-              ""
-            );
-          }
+      const contactId = await Contacts.addContact(contact).then(contactId => {
+        if (contactId) {
+          //Alert.alert("Success", "Contact added successfully!");
+          EtaAlert('Success', 'Contact added successfully!', 'Ok', '');
+        } else {
+          //Alert.alert("Failed", "Failed to add contact.");
+          EtaAlert('Failure', 'Failed to add contact.', 'Ok', '');
         }
-      );
-
+      });
     } catch (error) {
       //console.error("Error adding contact:"+error.toString());
       //Alert.alert("Error", "An error occurred while adding the contact.");
       EtaAlert(
-        "Error",
-        "An error occurred while adding the contact.",
-        "Ok",
-        ""
+        'Error',
+        'An error occurred while adding the contact.',
+        'Ok',
+        '',
       );
     }
   };
 
-  const openImagePickerS = async (selected) => {
+  const openImagePickerS = async selected => {
     const options = {
       mediaType: 'photo',
       includeBase64: false,
@@ -175,79 +161,98 @@ console.log("detail", detail);
     };
     var selectedImage = 0;
     var imageUri;
-    launchImageLibrary(options, (result) => {
+    launchImageLibrary(options, result => {
       if (result.didCancel) {
         //Alert.alert('User cancelled image picker');
-        EtaAlert(
-          "Error",
-          'User cancelled image picker',
-          "Ok",
-          ""
-        );
+        EtaAlert('Error', 'User cancelled image picker', 'Ok', '');
       } else if (result.error) {
         //Alert.alert('Image picker error: ', result.error);
-        EtaAlert(
-          "Error",
-          'Image picker error: ', result.error,
-          "Ok",
-          ""
-        );
+        EtaAlert('Error', 'Image picker error: ', result.error, 'Ok', '');
       } else {
         imageUri = result.uri || result.assets?.[0]?.uri;
         selectedImage = 1;
         setImageURI(imageUri);
         if (selectedImage == 1) {
           const formData = new FormData();
-          formData.append("photo", {
+          formData.append('photo', {
             uri: imageUri,
-            type: "image/png",
+            type: 'image/png',
             name: result.assets[0].fileName,
           });
-          formData.append("pers_id", `${detail.id}`);
-          formData.append("pers_type", `${authUser.perstype}`);
-          formData.append("doc_type", "studProfilePic");
-          formData.append("title", "PersonProfile");
-          formData.append("file_type", result.assets[0].type);
-          formData.append("etaaction", "new");
-          formData.append("curuserid", `${authUser.currpersid}`);
-          formData.append("chg_tstamp", new Date());
+          formData.append('pers_id', `${detail.id}`);
+          formData.append('pers_type', `${authUser.perstype}`);
+          formData.append('doc_type', 'studProfilePic');
+          formData.append('title', 'PersonProfile');
+          formData.append('file_type', result.assets[0].type);
+          formData.append('etaaction', 'new');
+          formData.append('curuserid', `${authUser.currpersid}`);
+          formData.append('chg_tstamp', new Date());
 
           const myurl = `${authUser.host}uploadBlobETAAll?`;
           fetch(myurl, {
-            method: "POST",
+            method: 'POST',
             body: formData,
             headers: {
-              "Content-Type": "multipart/form-data;",
+              'Content-Type': 'multipart/form-data;',
             },
           })
-            .then((response) => {
+            .then(response => {
               if (response.ok) {
                 setImage(imageUri);
                 setImageUploaded(true);
-                EtaAlert("Success", "Image uploaded successfully!", "Ok",
-                  "");
+                EtaAlert('Success', 'Image uploaded successfully!', 'Ok', '');
               } else {
-                EtaAlert("Failure", "Image upload failed.", "Ok",
-                  "");
+                EtaAlert('Failure', 'Image upload failed.', 'Ok', '');
               }
             })
-            .catch((error) => {
-              console.log("error", error);
+            .catch(error => {
+              console.log('error', error);
             });
         }
-
       }
     });
+  };
 
+  const DeleteImage = async () => {
+    try {
+      const request = await fetch(
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
+          authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
+          authUser.sessionid
+        }&mode=deleteprofilepic&etamobilepro=1&nocache=${
+          Math.random().toString().split('.')[1]
+        }&persid=${authUser.currpersid}&sysdocid=${studDetail.SYSDOCID}`,
+      );
+      const data = await request.json();
+      if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+        return; // Stop further processing if an error is handled
+      }
+      if (handleFetchError(data)) {
+        // If an authentication error occurred, stop further processing
+        return;
+      }
+      setStudDetail(prev => ({
+        ...prev,
+        SYSDOCID: data.sys_doc_id,
+      }));
+      EtaAlert('Success', 'Image was deleted successfully!', 'Ok', '');
+    } catch (error) {
+      console.error('Error deleting an image.', error);
+    }
   };
 
   let avatarSource;
-  if (image) {
-    avatarSource = { uri: image }
+  // if (image) {
+  //   avatarSource = { uri: image }
+  // } else {
+  //   avatarSource = require("../assets/person-icon.png")
+  // }
+  if (studDetail.SYSDOCID === '' || studDetail.SYSDOCID === '-1') {
+    avatarSource = require('../assets/person-icon.png');
   } else {
-    avatarSource = require("../assets/person-icon.png")
+    avatarSource = {uri: image};
   }
-
 
   return (
     <ScrollView>
@@ -255,26 +260,45 @@ console.log("detail", detail);
         <SafeAreaView style={styles.safeArea}>
           <ScrollView>
             <View style={styles.headerContainer}>
-              {studDetail.canEditPic === "1" ?
-                <TouchableOpacity onPress={() => openImagePickerS()} onLongPress={() => console.log("delete image")}>
-                  <Avatar
-                    source={avatarSource}
-                    style={styles.profileAvatar}
-                  />
-
+              {studDetail.canEditPic === '1' ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    if (studDetail.canEditPic === '1') {
+                      openImagePickerS();
+                    } else {
+                      EtaAlert(
+                        'Access Denied',
+                        "You don't have permission.",
+                        'OK',
+                        '',
+                      );
+                    }
+                  }}
+                  onLongPress={() => {
+                    if (studDetail.canDeletePic === '1') {
+                      DeleteImage();
+                    } else {
+                      EtaAlert(
+                        'Access Denied',
+                        "You don't have permission to delete.",
+                        'OK',
+                        '',
+                      );
+                    }
+                  }}>
+                  <Avatar source={avatarSource} style={styles.profileAvatar} />
                 </TouchableOpacity>
-                : <Avatar
-                  source={avatarSource}
-                  style={styles.profileAvatar}
-                />}
-              {studDetail && studDetail.isgrounded === "1" && (
+              ) : (
+                <Avatar source={avatarSource} style={styles.profileAvatar} />
+              )}
+              {studDetail && studDetail.isgrounded === '1' && (
                 <Text style={styles.groundedText}>
                   {studDetail.DISNAME} is GROUNDED
                 </Text>
               )}
 
               <Text category="h1" style={styles.profileName}>
-                {studDetail ? studDetail.DISNAME : ""}
+                {studDetail ? studDetail.DISNAME : ''}
               </Text>
             </View>
 
@@ -284,26 +308,25 @@ console.log("detail", detail);
                 accessoryLeft={() => (
                   <Icon name="account-plus" size={20} color="#fff" />
                 )}
-                style={styles.actionButton}
-              >
+                style={styles.actionButton}>
                 Add Contact
               </Button>
               <Button
                 onPress={() =>
-                  navigation.navigate("StudentMap", { course: studDetail })
+                  navigation.navigate('StudentMap', {course: studDetail})
                 }
                 accessoryLeft={() => <Icon name="map" size={20} color="#fff" />}
-                style={styles.actionButton}
-              >
+                style={styles.actionButton}>
                 Course Map
               </Button>
               <Button
                 onPress={() =>
-                  navigation.navigate("StudentCourse", { course: studDetail })
+                  navigation.navigate('StudentCourse', {course: studDetail})
                 }
-                accessoryLeft={() => <Icon name="book" size={20} color="#fff" />}
-                style={styles.actionButton}
-              >
+                accessoryLeft={() => (
+                  <Icon name="book" size={20} color="#fff" />
+                )}
+                style={styles.actionButton}>
                 Course Details
               </Button>
             </View>
@@ -314,7 +337,7 @@ console.log("detail", detail);
               </Text>
               <Card style={styles.card}>
                 {/* Email Row */}
-                {studDetail.EMAIL1 === "*not set*" ? (
+                {studDetail.EMAIL1 === '*not set*' ? (
                   <View style={styles.contactRow}>
                     <Icon name="email-outline" size={24} color="#4CAF50" />
                     <View style={styles.textContainer}>
@@ -325,37 +348,39 @@ console.log("detail", detail);
                 ) : (
                   <TouchableOpacity
                     style={styles.contactRow}
-                    onPress={openAndFormatEmail}
-                  >
+                    onPress={openAndFormatEmail}>
                     <Icon name="email-outline" size={24} color="#4CAF50" />
                     <View style={styles.textContainer}>
                       <Text style={styles.contactLabel}>Email</Text>
-                      <Text style={styles.contactValue}>{studDetail.EMAIL1}</Text>
+                      <Text style={styles.contactValue}>
+                        {studDetail.EMAIL1}
+                      </Text>
                     </View>
                     <Icon name="chevron-right" size={24} color="#AAA" />
                   </TouchableOpacity>
                 )}
 
                 {/* Phone Row */}
-                {studDetail.PHONE === "*not set*" ? (
+                {studDetail.PHONE === '*not set*' ? (
                   <View style={styles.contactRow}>
-
-
                     <Icon name="phone-outline" size={24} color="#3F51B5" />
                     <View style={styles.textContainer}>
                       <Text style={styles.contactLabel}>Phone</Text>
-                      <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                      <Text style={styles.contactValue}>
+                        {studDetail.PHONE}
+                      </Text>
                     </View>
                   </View>
                 ) : (
                   <TouchableOpacity
                     style={styles.contactRow}
-                    onPress={callPhoneNumber}
-                  >
+                    onPress={callPhoneNumber}>
                     <Icon name="phone-outline" size={24} color="#3F51B5" />
                     <View style={styles.textContainer}>
                       <Text style={styles.contactLabel}>Phone</Text>
-                      <Text style={styles.contactValue}>{studDetail.PHONE}</Text>
+                      <Text style={styles.contactValue}>
+                        {studDetail.PHONE}
+                      </Text>
                     </View>
                     <Icon name="chevron-right" size={24} color="#AAA" />
                   </TouchableOpacity>
@@ -370,7 +395,11 @@ console.log("detail", detail);
               <Card style={styles.card}>
                 {/* Next Checkride */}
                 <View style={styles.infoRow}>
-                  <Icon name="calendar-check-outline" size={24} color="#4CAF50" />
+                  <Icon
+                    name="calendar-check-outline"
+                    size={24}
+                    color="#4CAF50"
+                  />
                   <View style={styles.textContainer}>
                     <Text style={styles.label}>Next Checkride</Text>
                     <Text style={styles.value}>{studDetail.NEXT_CHK}</Text>
@@ -410,7 +439,11 @@ console.log("detail", detail);
 
                 {/* Team */}
                 <View style={styles.infoRow}>
-                  <Icon name="account-group-outline" size={24} color="#4CAF50" />
+                  <Icon
+                    name="account-group-outline"
+                    size={24}
+                    color="#4CAF50"
+                  />
                   <View style={styles.textContainer}>
                     <Text style={styles.label}>Team</Text>
                     <Text style={styles.value}>{studDetail.TEAM}</Text>
@@ -496,20 +529,20 @@ console.log("detail", detail);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F9FC",
+    backgroundColor: '#F7F9FC',
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#555",
+    fontWeight: '600',
+    color: '#555',
   },
   value: {
     fontSize: 16,
-    fontWeight: "400",
-    color: "#333",
+    fontWeight: '400',
+    color: '#333',
   },
   headerContainer: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   textContainer: {
     flex: 1,
@@ -517,68 +550,67 @@ const styles = StyleSheet.create({
   },
   contactLabel: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#555",
+    fontWeight: '600',
+    color: '#555',
   },
   contactValue: {
     fontSize: 16,
-    fontWeight: "400",
-    color: "#333",
+    fontWeight: '400',
+    color: '#333',
   },
   safeArea: {
     flex: 1,
   },
   contactRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 12,
   },
   headerBackground: {
-    width: "100%",
+    width: '100%',
     height: 180,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   profileAvatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
     marginBottom: 10,
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderWidth: 2,
   },
   progressRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 6,
   },
   groundedText: {
-    color: "red",
-    fontWeight: "bold",
+    color: 'red',
+    fontWeight: 'bold',
     fontSize: 16,
   },
   profileName: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#2E3A59",
+    fontWeight: 'bold',
+    color: '#2E3A59',
   },
   buttonGroup: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
     marginVertical: 12,
-
   },
   actionButton: {
     flex: 1,
     marginHorizontal: 6,
     marginRight: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center", // Ensures both icon and text are centered
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // Ensures both icon and text are centered
   },
   sectionContainer: {
     marginVertical: 8,
@@ -586,28 +618,28 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#4A5568",
+    fontWeight: 'bold',
+    color: '#4A5568',
     marginBottom: 8,
   },
   card: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
+    backgroundColor: '#fff',
+    shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     elevation: 3,
   },
   infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 6,
   },
   cardText: {
     fontSize: 14,
     marginLeft: 8,
-    color: "#333",
+    color: '#333',
   },
   divider: {
     marginVertical: 8,

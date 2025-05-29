@@ -78,7 +78,6 @@ const ConfirmFIF = ({ navigation }) => {
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
-      console.log(data);
       //console.log("Response Data:", data);
       setEtaresponse(data); // Store response in state
     } catch (error) {

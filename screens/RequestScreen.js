@@ -19,10 +19,10 @@ const RequestScreen = ({ navigation }) => {
     const [filterByInst, setFilterByInst] = useState("");
     const [filterBySite, setFilterBySite] = useState("");
 
-    const options = ["Option 1", "Option 2", "Option 3"];
+    const options = ["Course", "Admin", "Rental"];
     const siteOptions = ["Site A", "Site B", "Site C"];
 
-    const handleDateChange = (selectedDate) => {
+    const handleDateChange = (event, selectedDate) => {
         setShowDatePicker(false);
         if (selectedDate) {
             setSchedDate(selectedDate);
@@ -76,18 +76,9 @@ const RequestScreen = ({ navigation }) => {
             <SelectList
                 data={options.map((item) => ({ key: item, value: item }))}
                 setSelected={(value) => setSelectedIndex(new IndexPath(options.indexOf(value)))}
-                placeholder="Select an Option"
+                placeholder="Select a Request Type"
                 boxStyles={styles.selectListBox}
             />
-
-            {/* Site Selection Dropdown */}
-            <SelectList
-                data={siteOptions.map((item) => ({ key: item, value: item }))}
-                setSelected={setFilterBySite}
-                placeholder={filterBySite || "Select a Site"}
-                boxStyles={styles.selectListBox}
-            />
-
             {/* Submit Button */}
             <Button onPress={handleRequestData}>Detailed Request</Button>
             <Button onPress={handleQuickRequest}>Quick Request</Button>
