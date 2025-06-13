@@ -460,6 +460,7 @@ const LoginScreen = ({navigation}) => {
                   onPressIn={handlePressIn}
                   onPressOut={handlePressOut}
                   onPress={fLogin}
+                  testID='loginButton'
                   disabled={!isLoginEnabled}>
                   {loginLabel}
                 </Button>

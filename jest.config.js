@@ -3,6 +3,9 @@ module.exports = {
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
+  setupFilesAfterEnv: [
+    '<rootDir>/setup-test.js',
+  ],
   transformIgnorePatterns: [
     "node_modules/(?!(react-native" +
       "|@react-native" +
@@ -14,10 +17,13 @@ module.exports = {
       "|react-native-vector-icons" +
       "|@react-navigation" +
       "|react-native-reanimated" +
+      "|react-native-keyboard-aware-scroll-view" + 
+      "|react-native-iphone-x-helper" + 
+      "|react-native-webview" + 
       ")/)"
   ],
   setupFiles: [
-    './__mocks__/react-native-gesture-handler.js' 
+    './node_modules/react-native-gesture-handler/jestSetup.js' 
   ],
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/__mocks__/fileMock.js',

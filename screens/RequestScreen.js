@@ -10,82 +10,101 @@ import {
 import { Text, Button, IndexPath } from "@ui-kitten/components";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { SelectList } from "react-native-dropdown-select-list";
+import RequestCourseS from "./RequestCourse";
+import RequestRefresher from "./RequestRefresher";
+import RequestAdmin from "./RequestAdmin";
+import RequestRental from "./RequestRental";
 
-const RequestScreen = ({ navigation }) => {
-    const [schedDate, setSchedDate] = useState(new Date());
-    const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0)); // Default index
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [filterByInst, setFilterByInst] = useState("");
-    const [filterBySite, setFilterBySite] = useState("");
+const Tab = createMaterialTopTabNavigator();
 
-    const options = ["Course", "Admin", "Rental"];
-    const siteOptions = ["Site A", "Site B", "Site C"];
+// const RequestScreen = ({ navigation }) => {
+//     const [schedDate, setSchedDate] = useState(new Date());
+//     const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0)); // Default index
+//     const [showDatePicker, setShowDatePicker] = useState(false);
+//     const [filterByInst, setFilterByInst] = useState("");
+//     const [filterBySite, setFilterBySite] = useState("");
 
-    const handleDateChange = (event, selectedDate) => {
-        setShowDatePicker(false);
-        if (selectedDate) {
-            setSchedDate(selectedDate);
-        }
-    };
+//     const options = ["Course", "Admin", "Rental"];
+//     const siteOptions = ["Site A", "Site B", "Site C"];
 
-    const handleRequestData = () => {
-        const dataToSend = {
-            selectedOption: options[selectedIndex.row],
-            date: schedDate.toDateString(),
-            site: filterBySite,
-        };
-        navigation.navigate("RequestStudent", { initdata: dataToSend });
-        Alert.alert("Data Sent!", JSON.stringify(dataToSend, null, 2));
-    };
-    const handleQuickRequest = () => {
-        const dataToSend = {
-            selectedOption: options[selectedIndex.row],
-            date: schedDate.toDateString(),
-            site: filterBySite,
-        };
-        navigation.navigate("RequestQuicK", { initdata: dataToSend });
-        Alert.alert("Data Sent!", JSON.stringify(dataToSend, null, 2));
-    };
+//     const handleDateChange = (event, selectedDate) => {
+//         setShowDatePicker(false);
+//         if (selectedDate) {
+//             setSchedDate(selectedDate);
+//         }
+//     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, padding: 20 }}>
-            {/* Date Picker Button */}
-            <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                style={styles.datepickerButton}
-            >
-                <Text style={styles.datepickerText}>
-                    {schedDate.toDateString()}
-                </Text>
-            </TouchableOpacity>
+//     const handleRequestData = () => {
+//         const dataToSend = {
+//             selectedOption: options[selectedIndex.row],
+//             date: schedDate.toDateString(),
+//             site: filterBySite,
+//         };
+//         navigation.navigate("RequestStudent", { initdata: dataToSend });
+//         Alert.alert("Data Sent!", JSON.stringify(dataToSend, null, 2));
+//     };
+//     const handleQuickRequest = () => {
+//         const dataToSend = {
+//             selectedOption: options[selectedIndex.row],
+//             date: schedDate.toDateString(),
+//             site: filterBySite,
+//         };
+//         navigation.navigate("RequestQuicK", { initdata: dataToSend });
+//         Alert.alert("Data Sent!", JSON.stringify(dataToSend, null, 2));
+//     };
 
-            {/* Date Picker Modal */}
-            {showDatePicker && (
-                <View style={styles.datePickerWrapper}>
-                    <DateTimePicker
-                        value={schedDate}
-                        mode="date"
-                        display={Platform.OS === "ios" ? "inline" : "default"}
-                        onChange={handleDateChange}
-                    />
-                </View>
-            )}
+//     return (
+//         <SafeAreaView style={{ flex: 1, padding: 20 }}>
+//             {/* Date Picker Button */}
+//             <TouchableOpacity
+//                 onPress={() => setShowDatePicker(true)}
+//                 style={styles.datepickerButton}
+//             >
+//                 <Text style={styles.datepickerText}>
+//                     {schedDate.toDateString()}
+//                 </Text>
+//             </TouchableOpacity>
 
-            {/* Select Option Dropdown */}
-            <SelectList
-                data={options.map((item) => ({ key: item, value: item }))}
-                setSelected={(value) => setSelectedIndex(new IndexPath(options.indexOf(value)))}
-                placeholder="Select a Request Type"
-                boxStyles={styles.selectListBox}
-            />
-            {/* Submit Button */}
-            <Button onPress={handleRequestData}>Detailed Request</Button>
-            <Button onPress={handleQuickRequest}>Quick Request</Button>
-        </SafeAreaView>
-    );
-};
+//             {/* Date Picker Modal */}
+//             {showDatePicker && (
+//                 <View style={styles.datePickerWrapper}>
+//                     <DateTimePicker
+//                         value={schedDate}
+//                         mode="date"
+//                         display={Platform.OS === "ios" ? "inline" : "default"}
+//                         onChange={handleDateChange}
+//                     />
+//                 </View>
+//             )}
 
+//             {/* Select Option Dropdown */}
+//             <SelectList
+//                 data={options.map((item) => ({ key: item, value: item }))}
+//                 setSelected={(value) => setSelectedIndex(new IndexPath(options.indexOf(value)))}
+//                 placeholder="Select a Request Type"
+//                 boxStyles={styles.selectListBox}
+//             />
+//             {/* Submit Button */}
+//             <Button onPress={handleRequestData}>Detailed Request</Button>
+//             <Button onPress={handleQuickRequest}>Quick Request</Button>
+//         </SafeAreaView>
+//     );
+// };
+
+const RequestScreen = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Course" component={RequestCourseS} />
+      <Tab.Screen name="Refresher" component={RequestRefresher} />
+      <Tab.Screen name="Admin" component={RequestAdmin} />
+      <Tab.Screen name="Rental" component={RequestRental} />
+      
+
+    </Tab.Navigator>
+  );
+}
 const styles = StyleSheet.create({
     datePickerWrapper: {
         justifyContent: "center",

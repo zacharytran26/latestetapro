@@ -189,7 +189,12 @@ export function CustomDrawerContent(props) {
               <Icon name="calendar-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
-            onPress={openInBrowserCal}
+            //onPress={openInBrowserCal}
+            onPress={() =>
+              props.navigation.navigate("HomeStack", {
+                screen: "Calendar",
+              })
+            }
           />
 
           <DrawerItem
@@ -228,7 +233,7 @@ export function CustomDrawerContent(props) {
           />)}
 
 
-          {/* <DrawerItem
+          <DrawerItem
             label="Request"
             icon={({ color, size }) => (
               <Icon name="account-group-outline" color={color} size={size} />
@@ -239,7 +244,7 @@ export function CustomDrawerContent(props) {
                 screen: "Request",
               })
             }
-          /> */}
+          />
 
           <DrawerItem
             label="Scheduling"
