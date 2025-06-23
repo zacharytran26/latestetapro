@@ -55,7 +55,7 @@ export default function ChgPwdScreen({ navigation }) {
   const hasMinLength = newpin.length >= 4;
   const hasNoSpecials = !forbiddenChars.test(newpin);
   const pinMatches = newpin === confirmpin;
-  const isPinValid = hasLetter && hasNumber && hasMinLength && hasNoSpecials && pinMatches;
+  const isPinAndPassValid = hasLetter && hasNumber && hasMinLength && hasNoSpecials && pinMatches;
 
   //   // --- Password validation ---
   // const pwdHasMinLength = newpassword.length >= 4;
@@ -333,7 +333,7 @@ export default function ChgPwdScreen({ navigation }) {
             onPressIn={handlePressIn} // Trigger when button is pressed
             onPressOut={handlePressOut} // Trigger when button is released
             onPress={handlePress}
-          // disabled={}
+            disabled={!isPinAndPassValid}
           >
             {authUser?.chgpin === "1" ? "UPDATE PASSWORD AND PIN" : "UPDATE PASSWORD"}
           </Button>

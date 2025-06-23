@@ -122,7 +122,58 @@ format of the events: [
 ]
 */
 const Calendar = () => {
-  const [events, setEvents] = useState({});
+  const [events, setEvents] = useState([
+    {
+      id: '2',
+      title: 'Meeting with Team',
+      start: {dateTime: '2025-06-14T10:00:00'},
+      end: {dateTime: '2025-06-14T11:00:00'},
+      color: '#4285F4',
+      resourceId: 'resource_1',
+    },
+    {
+      id: '3',
+      title: 'Meeting with Team3',
+      start: {dateTime: '2025-06-14T10:00:00'},
+      end: {dateTime: '2025-06-14T11:00:00'},
+      color: '#4285F4',
+      resourceId: 'resource_2',
+    },
+    {
+      id: '4',
+      title: 'Meeting with Client',
+      start: {dateTime: '2025-06-14T09:00:00'},
+      end: {dateTime: '2025-06-14T12:00:00'},
+      color: '#4285F4',
+      resourceId: 'resource_2',
+    },
+]);
+const fetchedEvents = [
+    {
+      id: '2',
+      title: 'Meeting with Team',
+      start: {dateTime: '2025-06-14T13:00:00'},
+      end: {dateTime: '2025-06-14T14:00:00'},
+      color: '#4285F4',
+      resourceId: 'resource_1',
+    },
+    {
+      id: '3',
+      title: 'Meeting with Team3',
+      start: {dateTime: '2025-06-14T15:00:00'},
+      end: {dateTime: '2025-06-14T16:00:00'},
+      color: '#4285F4',
+      resourceId: 'resource_2',
+    },
+    {
+      id: '4',
+      title: 'Meeting with Client',
+      start: {dateTime: '2025-06-14T07:00:00'},
+      end: {dateTime: '2025-06-14T08:00:00'},
+      color: '#4285F4',
+      resourceId: 'resource_2',
+    },
+]
   const {bottom} = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const calendarRef = useRef(null);
@@ -136,6 +187,35 @@ const Calendar = () => {
   const route = useRoute();
   const {authUser, setAuthUser, setIsLoggedIn} = useAuth();
 
+
+  const calUnavailableHours = () => {
+    const hours = fetchedEvents.map(hours => {
+      const startDate = new Date(hours.start.dateTime);
+      const endDate = new Date(hours.end.dateTime)
+      const startMinutes = startDate.getHours() * 60 + startDate.getMinutes();
+    const endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
+    return {
+      start: startMinutes,
+      end: endMinutes,
+      resourceId: hours.resourceId,
+      backgroundColor: '#FFCCCC', // light red, for example
+      enableBackgroundInteraction: false, // disable interaction during unavailable time
+    };
+    });
+    return hours;
+  };
+
+  const unavailableHours = useMemo(
+    () => {
+      const baseHours = [
+    { start: 0, end: 6 * 60, backgroundColor: '#ccc', enableBackgroundInteraction: true },
+    { start: 20 * 60, end: 24 * 60, backgroundColor: '#ccc', enableBackgroundInteraction: true },
+  ];
+  return [...baseHours, ...calUnavailableHours()];
+    },
+    [fetchedEvents]
+  );
+
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
       setCalendarWidth(window.width);
@@ -147,9 +227,9 @@ const Calendar = () => {
     console.log('Events updated:', events);
   }, [events]);
 
-  useEffect(() => {
-    FetchCalData();
-  }, []);
+  // useEffect(() => {
+  //   FetchCalData();
+  // }, []);
 
   const resources = useMemo(() => {
     return Array.from({length: TOTAL_RESOURCES}, (_, index) => ({
@@ -182,35 +262,49 @@ const Calendar = () => {
   //   }
   // };
 
-    const FetchCalData = async () => {
-      try {
-        const request = await fetch(
-          `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
-            authUser.uname
-          }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
-            authUser.sessionid
-          }&mode=gettestdata&etamobilepro=1&nocache=${
-            Math.random().toString().split('.')[1]
-          }&persid=${
-            authUser.currpersid
-          }`,
-        );
-        console.log(request);
-        const text = await request.text();
-        console.log('text', text);
-        const data = JSON.parse(text);
-        console.log('data', data);
-        setEvents(data.events);
-  
-        if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
-          return; // Stop further processing if an error is handled
-        }
+  // const FetchCalData = async () => {
+  //   try {
+  //     const request = await fetch(
+  //       `${authUser.host}content?module=home&page=m&reactnative=1&uname=${
+  //         authUser.uname
+  //       }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${
+  //         authUser.sessionid
+  //       }&mode=gettestdata&etamobilepro=1&nocache=${
+  //         Math.random().toString().split('.')[1]
+  //       }&persid=${authUser.currpersid}`,
+  //     );
+  //     console.log(request);
+  //     const text = await request.text();
+  //     console.log('text', text);
+  //     const data = JSON.parse(text);
+  //     console.log('data', data);
+  //     setEvents(data.events);
 
-      } catch (error) {
-        console.error('Error fetching student data:', error);
-        return null;
-      }
-    };
+  //     if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
+  //       return; // Stop further processing if an error is handled
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching student data:', error);
+  //     return null;
+  //   }
+  // };
+
+  const handleCalChange = event => {
+    const updated = events.map(e => (e.id === event.id ? event : e));
+    console.log('updateed', updated);
+    setEvents(updated);
+  };
+
+  const handleCreateEvent = event => {
+          const newEvent = {
+            ...event,
+            id: `event_${events.length + 1}`,
+            title: `Event ${events.length + 1}`,
+            color: '#4285F4',
+          };
+          setEvents([...events, newEvent]);
+          setSelectedEvent(null);
+  };
 
   const _renderResource = useCallback(
     resource => (
@@ -270,6 +364,7 @@ const Calendar = () => {
     <View style={styles.container}>
       <CalendarContainer
         ref={calendarRef}
+        unavailableHours={unavailableHours}
         selectedEvent={selectedEvent}
         calendarWidth={calendarWidth}
         scrollByDay
@@ -285,25 +380,13 @@ const Calendar = () => {
         dragStep={15}
         allowDragToEdit={true}
         allowDragToCreate={true}
-        // onDragSelectedEventStart={handleDragStart}
-        // onDragSelectedEventEnd={handleDragEnd}
+        onDragSelectedEventStart={handleDragStart}
+        onDragSelectedEventEnd={handleDragEnd}
         onDragEventStart={handleDragStart}
-        onDragEventEnd={event => {
-          const updated = events.map(e => (e.id === event.id ? event : e));
-          setEvents(updated);
-        }}
+        onDragEventEnd={handleCalChange}
         resources={resources}
         onPressEvent={() => navigation.navigate('Request')}
-        onDragCreateEventEnd={event => {
-          const newEvent = {
-            ...event,
-            id: `event_${events.length + 1}`,
-            title: `Event ${events.length + 1}`,
-            color: '#4285F4',
-          };
-          setEvents([...events, newEvent]);
-          setSelectedEvent(newEvent);
-        }}>
+        onDragCreateEventEnd={handleCreateEvent}>
         <CalendarHeader
           dayBarHeight={100}
           renderHeaderItem={_renderResourceHeaderItem}

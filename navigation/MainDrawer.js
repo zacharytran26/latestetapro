@@ -182,8 +182,8 @@ export function CustomDrawerContent(props) {
               props.navigation.navigate("HomeStack", { screen: "FIF" })
             }
           />
-          {/*Fix the Calendar not working */}
-          <DrawerItem
+
+          {/* <DrawerItem
             label="Full Calendar"
             icon={({ color, size }) => (
               <Icon name="calendar-outline" color={color} size={size} />
@@ -195,6 +195,14 @@ export function CustomDrawerContent(props) {
                 screen: "Calendar",
               })
             }
+          /> */}
+          <DrawerItem
+            label="Full Calendar"
+            icon={({ color, size }) => (
+              <Icon name="calendar-outline" color={color} size={size} />
+            )}
+            labelStyle={styles.drawerItemLabel}
+            onPress={openInBrowserCal}
           />
 
           <DrawerItem
@@ -233,7 +241,7 @@ export function CustomDrawerContent(props) {
           />)}
 
 
-          <DrawerItem
+          {/* <DrawerItem
             label="Request"
             icon={({ color, size }) => (
               <Icon name="account-group-outline" color={color} size={size} />
@@ -244,7 +252,7 @@ export function CustomDrawerContent(props) {
                 screen: "Request",
               })
             }
-          />
+          /> */}
 
           <DrawerItem
             label="Scheduling"
