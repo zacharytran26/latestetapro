@@ -22,7 +22,7 @@ import PendingAuths from "../screens/PendingAuths";
 import FIFScreen from "../screens/FIFScreen";
 import { useAuth } from "../screens/ThemeContext";
 // import RequestScreen from "../screens/RequestScreen";
-import Calendar from "../screens/CalendarScreen";
+// import Calendar from "../screens/CalendarScreen";
 // import RequestQuick from "../screens/RequestQuick";
 // import RequestStudent from "../screens/RequestStudent";
 // import RequestRefresher from "../screens/RequestRefresher";
@@ -72,7 +72,7 @@ const HomeStackNavigator = ({ navigation, route }) => {
       <Stack.Screen name="PendingAuth" component={PendingAuths} />
       <Stack.Screen name="FIF" component={FIFScreen} />
       {/* <Stack.Screen name="Request" component={RequestScreen}/> */}
-      <Stack.Screen name="Calendar" component={Calendar}/>
+      {/* <Stack.Screen name="Calendar" component={Calendar}/> */}
     </Stack.Navigator>
   );
 }

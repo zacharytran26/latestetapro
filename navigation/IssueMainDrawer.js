@@ -85,13 +85,7 @@ export function CustomDrawerContentIssue(props) {
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
 
-    Linking.canOpenURL(urlGoto).then((supported) => {
-      if (supported) {
-        Linking.openURL(urlGoto);
-      } else {
-        console.warn("Don't know how to open URI:" + urlGoto);
-      }
-    }).catch((err) => console.error("An error occured,", err))
+    setWebViewUrl(urlGoto);
   }
 
   const openInBrowserCal = () => {
@@ -208,7 +202,7 @@ export function CustomDrawerContentIssue(props) {
             }
           />
 
-          {authUser.perstype === "student" ? (null) : (<DrawerItem
+          {authUser.perstype === "student" || authUser.penaut != "rw" ? (null) : (<DrawerItem
             label="Pending Authorizations"
             icon={({ color, size }) => (
               <Icon name="clipboard-clock-outline" color={color} size={size} />
@@ -286,8 +280,8 @@ export function CustomDrawerContentIssue(props) {
                 <Text style={{ marginLeft: 5 }}>Help</Text>
               </View>
             </TouchableOpacity>
-            <Text style={styles.bottomText}>Version 1.0.0</Text>
-            <Text style={styles.bottomText}>© 2024 Talon Systems LLC</Text>
+            <Text style={styles.bottomText}>{authUser.vers}</Text>
+            <Text style={styles.bottomText}>© 2025 Talon Systems LLC</Text>
             <Text style={styles.bottomText}>All Rights Reserved</Text>
           </View>
           <Modal

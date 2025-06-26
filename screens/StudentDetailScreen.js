@@ -91,7 +91,6 @@ const StudentDetailScreen = ({navigation}) => {
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
-      console.log("data", data);
       setStudDetail(data);
     } catch (error) {
       //Alert.alert("Error", error.message || "An error occurred");

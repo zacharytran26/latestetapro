@@ -29,43 +29,15 @@ const ConfirmFIF = ({ navigation }) => {
   const [etaresponse, setEtaresponse] = useState(null); // Stores the response JSON
 
   const HandleAuthorization = async () => {
-    let confirmcode = confirmInputState.value;
+    const confirmcode = confirmInputState.value;
     const pin = pinInputState.value;
     try {
-      const SearchParams = new URLSearchParams({
-        module: 'home',
-        page: 'm',
-        reactnative: '1',
-        uname: authUser.uname,
-        password: authUser.upwd,
-        customer: 'eta' + authUser.schema,
-        session_id: authUser.sessionid,
-        mode: 'confirmfif',
-        etamobilepro: '1',
-        nocache: Math.random().toString().split(".")[1],
-        pinnum: pin,
-        persid: authUser.currpersid,
-        fifid: fifdata.ID
-      });
-      if (confirmcode) {
-        SearchParams.append('confirmcode', confirmcode);
-      }
-      // const response = await fetch(
-      //   `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
-      //   }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
-      //   }&mode=confirmfif&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
-      //   }&pinnum=${pin}&${confirmblock}&persid=${authUser.currpersid
-      //   }&fifid=${fifdata.ID}`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       Accept: "application/txt",
-      //       "Content-Type": "application/txt",
-      //     },
-      //   }
-      // );
       const response = await fetch(
-        `${authUser.host}content?${SearchParams.toString()}`,
+        `${authUser.host}content?module=home&page=m&reactnative=1&uname=${authUser.uname
+        }&password=${authUser.upwd}&customer=eta${authUser.schema}&session_id=${authUser.sessionid
+        }&mode=confirmfif&etamobilepro=1&nocache=${Math.random().toString().split(".")[1]
+        }&pinnum=${pin}&confirmcode=${confirmcode}&persid=${authUser.currpersid
+        }&fifid=${fifdata.ID}`,
         {
           method: "POST",
           headers: {
@@ -76,10 +48,9 @@ const ConfirmFIF = ({ navigation }) => {
       );
       const data = await response.json(); // Parse the JSON from the response
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
-        return; // Stop further processing if an error is handled
+        return; 
       }
-      //console.log("Response Data:", data);
-      setEtaresponse(data); // Store response in state
+      setEtaresponse(data); 
     } catch (error) {
       console.error("Error during fetch:", error);
     }
@@ -125,24 +96,32 @@ const ConfirmFIF = ({ navigation }) => {
       navigation.goBack();
       return;
     }
-
-    if (!confirm) {
+    //logic if there is a confirmation code
+    if (confirm) {
       if (response.status === "confirm") {
-        //Alert.alert("The FIF has been confirmed");
         EtaAlert("Success", "The FIF has been confirmed", "Ok", "");
         const FifId = {
-          id: String(fifdata.ID), // Ensure ID is a string
+          id: String(fifdata.ID), 
         };
-        // navigation.navigate("FIF", { FifId });
         navigation.popTo("FIF", { FifId, isConfirmed: true })
       } else {
-        //Alert.alert(response.msg);
         EtaAlert("Alert", response.msg, "Ok", "");
       }
     } else {
       if (fifdata.CONFIRM_CODE != confirmInputState.value) {
-        //Alert.alert("Invalid Confirmation Code. Please Try Again");
         EtaAlert("Alert", "Invalid Confirmation Code. Please Try Again", "Ok", "");
+      }
+    }
+    //logic for if there is only pin required
+    if(!confirm){
+      if(response.status === 'confirm'){
+         EtaAlert("Success", "The FIF has been confirmed", "Ok", "");
+        const FifId = {
+          id: String(fifdata.ID), 
+        };
+        navigation.popTo("FIF", { FifId, isConfirmed: true })
+      } else {
+        EtaAlert("Alert", response.msg, "Ok", "");
       }
     }
     };
@@ -159,7 +138,6 @@ const ConfirmFIF = ({ navigation }) => {
                 textStyle={styles.textArea}
                 placeholder="Pin"
                 returnKeyType={Platform.OS === "ios" ? "done" : "next"}
-                // blurOnSubmit={true}
                 {...pinInputState}
                 style={styles.input}
                 secureTextEntry={true}
