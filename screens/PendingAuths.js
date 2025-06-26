@@ -218,42 +218,43 @@ const PendingAuth = () => {
       if (handleFetchError(data, setAuthUser, setIsLoggedIn)) {
         return; // Stop further processing if an error is handled
       }
-      const pendAuthData = data.pendauthdata.reduce(
-        (acc, item) => {
-          if (item.pendauths) {
-            acc.pendauths = acc.pendauths.concat(
-              item.pendauths.map((pendauth) => ({
-                key: pendauth.ID,
-                value: pendauth.REQST_TYPE_DISNAME,
-                requestid: pendauth.ID,
-                eventStop: pendauth.EVENT_STOP,
-                eventStart: pendauth.EVENT_START,
-                hour: pendauth.HOUR,
-                debriefDur: pendauth.DEBRIEF_DUR,
-                briefDur: pendauth.BRIEF_DUR,
-                actDur: pendauth.ACT_DUR,
-                actStart: pendauth.ACT_START,
-                actStop: pendauth.ACT_STOP,
-                scheduleid: pendauth.SCH_ACT_ID,
-                teamId: pendauth.TEAMID,
-                ...pendauth,
-              }))
-            );
+      data.pendauthdata.map( (el)=> {
+        mytemp=[]
+        if (el.teams){
+          mytemp = mytemp.concat(
+            el.teams.map((ateam) => ({
+              key: ateam.ID,
+              value: ateam.DIS,
+            }))
+          );
+          setTeams(mytemp);
+          if (mytemp.length==1){
+            currentTeam=mytemp[0].value;
+            handleTeamSelect(mytemp[0].key);
           }
-          if (item.teams) {
-            acc.teams = acc.teams.concat(
-              item.teams.map((team) => ({
-                key: team.ID,
-                value: team.DIS,
-              }))
-            );
-          }
-          return acc;
-        },
-        { pendauths: [], teams: [] }
-      );
-      setRequests(pendAuthData.pendauths);
-      setTeams(pendAuthData.teams);
+        }
+        mytemp=[]
+        if (el.pendauths){
+          mytemp=mytemp.concat(el.pendauths.map((pendauth) => ({
+            key: pendauth.ID,
+            value: pendauth.REQST_TYPE_DISNAME,
+            requestid: pendauth.ID,
+            eventStop: pendauth.EVENT_STOP,
+            eventStart: pendauth.EVENT_START,
+            hour: pendauth.HOUR,
+            debriefDur: pendauth.DEBRIEF_DUR,
+            briefDur: pendauth.BRIEF_DUR,
+            actDur: pendauth.ACT_DUR,
+            actStart: pendauth.ACT_START,
+            actStop: pendauth.ACT_STOP,
+            scheduleid: pendauth.SCH_ACT_ID,
+            teamId: pendauth.TEAMID,
+            ...pendauth,
+          }))
+        );
+        setRequests(mytemp);
+        }
+      });
     } catch (error) {
       console.error("Error fetching and parsing data:", error);
     } finally {
@@ -313,13 +314,21 @@ const PendingAuth = () => {
     }>
       <Layout style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
-          <SelectList
+        {teams.length==1? 
+            (
+              <View style={{alignItems: "center",marginTop:5}}>
+                <Text style={{fontSize:16}}>Team: {currentTeam}</Text>                           
+              </View>
+            )
+          :
+            (<SelectList
             data={[{ key: "", value: "All Teams" }, ...teams]}
             setSelected={handleTeamSelect}
             placeholder={filterByTeam || "Select a team"}
             boxStyles={styles.selectListBox}
             value={filterByTeam}
-          />
+            />)
+          }
           <FlashList
             data={filteredRequests}
             refreshing={refreshing}

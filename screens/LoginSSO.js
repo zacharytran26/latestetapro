@@ -111,6 +111,7 @@ export default function LoginSSOScreen({ navigation }) {
           </Text>
         </View>
         <WebView
+          incognito={true}
           source={{ uri: ssourl }}
           onError={handleWebViewError}
           onMessage={(event) => {
