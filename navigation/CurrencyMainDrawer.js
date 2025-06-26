@@ -79,8 +79,9 @@ export function CustomDrawerContentCurrency(props) {
       arrCalStart[1] +
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
-
+console.log("pressed");
     setWebViewUrl(urlGoto);
+    setModalVisible(true);
   }
 
   const uric = `${authUser.host.replace(

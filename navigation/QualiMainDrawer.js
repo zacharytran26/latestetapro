@@ -87,6 +87,7 @@ export function CustomDrawerContentQuali(props) {
       '&version=3.0.2&';
     const urlGoto = sHost + surl;
     setWebViewUrl(urlGoto);
+    setModalVisible(true);
   };
 
   const openInBrowserCal = () => {

@@ -86,6 +86,7 @@ export function CustomDrawerContentIssue(props) {
     const urlGoto = sHost + surl;
 
     setWebViewUrl(urlGoto);
+    setModalVisible(true);
   }
 
   const openInBrowserCal = () => {

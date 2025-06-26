@@ -87,6 +87,7 @@ export function CustomDrawerContent(props) {
       "&version=3.0.2&";
     const urlGoto = sHost + surl;
     setWebViewUrl(urlGoto);
+    setModalVisible(true);
 
     // Linking.canOpenURL(urlGoto).then((supported) => {
     //   if (supported) {

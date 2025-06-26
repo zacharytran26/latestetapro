@@ -86,6 +86,7 @@ export function CustomDrawerContentMsg(props) {
     const urlGoto = sHost + surl;
 
     setWebViewUrl(urlGoto);
+    setModalVisible(true);
   }
   const openInBrowserCal = () => {
     const arrCalStart = authUser.calstart.split(";"); //DD/MON/YYYY;MM/DD/YYYY
