@@ -94,7 +94,8 @@ const StudentDetailScreen = ({navigation}) => {
       setStudDetail(data);
     } catch (error) {
       //Alert.alert("Error", error.message || "An error occurred");
-      EtaAlert('Error', error.message || 'An error occurred', 'Ok', '');
+      // EtaAlert('Error', error.message || 'An error occurred', 'Ok', '');
+      return;
     }
   };
 
@@ -163,7 +164,7 @@ const StudentDetailScreen = ({navigation}) => {
     launchImageLibrary(options, result => {
       if (result.didCancel) {
         //Alert.alert('User cancelled image picker');
-        EtaAlert('Error', 'User cancelled image picker', 'Ok', '');
+        return;
       } else if (result.error) {
         //Alert.alert('Image picker error: ', result.error);
         EtaAlert('Error', 'Image picker error: ', result.error, 'Ok', '');

@@ -65,12 +65,7 @@ const InstructorActivity = ({ navigation }) => {
     launchImageLibrary(options, (result) => {
       if (result.didCancel) {
         //Alert.alert('User cancelled image picker');
-        EtaAlert(
-          "Alert",
-          'User cancelled image picker',
-          "Ok",
-          ""
-        );
+        return;
       } else if (result.error) {
         //Alert.alert('Image picker error: ', result.error);
         EtaAlert(

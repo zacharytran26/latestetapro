@@ -154,14 +154,14 @@ console.log("pressed");
             <Avatar source={{ uri: uric }} style={styles.profileAvatar} />
           </View>
 
-          <DrawerItem
+          {/* <DrawerItem
             label="ETA"
             icon={({ color, size }) => (
               <Icon name="home-outline" color={color} size={size} />
             )}
             labelStyle={styles.drawerItemLabel}
             onPress={() => openEtaBroswer("module=home&page=homepg")}
-          />
+          /> */}
 
           <DrawerItem
             label="FIF"
