@@ -33,7 +33,7 @@ const SettingsScreen = ({ setProfileImage }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [form, setForm] = useState({
-    pushNotifications: false,
+    pushNotifications: true,
     accessCode: "",
     username: "",
   });
