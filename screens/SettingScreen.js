@@ -74,8 +74,8 @@ const SettingsScreen = ({ setProfileImage }) => {
       const accessCode = await AsyncStorage.getItem("accesscode");
       const username = await AsyncStorage.getItem("username");
 
+      //const isPushEnabled = storedPush === null ? true : storedPush === "true";
       const isPushEnabled = storedPush === "true";
-
       const loadedForm = {
         pushNotifications: isPushEnabled,
         accessCode: accessCode || "",
@@ -105,6 +105,7 @@ const SettingsScreen = ({ setProfileImage }) => {
     setFormPreferences(updatedForm); // Optional: update global context
     saveSettings("pushNotifications", isChecked);
   };
+  saveSettings("pushNotifications", form.pushNotifications);
 
   return (
     <>
