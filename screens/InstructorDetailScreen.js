@@ -8,7 +8,9 @@ import {
   Alert,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
+import { WebView } from "react-native-webview";
 import {
   Layout,
   Text,
@@ -26,6 +28,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useFocusEffect} from '@react-navigation/native';
 
+
 const InstructorList = ({navigation}) => {
   const route = useRoute();
   const {detail} = route.params;
@@ -35,7 +38,8 @@ const InstructorList = ({navigation}) => {
   const [imageError, setImageError] = useState(false); // Track image loading error
   const [imageURI, setImageURI] = useState(null);
   const [imageUploaded, setImageUploaded] = useState(false);
-
+  const [WebViewUrl, setWebViewUrl] = useState('');
+  const [webViewVisible, setWebViewVisible] = useState(false);
 
   useEffect(() => {
     FetchInstructorDetail();
@@ -133,6 +137,19 @@ const InstructorList = ({navigation}) => {
     }
   };
 
+  const openProfileBroswer = () => {
+    const urlProfile = `${authUser.host.replace(
+      'servlet/',
+      '',
+    )}php/upload/view.php?imgRes=100&viewPers=${
+      detail.ID
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${instDetail.SYSDOCID}&svr=${
+      authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+    setWebViewUrl(urlProfile);
+    setWebViewVisible(true);
+  };
+
   const openImagePickerI = async selected => {
     const options = {
       mediaType: 'photo',
@@ -144,10 +161,8 @@ const InstructorList = ({navigation}) => {
     var imageUri;
     launchImageLibrary(options, result => {
       if (result.didCancel) {
-        //Alert.alert('User cancelled image picker');
-        EtaAlert('Error', 'User cancelled image picker', 'Ok', '');
+        return;
       } else if (result.error) {
-        //Alert.alert('Image picker error: ', result.error);
         EtaAlert('Error', 'Image picker error: ', result.error, 'Ok', '');
       } else {
         imageUri = result.uri || result.assets?.[0]?.uri;
@@ -162,12 +177,14 @@ const InstructorList = ({navigation}) => {
           });
           formData.append('pers_id', `${detail.ID}`);
           formData.append('pers_type', `${authUser.perstype}`);
+          formData.append("any_type", "pers_id");     
+          formData.append("any_id", `${detail.ID}`);
           formData.append('doc_type', 'instProfilePic');
           formData.append('title', 'PersonProfile');
           formData.append('file_type', result.assets[0].type);
           formData.append('etaaction', 'new');
-          formData.append('curuserid', `${authUser.currpersid}`);
-          formData.append('chg_tstamp', new Date());
+          //formData.append('curuserid', `${authUser.currpersid}`);
+          //formData.append('chg_tstamp', new Date());
 
           const myurl = `${authUser.host}uploadBlobETAAll?`;
           fetch(myurl, {
@@ -269,29 +286,13 @@ const InstructorList = ({navigation}) => {
               {authUser.perstype === 'instructor' ? (
                 <TouchableOpacity
                   onPress={() => {
-                    if (instDetail.canEditPic === '1') {
+                    if (instDetail.canEditPic === '1' && instDetail.SYSDOCID === '') {
                       openImagePickerI();
                     } else {
-                      EtaAlert(
-                        'Access Denied',
-                        "You don't have permission.",
-                        'OK',
-                        '',
-                      );
+                      openProfileBroswer();
                     }
                   }}
-                  onLongPress={() => {
-                    if (instDetail.canDeletePic === '1') {
-                      DeleteImage();
-                    } else {
-                      EtaAlert(
-                        'Access Denied',
-                        "You don't have permission to delete.",
-                        'OK',
-                        '',
-                      );
-                    }
-                  }}>
+                >
                   <Avatar
                     source={avatarSource}
                     style={styles.profileAvatar}
@@ -309,6 +310,18 @@ const InstructorList = ({navigation}) => {
               <Text category="h1" style={styles.profileName}>
                 {instDetail.DISNAME}
               </Text>
+              {instDetail.SYSDOCID === '' || instDetail.canDeletePic === '0' ? ('') :
+                (<Icon name='alpha-x-circle-outline' position='absolute' top={0} left={250} size={30} onPress={() => { 
+                  Alert.alert('Delete Confirmation', 'Are you sure you want to delete this profile image?', [
+                    {
+                      text: 'Cancel',
+                      onPress: () => {},
+                      style: 'cancel',
+                    },
+                    {text: 'OK', onPress: () => DeleteImage() },
+                  ]);
+                }}/>)
+              }
               <Button
                 onPress={addContact}
                 accessoryLeft={() => (
@@ -380,6 +393,20 @@ const InstructorList = ({navigation}) => {
             </View>
           </ScrollView>
         </SafeAreaView>
+
+        <Modal
+          visible={webViewVisible}
+          animationType="slide"
+          onRequestClose={() => setWebViewVisible(false)}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.webViewHeader}>
+              <Button onPress={() => setWebViewVisible(false)}>Close</Button>
+            </View>
+            <WebView source={{ uri: WebViewUrl }} />
+          </SafeAreaView>
+        </Modal>
+
       </Layout>
     </KeyboardAwareScrollView>
   );

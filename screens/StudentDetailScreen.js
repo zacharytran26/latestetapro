@@ -8,6 +8,7 @@ import {
   ScrollView,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
 import {
   Layout,
@@ -20,12 +21,12 @@ import {
 } from '@ui-kitten/components';
 import {useRoute} from '@react-navigation/native';
 import {useAuth} from './ThemeContext';
-//import * as Contacts from "expo-contacts";
 import Contacts from 'react-native-contacts';
 import {handleFetchError, EtaAlert} from './ExtraImports';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useFocusEffect} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
+import { WebView } from "react-native-webview";
 
 const StudentDetailScreen = ({navigation}) => {
   const route = useRoute();
@@ -36,6 +37,8 @@ const StudentDetailScreen = ({navigation}) => {
   const [imageError, setImageError] = useState(false); // Track image loading error
   const [studDetail, setStudDetail] = useState({});
   const {authUser, setAuthUser, setIsLoggedIn} = useAuth();
+  const [WebViewUrl, setWebViewUrl] = useState('');
+  const [webViewVisible, setWebViewVisible] = useState(false);
 
   const uric = `${authUser.host.replace(
     'servlet/',
@@ -152,6 +155,19 @@ const StudentDetailScreen = ({navigation}) => {
     }
   };
 
+  const openProfileBroswer = () => {
+    const urlProfile = `${authUser.host.replace(
+      'servlet/',
+      '',
+    )}php/upload/view.php?imgRes=100&viewPers=${
+      detail.persid
+    }&rorwwelrw=rw&curuserid=${authUser.currpersid}&id=${studDetail.SYSDOCID}&svr=${
+      authUser.svr
+    }&s=${authUser.sessionid}&c=eta${authUser.schema}`;
+    setWebViewUrl(urlProfile);
+    setWebViewVisible(true);
+  };
+
   const openImagePickerS = async selected => {
     const options = {
       mediaType: 'photo',
@@ -163,7 +179,6 @@ const StudentDetailScreen = ({navigation}) => {
     var imageUri;
     launchImageLibrary(options, result => {
       if (result.didCancel) {
-        //Alert.alert('User cancelled image picker');
         return;
       } else if (result.error) {
         //Alert.alert('Image picker error: ', result.error);
@@ -179,16 +194,18 @@ const StudentDetailScreen = ({navigation}) => {
             type: 'image/png',
             name: result.assets[0].fileName,
           });
-          formData.append('pers_id', `${detail.id}`);
-          formData.append('pers_type', `${authUser.perstype}`);
+          formData.append('pers_id', `${detail.persid}`);
+          formData.append('pers_type',"student");
+          formData.append("any_type", "pers_id");     
+          formData.append("any_id", `${detail.persid}`);
           formData.append('doc_type', 'studProfilePic');
           formData.append('title', 'PersonProfile');
           formData.append('file_type', result.assets[0].type);
           formData.append('etaaction', 'new');
-          formData.append('curuserid', `${authUser.currpersid}`);
-          formData.append('chg_tstamp', new Date());
+          //formData.append('curuserid', `${authUser.currpersid}`);
+          //formData.append('chg_tstamp', new Date());
 
-          const myurl = `${authUser.host}uploadBlobETAAll?`;
+          const myurl = `${authUser.host}uploadBlobETAAll?`;         
           fetch(myurl, {
             method: 'POST',
             body: formData,
@@ -263,29 +280,13 @@ const StudentDetailScreen = ({navigation}) => {
               {studDetail.canEditPic === '1' ? (
                 <TouchableOpacity
                   onPress={() => {
-                    if (studDetail.canEditPic === '1') {
+                    if (studDetail.canEditPic === '1' && studDetail.SYSDOCID === '') {
                       openImagePickerS();
                     } else {
-                      EtaAlert(
-                        'Access Denied',
-                        "You don't have permission.",
-                        'OK',
-                        '',
-                      );
+                      openProfileBroswer();
                     }
                   }}
-                  onLongPress={() => {
-                    if (studDetail.canDeletePic === '1') {
-                      DeleteImage();
-                    } else {
-                      EtaAlert(
-                        'Access Denied',
-                        "You don't have permission to delete.",
-                        'OK',
-                        '',
-                      );
-                    }
-                  }}>
+                >
                   <Avatar source={avatarSource} style={styles.profileAvatar} />
                 </TouchableOpacity>
               ) : (
@@ -303,6 +304,9 @@ const StudentDetailScreen = ({navigation}) => {
             </View>
 
             <View style={styles.buttonGroup}>
+              {studDetail.SYSDOCID === '' || studDetail.canDeletePic === '0' ? ('') :
+                  (<Icon name='alpha-x-circle-outline' position='absolute' top={0} left={250} size={30}/>)
+              }
               <Button
                 onPress={addContact}
                 accessoryLeft={() => (
@@ -521,6 +525,20 @@ const StudentDetailScreen = ({navigation}) => {
             </View>
           </ScrollView>
         </SafeAreaView>
+
+        <Modal
+                  visible={webViewVisible}
+                  animationType="slide"
+                  onRequestClose={() => setWebViewVisible(false)}
+                >
+                  <SafeAreaView style={{ flex: 1 }}>
+                    <View style={styles.webViewHeader}>
+                      <Button onPress={() => setWebViewVisible(false)}>Close</Button>
+                    </View>
+                    <WebView source={{ uri: WebViewUrl }} />
+                  </SafeAreaView>
+                </Modal>
+
       </Layout>
     </ScrollView>
   );
