@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Image, StyleSheet, View, Text, Dimensions, TouchableOpacity} from "react-native";
+import { Alert, Image, StyleSheet, View, Platform, Dimensions, TouchableOpacity} from "react-native";
 import { useAuth } from "./ThemeContext";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
 import messaging from '@react-native-firebase/messaging';
@@ -134,14 +134,22 @@ export function LogoTitle({routeName = '', screenName = ''}) {
 
   return (
     <TouchableOpacity onPress={handlePress}>
-      <Image
-        style={{ width: 150, height: 50 }}
-        source={require('../assets/logo-transparent.png')}
-      />
+      {Platform.OS === "ios" ? 
+        (<Image
+          style={{ width: 150, height: 50 }}
+          source={require('../assets/logo-transparent.png')}
+        />) : 
+        (<View style={styles.vcontainer}>
+          <Image
+            style={{ width: 180, height: 50}}
+            source={require('../assets/logo-transparent.png')}
+          />
+        </View>)
+      }
     </TouchableOpacity>
   );
 }
-
+const screenWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   chevron: {
     width: 24,
@@ -154,5 +162,10 @@ const styles = StyleSheet.create({
   carouselText: {
     fontSize: 11,
     color: "#333",
+  },
+  vcontainer: {
+    flex: 1,width:screenWidth-80,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

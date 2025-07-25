@@ -411,7 +411,7 @@ const LoginScreen = ({navigation}) => {
               <Layout style={styles.container}>
                 <Image
                   style={styles.image}
-                  source={require('../assets/login_logo.png')}
+                  source={require('../assets/login_logo.jpg')}
                 />
 
                 <Input
@@ -461,7 +461,7 @@ const LoginScreen = ({navigation}) => {
                   onPressOut={handlePressOut}
                   onPress={fLogin}
                   testID='loginButton'
-                  disabled={!isLoginEnabled}>
+                >
                   {loginLabel}
                 </Button>
               </Layout>
